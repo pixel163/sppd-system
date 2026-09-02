@@ -12,25 +12,21 @@ class UserSeeder extends Seeder
     {
         // Admin
         User::create([
-            'name' => 'Staff',
+            'name' => 'staff',
             'email' => 'staff@example.com',
             'password' => Hash::make('password'),
-            'role' => 'staff',
         ]);
 
-        // CS 1
         User::create([
             'name' => 'manajer',
             'email' => 'manajer@example.com',
             'password' => Hash::make('password'),
-            'role' => 'manajer',
         ]);
 
         User::create([
             'name' => 'ga',
             'email' => 'ga@example.com',
             'password' => Hash::make('password'),
-            'role' => 'ga',
         ]);
     }
 }

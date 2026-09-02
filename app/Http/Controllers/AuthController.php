@@ -19,11 +19,11 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
-            return match ($user->role) {
-                'staff' => redirect()->route('staff.dashboard'),
-                'manajer' => redirect()->route('manajer.dashboard'),
-                'ga' => redirect()->route('ga.dashboard'),
-                default => redirect('/'),
+            return match ($user->jabatan->name) {
+                'staff' => redirect()->route('dashboard'),
+                'manager' => redirect()->route('dashboard'),
+                'hrga' => redirect()->route('dashboard'),
+                default => redirect('/dashboard'),
             };
         }
 

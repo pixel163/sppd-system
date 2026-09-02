@@ -1,4 +1,5 @@
 import './bootstrap';
+import { createIcons, icons } from 'lucide';
 
 const profileToggle = document.getElementById('profileToggle');
 const profileMenu = document.getElementById('profileMenu');
@@ -19,3 +20,7 @@ if (profileToggle && profileMenu) {
 		profileToggle.setAttribute('aria-expanded', 'false');
 	});
 }
+
+createIcons({
+    icons,
+});
