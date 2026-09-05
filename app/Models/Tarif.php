@@ -11,7 +11,6 @@ class Tarif extends Model
     protected $fillable = [
         'golongan_id',
         'kota_kategori_id',
-        // 'travel_scope',
         'makan',
         'dinas',
         'hotel',

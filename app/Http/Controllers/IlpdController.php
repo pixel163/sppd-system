@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Sppd;
 use App\Models\Transport;
 use App\Models\Keperluan;
@@ -27,11 +28,9 @@ class IlpdController extends Controller
         }
         
         // / 1. Ambil Golongan User dari relasi SPPD -> User -> Golongan
-        // (Sesuaikan nama relasi/kolom di project kamu, misal: $sppd->user->golongan_id)
         $golonganId = $sppd->user->golongan_id ?? null;
 
         // 2. Ambil Kategori Kota dari relasi SPPD -> Kota -> Kategori
-        // (Sesuaikan nama relasi/kolom, misal: $sppd->kota->kota_kategori_id)
         $kotaKategoriId = $sppd->kota->kota_kategori_id ?? null;
 
         // 3. Cari tarif yang cocok di tabel 'tarif'
@@ -131,5 +130,18 @@ class IlpdController extends Controller
         }
 
         return $prefix . str_pad($number, 4, '0', STR_PAD_LEFT);
+    }
+
+    public function edit($id)
+    {
+        $ilpd = Ilpd::findOrFail($id);
+
+        // Ambil data pendukung untuk dropdown pilihan
+        $users      = User::select('id', 'name', 'nik')->get();
+        $kotas      = Kota::all();
+        $keperluans = Keperluan::all();
+        $transports = Transport::all();
+
+        return view('ilpd.edit', compact('ilpd', 'users', 'kotas', 'keperluans', 'transports'));
     }
 }

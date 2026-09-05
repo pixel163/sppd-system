@@ -311,7 +311,7 @@
                             id="kota"
                             name="kota"
                             type="text"
-                            value="{{ $sppd->kota->name }}"
+                            value="{{ $ilpd->sppd->kota->name }}"
                             class="form-input flex-1"
                             readonly>
                     </div>
@@ -330,7 +330,7 @@
                                     name="tanggal_awal"
                                     type="date"
                                     class="w-full border-0 text-[14px] outline-none"
-                                    value="{{ $sppd->tanggal_awal?->format('Y-m-d') ?? '' }}"
+                                    value="{{ $ilpd->tanggal_awal?->format('Y-m-d') ?? '' }}"
                                     onchange="hitunglSemua()">
                             </div>
 
@@ -343,7 +343,7 @@
                                     name="tanggal_akhir"
                                     type="date"
                                     class="w-full border-0 bg-transparent text-[14px] outline-none"
-                                    value="{{ $sppd->tanggal_akhir?->format('Y-m-d') ?? '' }}"
+                                    value="{{ $ilpd->tanggal_akhir?->format('Y-m-d') ?? '' }}"
                                     readonly>
                             </div>
                         </div>
@@ -367,7 +367,8 @@
                                         name="transport_id"
                                         value="{{ $transport->id }}"
                                         class="size-[18px] accent-[#2563eb]"
-                                        {{ $sppd->transport_id == $transport->id ? 'checked' : '' }}>
+                                        {{-- Jika transport_id dari $sppd sama dengan ID transport ini, otomatis tercentang --}}
+                                        {{ $ilpd->sppd->transport_id == $transport->id ? 'checked' : '' }}>
                                     <span class="text-[14px]">
                                         {{ $transport->name }}
                                     </span>
@@ -392,11 +393,9 @@
                                 type="text"
                                 placeholder="Sebutkan..."
                                 class="w-[180px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[12px] outline-none">
+
                         </div>
-                        {{-- <input
-                            type="text"
-                            placeholder="Sebutkan..."
-                            class="mt-2 w-[180px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[12px] outline-none"> --}}
+
                     </div>
 
                     {{-- KEPERLUAN --}}
@@ -415,7 +414,8 @@
                                         name="keperluan_id"
                                         value="{{ $keperluan->id }}"
                                         class="size-[18px] accent-[#2563eb]"
-                                        {{ $sppd->keperluan_id == $keperluan->id ? 'checked' : '' }}>
+                                        {{-- Jika keperluan_id dari $sppd sama dengan ID keperluan ini, otomatis tercentang --}}
+                                        {{ $ilpd->sppd->keperluan_id == $keperluan->id ? 'checked' : '' }}>
                                     <span class="text-[14px]">
                                         {{ $keperluan->name }}
                                     </span>
@@ -440,6 +440,7 @@
                                 type="text"
                                 placeholder="Sebutkan..."
                                 class="w-[180px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[12px] outline-none">
+
                         </div>
 
                     </div>
@@ -456,7 +457,7 @@
                             rows="4"
                             class="form-textarea"
                             placeholder="1.&#10;2.&#10;3.">
-                            {{ $sppd->tugas ?? '' }}
+                            {{ $ilpd->sppd->tugas ?? '' }}
                         </textarea>
 
                         <p class="mt-1 text-[11px] text-[#64748b]">
@@ -469,7 +470,8 @@
                 {{-- =================================================
                     SECTION 2
                 ================================================== --}}
-                <section class="section-card mt-5 rounded-2xl border border-[#f1f5f9] bg-white p-7 shadow-[0px_4px_6px_rgba(0,0,0,0.02)]">
+                <section
+                    class="section-card mt-5 rounded-2xl border border-[#f1f5f9] bg-white p-7 shadow-[0px_4px_6px_rgba(0,0,0,0.02)]">
 
                     <div class="mb-5 flex items-center gap-3">
 
@@ -571,16 +573,20 @@
 
                             {{-- LAUNDRY --}}
                             <div>
+
                                 <label class="mb-1.5 block text-[12px] font-semibold text-[#64748b]">
                                     Laundry
                                 </label>
+
                                 <div class="currency-wrapper">
+
                                     <input
                                         id="laundry"
                                         type="text"
                                         class="currency-input readonly-input"
                                         value="Actual"
                                         readonly>
+
                                 </div>
 
                             </div>
@@ -820,8 +826,6 @@
                     </div>
 
                 </section>
-
-                <input type="hidden" name="sppd_id" value="{{ $sppd->id }}">
 
                 {{-- BUTTON --}}
                 <div class="button-wrapper flex justify-end gap-3 pb-6 pt-6">

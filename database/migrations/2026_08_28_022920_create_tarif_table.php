@@ -33,7 +33,6 @@ return new class extends Migration
             $table->unique([
                 'golongan_id',
                 'kota_kategori_id',
-                // 'travel_scope'
             ]);
         });
     }

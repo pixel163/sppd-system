@@ -17,10 +17,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body class="min-h-screen bg-white font-['Inter',sans-serif] text-[#1e293b]">
@@ -51,10 +48,8 @@
                     Dokumen & Tiket
                 </h1>
 
-                <p
-                    id="pageDescription"
-                    class="mt-1 text-[13px] text-[#64748b]"
-                >
+                <p id="pageDescription"
+                    class="mt-1 text-[13px] text-[#64748b]">
                     Kelola dan unduh dokumen serta tiket perjalanan dinas Anda.
                 </p>
 
@@ -76,10 +71,8 @@
                             Daftar Pengajuan SPPD
                         </h2>
 
-                        <span
-                            id="roleBadge"
-                            class="rounded-md bg-[#eff6ff] px-2 py-1 text-[10px] font-semibold text-[#0d6efd]"
-                        >
+                        <span id="roleBadge"
+                            class="rounded-md bg-[#eff6ff] px-2 py-1 text-[10px] font-semibold text-[#0d6efd]">
                             STAFF
                         </span>
 
@@ -96,16 +89,14 @@
                                 id="searchInput"
                                 type="text"
                                 placeholder="Cari nomor SPPD atau tujuan..."
-                                class="min-w-0 flex-1 bg-transparent text-[12px] outline-none placeholder:text-[#94a3b8]"
-                            >
+                                class="min-w-0 flex-1 bg-transparent text-[12px] outline-none placeholder:text-[#94a3b8]">
 
                         </div>
 
                         <button
                             id="filterButton"
                             type="button"
-                            class="flex shrink-0 items-center gap-1.5 rounded-lg border border-[#e2e8f0] px-3 py-2 text-[12px] font-semibold text-[#64748b]"
-                        >
+                            class="flex shrink-0 items-center gap-1.5 rounded-lg border border-[#e2e8f0] px-3 py-2 text-[12px] font-semibold text-[#64748b]">
 
                             <i data-lucide="sliders-horizontal" class="size-3.5 text-[#64748b]"></i>
 
@@ -116,49 +107,40 @@
                     </div>
 
                     {{-- FILTER MENU --}}
-                    <div
-                        id="filterMenu"
-                        class="mb-3 hidden rounded-xl border border-[#e2e8f0] bg-white p-2"
-                    >
+                    <div id="filterMenu"
+                        class="mb-3 hidden rounded-xl border border-[#e2e8f0] bg-white p-2">
 
                         <button
                             type="button"
                             onclick="setStatusFilter('all')"
-                            class="w-full rounded-lg px-3 py-2 text-left text-xs hover:bg-[#f8fafc]"
-                        >
+                            class="w-full rounded-lg px-3 py-2 text-left text-xs hover:bg-[#f8fafc]">
                             Semua Status
                         </button>
 
                         <button
                             type="button"
                             onclick="setStatusFilter('Selesai')"
-                            class="w-full rounded-lg px-3 py-2 text-left text-xs hover:bg-[#f8fafc]"
-                        >
+                            class="w-full rounded-lg px-3 py-2 text-left text-xs hover:bg-[#f8fafc]">
                             Selesai
                         </button>
 
                         <button
                             type="button"
                             onclick="setStatusFilter('Approval')"
-                            class="w-full rounded-lg px-3 py-2 text-left text-xs hover:bg-[#f8fafc]"
-                        >
+                            class="w-full rounded-lg px-3 py-2 text-left text-xs hover:bg-[#f8fafc]">
                             Approval
                         </button>
 
                     </div>
 
                     {{-- LIST CONTAINER --}}
-                    <div
-                        id="pengajuanList"
-                        class="max-h-[600px] overflow-y-auto"
-                    >
+                    <div id="pengajuanList"
+                        class="max-h-[600px] overflow-y-auto">
                     </div>
 
                     {{-- EMPTY STATE --}}
-                    <div
-                        id="emptyState"
-                        class="hidden rounded-xl bg-[#f8fafc] px-4 py-8 text-center"
-                    >
+                    <div id="emptyState"
+                        class="hidden rounded-xl bg-[#f8fafc] px-4 py-8 text-center">
 
                         <p class="text-[13px] font-semibold text-[#64748b]">
                             Tidak ada pengajuan
@@ -171,10 +153,8 @@
                     </div>
 
                     {{-- PAGINATION --}}
-                    <div
-                        id="pagination"
-                        class="flex items-center justify-center gap-2 pt-4"
-                    >
+                    <div id="pagination"
+                        class="flex items-center justify-center gap-2 pt-4">
                     </div>
 
                 </section>
@@ -191,17 +171,15 @@
 
                             <div class="flex flex-wrap items-center gap-2">
 
-                                <h2
+                                <h2 
                                     id="detailNo"
-                                    class="text-[18px] font-bold"
-                                >
+                                    class="text-[18px] font-bold">
                                     -
                                 </h2>
 
                                 <span
                                     id="detailStatus"
-                                    class="rounded-md bg-[#e8f5e9] px-2 py-1 text-[11px] font-semibold text-[#2e7d32]"
-                                >
+                                    class="rounded-md bg-[#e8f5e9] px-2 py-1 text-[11px] font-semibold text-[#2e7d32]">
                                     -
                                 </span>
 
@@ -210,8 +188,7 @@
                             <button
                                 id="detailButton"
                                 type="button"
-                                class="self-start px-0 py-1.5 text-[12px] font-semibold text-[#0d6efd] sm:self-auto"
-                            >
+                                class="self-start px-0 py-1.5 text-[12px] font-semibold text-[#0d6efd] sm:self-auto">
                                 Lihat Detail Pengajuan
                             </button>
 
@@ -227,8 +204,7 @@
 
                                     <span
                                         id="detailTujuan"
-                                        class="text-[13px] font-medium text-[#64748b]"
-                                    >
+                                        class="text-[13px] font-medium text-[#64748b]">
                                         -
                                     </span>
 
@@ -240,8 +216,7 @@
 
                                     <span
                                         id="detailTanggal"
-                                        class="text-[13px] font-medium text-[#64748b]"
-                                    >
+                                        class="text-[13px] font-medium text-[#64748b]">
                                         -
                                     </span>
 
@@ -259,8 +234,7 @@
 
                                     <span
                                         id="detailPemohon"
-                                        class="font-semibold"
-                                    >
+                                        class="font-semibold">
                                         -
                                     </span>
 
@@ -274,8 +248,7 @@
 
                                     <span
                                         id="detailTanggalPengajuan"
-                                        class="font-semibold"
-                                    >
+                                        class="font-semibold">
                                         -
                                     </span>
 
@@ -298,8 +271,7 @@
 
                             <span
                                 id="documentCount"
-                                class="text-[11px] text-[#94a3b8]"
-                            >
+                                class="text-[11px] text-[#94a3b8]">
                                 -
                             </span>
 
@@ -307,8 +279,7 @@
 
                         <div
                             id="documentList"
-                            class="flex flex-col gap-3"
-                        >
+                            class="flex flex-col gap-3">
                         </div>
 
                     </section>
@@ -345,10 +316,8 @@
 {{-- =========================================================
      DOCUMENT MODAL
 ========================================================== --}}
-<div
-    id="documentModal"
-    class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/40 px-4"
->
+<div id="documentModal"
+    class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/40 px-4">
 
     <div class="w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl sm:p-6">
 
@@ -358,15 +327,13 @@
 
                 <h2
                     id="modalTitle"
-                    class="text-[16px] font-bold"
-                >
+                    class="text-[16px] font-bold">
                     Dokumen
                 </h2>
 
                 <p
                     id="modalDescription"
-                    class="mt-1 text-[12px] text-[#64748b]"
-                >
+                    class="mt-1 text-[12px] text-[#64748b]">
                     -
                 </p>
 
@@ -375,8 +342,7 @@
             <button
                 type="button"
                 onclick="closeDocumentModal()"
-                class="flex size-8 shrink-0 items-center justify-center rounded-lg text-[#64748b] hover:bg-[#f8fafc]"
-            >
+                class="flex size-8 shrink-0 items-center justify-center rounded-lg text-[#64748b] hover:bg-[#f8fafc]">
                 ✕
             </button>
 
@@ -407,16 +373,14 @@
             <button
                 type="button"
                 onclick="closeDocumentModal()"
-                class="rounded-lg border border-[#e2e8f0] px-4 py-2 text-[12px] font-semibold text-[#64748b]"
-            >
+                class="rounded-lg border border-[#e2e8f0] px-4 py-2 text-[12px] font-semibold text-[#64748b]">
                 Tutup
             </button>
 
             <button
                 type="button"
                 onclick="printDocument()"
-                class="rounded-lg border border-[#0d6efd] px-4 py-2 text-[12px] font-semibold text-[#0d6efd]"
-            >
+                class="rounded-lg border border-[#0d6efd] px-4 py-2 text-[12px] font-semibold text-[#0d6efd]">
                 Cetak
             </button>
 

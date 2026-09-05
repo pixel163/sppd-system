@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Sppd;
 use App\Models\Dinas;
 use App\Models\Kota;
@@ -68,5 +69,127 @@ class SppdController extends Controller
 
             return redirect()->route('ilpd.create', $sppd->id)->with('success', 'Form SPPD berhasil disimpan. Silakan lanjut mengisi Form Perizinan.');
         });
+    }
+
+    // public function edit($id)
+    // {
+    //     // Load SPPD beserta relasi yang dibutuhkan (sesuaikan nama relasi di Model)
+    //     $sppd = Sppd::with(['user', 'ilpd', 'dinas', 'kota'])->findOrFail($id);
+
+    //     return view('sppd.edit', compact('sppd'));
+    // }
+
+    public function edit($id)
+    {
+        $sppd = Sppd::findOrFail($id);
+
+        // Ambil data pendukung untuk dropdown pilihan
+        $users      = User::select('id', 'name', 'nik')->get();
+        $kotas      = Kota::all();
+        $keperluans = Keperluan::all();
+        $transports = Transport::all();
+
+        return view('sppd.edit', compact('sppd', 'users', 'kotas', 'keperluans', 'transports'));
+    }
+
+    /**
+     * Memproses update data SPPD.
+     */
+    public function update(Request $request, $id)
+    {
+        // 1. Validasi Input Data
+        $validated = $request->validate([
+            'user_id'      => 'required|exists:users,id',
+            'kota_id'      => 'required|exists:kotas,id',
+            'durasi'       => 'required|integer|min:1',
+            'keperluan_id' => 'required|exists:keperluans,id',
+            'transport_id' => 'required|exists:transports,id',
+            'tugas'        => 'required|string',
+        ], [
+            // Custom Error Messages (Opsional)
+            'user_id.required'      => 'Pegawai wajib dipilih.',
+            'kota_id.required'      => 'Kota tujuan wajib dipilih.',
+            'durasi.required'       => 'Durasi waktu wajib diisi.',
+            'keperluan_id.required' => 'Keperluan dinas wajib dipilih.',
+            'transport_id.required' => 'Moda transportasi wajib dipilih.',
+            'tugas.required'        => 'Deskripsi tugas wajib diisi.',
+        ]);
+
+        // 2. Cari Data SPPD
+        $sppd = Sppd::findOrFail($id);
+
+        // 3. Update Data di Database
+        $sppd->update($validated);
+
+        // 4. Redirect Kembali dengan Pesan Sukses
+        return redirect('/dashboard')->with('success', 'Data SPPD berhasil diperbarui');
+        // return redirect()->route('sppd.index')->with('success', 'Data SPPD berhasil diperbarui.');}
+    }
+
+    /**
+     * Tampilkan detail SPPD untuk diproses oleh Manager.
+     */
+    public function show($id)
+    {
+        // Load SPPD beserta relasi yang dibutuhkan (sesuaikan nama relasi di Model)
+        $sppd = Sppd::with(['user', 'ilpd', 'dinas', 'kota'])->findOrFail($id);
+
+        return view('sppd.approve', compact('sppd'));
+    }
+
+    /**
+     * Proses Menyetujui SPPD.
+     */
+    // public function approve(Request $request, $id)
+    // {
+    //     $sppd = Sppd::findOrFail($id);
+
+    //     $ttdPath = null;
+    //     if ($request->ttd_digital) {
+    //         // Decode string Base64 gambar TTD
+    //         $imageParts = explode(";base64,", $request->ttd_digital);
+    //         $imageDecoded = base64_decode($imageParts[1]);
+
+    //         // Buat nama file unik
+    //         $fileName = 'ttd_manager_' . time() . '.png';
+    //         $ttdPath = 'ttd/' . $fileName;
+
+    //         // Simpan file ke folder storage/app/public/ttd/
+    //         Storage::disk('public')->put($ttdPath, $imageDecoded);
+    //     }
+
+    //     // Update status & simpan path TTD ke database
+    //     $sppd->update([
+    //         'status'           => 'Disetujui',
+    //         'catatan_approval' => $request->catatan,
+    //         'ttd_manager'      => $ttdPath,
+    //         'approved_at'      => now(),
+    //     ]);
+
+    //     return redirect()->back()->with('success', 'Dokumen SPPD berhasil disetujui beserta Tanda Tangan.');
+    // }
+
+    public function approve(Request $request, $id)
+    {
+        $request->validate([
+            'ttd_file' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+        ]);
+
+        $sppd = Sppd::findOrFail($id);
+
+        $ttdPath = null;
+        if ($request->hasFile('ttd_file')) {
+            // Simpan file ke folder storage/app/public/ttd
+            $ttdPath = $request->file('ttd_file')->store('ttd', 'public');
+        }
+
+        $sppd->update([
+            'status'           => 'Disetujui',
+            'catatan_approval' => $request->catatan,
+            'ttd_manager'      => $ttdPath,
+            'approved_at'      => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Dokumen SPPD berhasil disetujui.');
     }
 }

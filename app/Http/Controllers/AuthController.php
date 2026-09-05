@@ -27,9 +27,7 @@ class AuthController extends Controller
             };
         }
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+        return back()->withErrors(['email' => 'Email atau password salah.',])->onlyInput('email');
     }
 
     public function logout(Request $request)

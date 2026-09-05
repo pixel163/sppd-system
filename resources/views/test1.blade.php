@@ -168,7 +168,7 @@
                                 id="profileInitial"
                                 class="text-[13px] font-bold text-[#2563eb]"
                             >
-                                ES
+                                BS
                             </span>
 
                         </div>
@@ -276,7 +276,11 @@
 
                         <div class="flex min-w-0 flex-1 items-center gap-2 rounded-lg bg-[#f4f6fb] px-3 py-2">
 
-                            <i data-lucide="search" class="size-3.5 shrink-0 text-[#94a3b8]"></i>
+                            <img
+                                src="https://www.figma.com/api/mcp/asset/0cd49deb-7a29-451a-96f7-d17e79d9e9b0.svg"
+                                class="size-3.5 shrink-0"
+                                alt=""
+                            >
 
                             <input
                                 id="searchInput"
@@ -293,7 +297,11 @@
                             class="flex shrink-0 items-center gap-1.5 rounded-lg border border-[#e2e8f0] px-3 py-2 text-[12px] font-semibold text-[#64748b]"
                         >
 
-                            <i data-lucide="sliders-horizontal" class="size-3.5 text-[#64748b]"></i>
+                            <img
+                                src="https://www.figma.com/api/mcp/asset/dc59cce2-e000-4bb3-9a63-a3806daf3700.svg"
+                                class="size-3.5"
+                                alt=""
+                            >
 
                             Filter
 
@@ -409,7 +417,11 @@
 
                                 <div class="flex items-center gap-2">
 
-                                    <i data-lucide="map-pin"class="size-4 shrink-0 text-[#94a3b8]"></i>
+                                    <img
+                                        src="https://www.figma.com/api/mcp/asset/89ed67bc-0b02-43bf-abb5-544a0f3a4cb9.svg"
+                                        class="size-4"
+                                        alt=""
+                                    >
 
                                     <span
                                         id="detailTujuan"
@@ -422,7 +434,11 @@
 
                                 <div class="flex items-center gap-2">
 
-                                    <i data-lucide="calendar-days"class="size-4 text-[#94a3b8]"></i>
+                                    <img
+                                        src="https://www.figma.com/api/mcp/asset/1255b000-8be1-4f94-87b2-e2a289650efc.svg"
+                                        class="size-4"
+                                        alt=""
+                                    >
 
                                     <span
                                         id="detailTanggal"
@@ -664,16 +680,6 @@
                 status: 'Approval',
                 pemohon: 'Eko Saputra',
                 tanggalPengajuan: '10 Juli 2026, 13:15 WIB',
-                dokumen: ['sppd', 'perizinan', 'tiket']
-            },
-
-            {
-                no: 'SPPD-2026-00096',
-                tujuan: 'Semarang',
-                tanggal: '10 - 13 Juni 2026',
-                status: 'Selesai',
-                pemohon: 'Eko Saputra',
-                tanggalPengajuan: '9 Juni 2026, 13:15 WIB',
                 dokumen: ['sppd', 'perizinan', 'tiket']
             },
 
@@ -1220,9 +1226,13 @@
                         onclick="openDocumentModal('${type}', '${item.no}')"
                     >
 
-                        Lihat
+                        <img
+                            src="https://www.figma.com/api/mcp/asset/9dcade87-3ecb-4c17-93a2-ac060800d896.svg"
+                            class="size-3.5"
+                            alt=""
+                        >
 
-                        <span class="text-[#64748b]">👁</span>
+                        Lihat
 
                     </button>
 

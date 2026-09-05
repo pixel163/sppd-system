@@ -7,22 +7,30 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    //
+
     public function index()
     {
         $user = auth()->user();
-
-        // Ambil data sesuai role
-        // Eager load relasi dinas, user, kota, dan ilpd
-        $pengajuanStaff = Sppd::with(['dinas', 'user', 'kota', 'ilpd'])
-            ->where('user_id', $user->id)
+        
+        // ambil data berdasarkan user
+        $pengajuanSaya = Sppd::with(['dinas','user','kota','ilpd'])
+        ->where('user_id', $user->id)
+        ->latest()
+        ->take(5)
+        ->get();
+        
+        // Manager
+        $approvalManager = Sppd::with(['dinas','user','kota','ilpd'])
+            ->where('status', 'Menunggu Approval')
+            ->whereHas('user', function ($query) use ($user) {
+                $query->where('department_id', $user->department->id);
+            })
             ->latest()
-            ->take(5)
             ->get();
-        $approvalManager = Sppd::where('user_id', $user->id)->where('status', 'menunggu_approval')->get();
+        
         // $pengajuanGa = Sppd::latest()->get();
 
-        return view('dashboard', compact('pengajuanStaff', 'approvalManager'));
-        // return view('dashboard', compact('pengajuanStaff', 'approvalManager', 'pengajuanGa'));
+        return view('dashboard', compact('pengajuanSaya' ,'approvalManager'));
+        // return view('dashboard', compact('approvalManager', 'pengajuanGa'));
     }
 }

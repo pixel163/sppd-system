@@ -192,8 +192,9 @@
             ================================================== --}}
             <div class="form-card rounded-2xl border border-[#f1f5f9] bg-white p-8 shadow-[0px_4px_6px_rgba(15,23,42,0.02)]">
 
-                <form id="sppdForm" action="{{ route('sppd.store') }}" method="POST" class="space-y-0">
+                <form method="POST" action="{{ route('sppd.update', $sppd->id) }}">
                     @csrf
+                    @method('PUT')
 
                     {{-- =================================================
                         DATA PEGAWAI
@@ -212,7 +213,9 @@
                                 id="nama"
                                 name="nama"
                                 type="text"
-                                value="{{ $user->name }}"
+                                {{-- value="{{ $users->name }}" --}}
+                                value="{{ old('name', $sppd->user->name) }}"
+                                placeholder="Nama otomatis terisi"
                                 class="form-input"
                                 readonly>
                         </div>
@@ -230,7 +233,7 @@
                             id="nik"
                             name="nik"
                             type="text"
-                            value="{{ $user->nik }}"
+                            value="{{ old('nik', $sppd->user->nik) }}"
                             class="form-input flex-1"
                             readonly>
                     </div>
@@ -246,7 +249,7 @@
                             id="jabatan"
                             name="jabatan"
                             type="text"
-                            value="{{ $user->jabatan->name }}"
+                            value="{{ old('jabatan', $sppd->user->jabatan->name) }}"
                             class="form-input flex-1"
                             readonly>
                     </div>
@@ -262,173 +265,127 @@
                             id="departemen"
                             name="departemen"
                             type="text"
-                            value="{{ $user->department->name }}"
+                            value="{{ old('department', $sppd->user->department->name) }}"
                             class="form-input flex-1"
                             readonly>
                     </div>
 
                     {{-- =================================================
-                        DATA PERJALANAN
+                        DATA PERJALANAN (EDITABLE)
                     ================================================== --}}
 
-                    {{-- Kota (Searchable Dropdown) --}}
+                    {{-- Kota Tujuan --}}
                     <div class="form-row flex gap-6 py-3">
-                        <label for="kota" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                        <label for="kota_id" class="form-label w-[180px] pt-2.5 text-[14px] font-bold text-slate-800">
                             Kota Tujuan
                         </label>
-
                         <div class="flex-1">
-                            <select 
-                                id="kota" 
-                                name="kota_id" 
-                                class="form-select flex-1 w-full rounded-lg border border-[#e2e8f0] px-4 py-2.5 focus:border-[#2563eb]" 
-                                required>
-                                <option value="">Pilih atau cari kota tujuan...</option>
-                                @foreach($masterKota as $kota)
-                                    <option value="{{ $kota->id }}" {{ old('kota_id') == $kota->id ? 'selected' : '' }}>
+                            <select id="kota_id" name="kota_id" placeholder="Cari atau pilih kota..." autocomplete="off">
+                                <option value="">Pilih Kota...</option>
+                                @foreach($kotas as $kota)
+                                    <option value="{{ $kota->id }}" {{ old('kota_id', $sppd->kota_id) == $kota->id ? 'selected' : '' }}>
                                         {{ $kota->name }}
                                     </option>
                                 @endforeach
                             </select>
+                            @error('kota_id')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
-                    {{-- Waktu --}}
+                    {{-- Waktu / Durasi --}}
                     <div class="form-row flex gap-6 py-3">
-
-                        <label for="waktu" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                        <label for="durasi" class="form-label w-[180px] pt-2.5 text-[14px] font-bold text-slate-800">
                             Waktu
                         </label>
-
                         <div class="flex-1">
-
                             <div class="relative">
-
                                 <input
                                     id="durasi"
                                     name="durasi"
                                     type="text"
                                     inputmode="numeric"
                                     maxlength="2"
-                                    placeholder="Masukkan waktu"
-                                    class="form-input pr-20"
-                                    required
                                     onkeydown="cekkunci(event)"
-                                    oninput="validasiWaktu(this)">
-
+                                    oninput="validasiWaktu(this)"
+                                    value="{{ old('durasi', $sppd->durasi) }}"
+                                    class="form-input w-full rounded-lg border border-[#e2e8f0] px-4 py-2.5 pr-20 text-[14px] text-slate-800 focus:border-[#2563eb] focus:outline-none">
                                 <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[13px] text-[#94a3b8]">
                                     hari
                                 </span>
-
                             </div>
-
-                            <p class="mt-1.5 text-[11px] text-[#94a3b8]">
-                                Masukkan angka 1–14 hari.
-                            </p>
-
+                            @error('durasi')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
-
                     </div>
 
-                    {{-- Keperluan Dinas (Dropdown Custom) --}}
+                    {{-- Keperluan Dinas --}}
                     <div class="form-row flex gap-6 py-3">
-                        <label for="keperluan" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                        <label for="keperluan_id" class="form-label w-[180px] pt-2.5 text-[14px] font-bold text-slate-800">
                             Keperluan Dinas
                         </label>
-
                         <div class="flex-1">
-                            <div class="relative">
-                                <select 
-                                    id="keperluan" 
-                                    name="keperluan_id" 
-                                    class="form-select w-full appearance-none rounded-lg border border-[#e2e8f0] bg-white px-4 py-2.5 pr-10 text-[14px] text-slate-800 outline-none transition-all duration-200 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20"
-                                    required>
-                                    <option value="" disabled {{ old('keperluan_id') ? '' : 'selected' }}>Pilih Keperluan Dinas</option>
-                                    @foreach($masterKeperluan as $keperluan)
-                                        <option value="{{ $keperluan->id }}" {{ old('keperluan_id') == $keperluan->id ? 'selected' : '' }}>
-                                            {{ $keperluan->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                <!-- Custom Arrow Icon -->
-                                <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </div>
+                            <select id="keperluan_id" name="keperluan_id" class="form-select w-full rounded-lg border border-[#e2e8f0] px-4 py-2.5 text-[14px] text-slate-800 focus:border-[#2563eb] focus:outline-none">
+                                @foreach($keperluans as $keperluan)
+                                    <option value="{{ $keperluan->id }}" {{ old('keperluan_id', $sppd->keperluan_id) == $keperluan->id ? 'selected' : '' }}>
+                                        {{ $keperluan->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('keperluan_id')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
-                    {{-- Transportasi (Dropdown Custom) --}}
+                    {{-- Transportasi --}}
                     <div class="form-row flex gap-6 py-3">
-                        <label for="transport" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                        <label for="transport_id" class="form-label w-[180px] pt-2.5 text-[14px] font-bold text-slate-800">
                             Transportasi
                         </label>
-
                         <div class="flex-1">
-                            <div class="relative">
-                                <select 
-                                    id="transport" 
-                                    name="transport_id" 
-                                    class="form-select w-full appearance-none rounded-lg border border-[#e2e8f0] bg-white px-4 py-2.5 pr-10 text-[14px] text-slate-800 outline-none transition-all duration-200 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20"
-                                    required>
-                                    <option value="" disabled {{ old('transport_id') ? '' : 'selected' }}>Pilih Jenis Transportasi</option>
-                                    @foreach($masterTransport as $transport)
-                                        <option value="{{ $transport->id }}" {{ old('transport_id') == $transport->id ? 'selected' : '' }}>
-                                            {{ $transport->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                <!-- Custom Arrow Icon -->
-                                <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </div>
+                            <select id="transport_id" name="transport_id" class="form-select w-full rounded-lg border border-[#e2e8f0] px-4 py-2.5 text-[14px] text-slate-800 focus:border-[#2563eb] focus:outline-none">
+                                @foreach($transports as $transport)
+                                    <option value="{{ $transport->id }}" {{ old('transport_id', $sppd->transport_id) == $transport->id ? 'selected' : '' }}>
+                                        {{ $transport->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('transport_id')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
                     {{-- Tugas --}}
                     <div class="form-row flex gap-6 py-3">
-
-                        <label for="tugas"
-                            class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                        <label for="tugas" class="form-label w-[180px] pt-2.5 text-[14px] font-bold text-slate-800">
                             Tugas
                         </label>
-
-                        <div class="flex min-h-[160px] flex-1 flex-col rounded-lg border border-[#e2e8f0] px-4 py-3 focus-within:border-[#2563eb]">
-
+                        <div class="flex-1">
                             <textarea
                                 id="tugas"
                                 name="tugas"
-                                class="form-textarea mt-1 flex-1"
-                                placeholder="1.&#10;2.&#10;3.&#10;4."
-                                required>
-                            </textarea>
-
+                                rows="4"
+                                class="form-textarea w-full rounded-lg border border-[#e2e8f0] p-4 text-[14px] text-slate-800 focus:border-[#2563eb] focus:outline-none resize-none">{{ old('tugas', $sppd->tugas) }}</textarea>
+                            @error('tugas')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
-
                     </div>
 
-                    {{-- =================================================
-                        BUTTON
-                    ================================================== --}}
-                    <div class="form-actions flex justify-end gap-3 pt-6">
+                    <hr class="my-6 border-[#f1f5f9]" />
 
-                        <a href="/dashboard"
-                            class="rounded-lg border border-[#e2e8f0] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#64748b] transition hover:bg-slate-50">
+                    {{-- BUTTON ACTIONS --}}
+                    <div class="form-actions flex justify-end gap-3 pt-2">
+                        <a href="{{ url()->previous() }}" class="rounded-lg border border-slate-200 px-5 py-2.5 text-[14px] font-semibold text-slate-600 transition hover:bg-slate-50">
                             Batal
                         </a>
-
-                        <button type="submit"
-                            class="rounded-lg bg-[#2563eb] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#1d4ed8]">
-                            Ajukan
+                        <button type="submit" class="rounded-lg bg-[#2563eb] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#1d4ed8]">
+                            Simpan
                         </button>
-
                     </div>
 
                 </form>
@@ -451,6 +408,16 @@
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+        new TomSelect('#kota_id', {
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            }
+        });
+    });
+
 // 1. Mencegah pengetikan karakter non-angka seperti e, +, -, ., dan ,
 function cekkunci(e) {
     if (['e', 'E', '+', '-', '.', ','].includes(e.key)) {
