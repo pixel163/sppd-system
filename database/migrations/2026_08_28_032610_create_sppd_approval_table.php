@@ -23,8 +23,8 @@ return new class extends Migration
                 ->constrained('users')
                 ->restrictOnDelete();
 
-            // $table->string('status');
-            $table->string('status')->default('draft');
+            $table->string('status');
+            // $table->string('status')->default('draft');
 
             $table->string('signature')->nullable();
 

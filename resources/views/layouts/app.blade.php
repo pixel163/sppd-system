@@ -27,6 +27,18 @@
 
             @include('components.navbar')
 
+            @if(session('warning'))
+                <div style="padding: 12px; background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; border-radius: 6px; margin-bottom: 15px;">
+                    ⚠️ {{ session('warning') }}
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div style="padding: 12px; background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; border-radius: 6px; margin-bottom: 15px;">
+                    ✅ {{ session('success') }}
+                </div>
+            @endif
+
             @yield('content')
 
         </main>

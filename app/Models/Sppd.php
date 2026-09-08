@@ -20,6 +20,7 @@ class Sppd extends Model
         'transport_id',
         'durasi',
         'tugas',
+        'status',
     ];
 
     public function Dinas(): BelongsTo

@@ -393,7 +393,7 @@
 
                 <hr class="my-6 border-[#f1f5f9]" />
 
-                <form id="approvalForm" method="POST" action="" enctype="multipart/form-data">
+                <form id="approvalForm" method="POST" action="{{ route('sppd.approve', $sppd->id) }}" enctype="multipart/form-data">
                     @csrf
 
                     {{-- Upload File Tanda Tangan --}}
@@ -417,7 +417,8 @@
                                         name="ttd_file" 
                                         accept="image/png, image/jpeg, image/jpg" 
                                         class="hidden" 
-                                        onchange="previewTTD(event)">
+                                        onchange="previewTTD(event)"
+                                        required>
                                 </label>
 
                                 {{-- Preview Gambar --}}
@@ -429,19 +430,17 @@
                             @error('ttd_file')
                                 <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                             @enderror
-                            <p class="mt-1.5 text-[11px] text-[#94a3b8]">Format yang didukung: PNG, JPG, JPEG (Maks. 2MB). Disarankan menggunakan background transparan.</p>
+                            <p class="mt-1.5 text-[11px] text-[#94a3b8]">Format yang didukung: PNG, JPG, JPEG (Maks. 2MB).</p>
                         </div>
                     </div>
 
                     {{-- BUTTON ACTIONS --}}
                     <div class="form-actions flex justify-end gap-3 pt-6">
-
-                        <button type="submit"
-                            onclick="submitApproval('{{ route('sppd.approve', $sppd->id) }}')"
+                        <button 
+                            type="submit"
                             class="rounded-lg bg-[#2563eb] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#1d4ed8]">
                             Setujui
                         </button>
-
                     </div>
                 </form>
 
@@ -479,11 +478,6 @@
             }
             reader.readAsDataURL(file);
         }
-    }
-
-    function submitApproval(url) {
-        const form = document.getElementById('approvalForm');
-        form.action = url;
     }
 </script>
     {{-- @vite('resources/js/sppd.js') --}}

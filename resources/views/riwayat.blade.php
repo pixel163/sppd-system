@@ -176,7 +176,7 @@
 
                                 {{-- Status --}}
                                 <span>
-                                    {{ $sppd->status ?? '-' }}
+                                    {{ $sppd->dinas->status ?? '-' }}
                                 </span>
 
                                 {{-- Diajukan Pada --}}

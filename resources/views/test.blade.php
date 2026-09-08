@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Riwayat - SPPD System</title>
+    <title>Dashboard - SPPD System</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -17,7 +17,7 @@
     >
 </head>
 
-<body class="min-h-screen bg-white font-['Inter',sans-serif] text-[#1e293b]">
+<body class="min-h-screen bg-[#f8fafc] font-['Inter',sans-serif] text-[#1e293b]">
 
 <div class="flex min-h-screen">
 
@@ -30,171 +30,196 @@
         onclick="toggleSidebar()"
     ></div>
 
+
     {{-- =========================================================
          SIDEBAR
     ========================================================== --}}
     <aside
         id="sidebar"
-        class="fixed left-0 top-0 z-50 flex h-screen w-[260px] -translate-x-full flex-col gap-6 border-r border-[#e2e8f0] bg-white px-4 py-6 transition-transform duration-300 lg:translate-x-0"
+        class="fixed inset-y-0 left-0 z-50 flex w-[260px] -translate-x-full flex-col border-r border-[#e2e8f0] bg-white px-4 py-6 transition-transform duration-300 lg:static lg:translate-x-0"
     >
 
-        {{-- BRAND --}}
-        <div class="flex items-center justify-between">
+        {{-- Brand --}}
+        <div class="flex items-center gap-3 pl-3">
 
-            <div class="flex items-center gap-3 pl-3">
-
-                <div class="flex size-9 items-center justify-center rounded-[10px] bg-[#0d6efd]">
+            <div class="flex size-9 items-center justify-center rounded-[10px] bg-[#0d6efd]">
                     <span class="text-lg font-bold text-white">
                         S
                     </span>
                 </div>
 
-                <div class="flex flex-col gap-px">
+            <div class="flex flex-col gap-px">
+                <span class="text-[16px] font-bold">
+                    SPPD System
+                </span>
 
-                    <span class="text-[16px] font-bold">
-                        SPPD System
-                    </span>
-
-                    <span class="text-[11px] text-[#64748b]">
-                        Sistem Perjalanan Dinas
-                    </span>
-
-                </div>
-
+                <span class="text-[11px] text-[#64748b]">
+                    Sistem Perjalanan Dinas
+                </span>
             </div>
 
-            {{-- MOBILE CLOSE --}}
             <button
-                type="button"
                 onclick="toggleSidebar()"
-                class="mr-1 flex size-8 items-center justify-center rounded-lg text-[#64748b] hover:bg-[#f8fafc] lg:hidden"
+                class="ml-auto lg:hidden"
             >
                 ✕
             </button>
 
         </div>
 
-        {{-- MENU --}}
-        <nav class="flex flex-col gap-1">
+
+        {{-- Main Navigation --}}
+        <nav class="mt-8 flex flex-col gap-1">
 
             <a
                 href="/dashboard"
-                class="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-[#f8fafc]"
+                class="flex w-full items-center gap-3 rounded-xl bg-[#eff6ff] px-4 py-3"
             >
 
-                <span class="text-[14px] font-medium text-[#64748b]">
+                <span class="text-[14px] font-semibold text-[#0d6efd]">
                     Dashboard
                 </span>
-
             </a>
 
             <a
                 href="/sppd"
-                class="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-[#f8fafc]"
+                class="flex items-center gap-3 rounded-xl px-4 py-3 transition hover:bg-[#f8fafc]"
             >
 
                 <span class="text-[14px] font-medium text-[#64748b]">
                     Pengajuan SPPD
                 </span>
-
             </a>
 
             <a
                 href="/ilpd"
-                class="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-[#f8fafc]"
+                class="flex items-center gap-3 rounded-xl px-4 py-3 transition hover:bg-[#f8fafc]"
             >
 
                 <span class="text-[14px] font-medium text-[#64748b]">
                     Perizinan
                 </span>
-
             </a>
 
-            {{-- ACTIVE --}}
             <a
                 href="/riwayat"
-                class="flex w-full items-center gap-3 rounded-xl bg-[#eff6ff] px-4 py-3"
+                class="flex items-center gap-3 rounded-xl px-4 py-3 transition hover:bg-[#f8fafc]"
             >
 
-                <span class="text-[14px] font-semibold text-[#0d6efd]">
+                <span class="text-[14px] font-medium text-[#64748b]">
                     Riwayat Pengajuan
                 </span>
-
             </a>
 
             <a
                 href="/dokumen"
-                class="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-[#f8fafc]"
+                class="flex items-center gap-3 rounded-xl px-4 py-3 transition hover:bg-[#f8fafc]"
             >
 
                 <span class="text-[14px] font-medium text-[#64748b]">
                     Dokumen & Tiket
                 </span>
-
             </a>
 
         </nav>
 
-        <div class="h-px w-full bg-[#e2e8f0]"></div>
+
+        <div class="my-4 h-px w-full bg-[#e2e8f0]"></div>
+
+
+        {{-- Secondary Navigation --}}
+        {{-- <nav class="flex flex-col gap-1">
+
+            <a
+                href="#"
+                class="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-[#f8fafc]"
+            >
+                <span class="text-[14px] font-medium text-[#64748b]">
+                    Profile
+                </span>
+            </a>
+
+            <a
+                href="#"
+                class="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-[#f8fafc]"
+            >
+                <span class="text-[14px] font-medium text-[#64748b]">
+                    Pengaturan
+                </span>
+            </a>
+
+        </nav> --}}
 
         <div class="flex-1"></div>
 
     </aside>
 
+
     {{-- =========================================================
          MAIN
     ========================================================== --}}
-    <main class="min-w-0 flex-1 lg:ml-[260px]">
+    <main class="min-w-0 flex-1">
 
-        {{-- =====================================================
-             NAVBAR
-        ====================================================== --}}
-        <header class="flex h-[72px] items-center justify-between border-b border-[#e2e8f0] bg-white px-4 sm:px-6 lg:justify-end lg:px-8">
+        {{-- HEADER --}}
+        <header
+            class="flex flex-col gap-5 border-b border-[#e2e8f0] bg-white px-5 py-5 sm:px-7 lg:flex-row lg:items-center lg:justify-between lg:border-0 lg:bg-transparent"
+        >
 
-            {{-- MOBILE MENU --}}
-            <button
-                type="button"
-                onclick="toggleSidebar()"
-                class="flex size-10 items-center justify-center rounded-lg hover:bg-[#f8fafc] lg:hidden"
-            >
-                ☰
-            </button>
+            <div class="flex items-start gap-3">
 
-            <div class="flex items-center gap-4 sm:gap-5">
+                {{-- Mobile Menu --}}
+                <button
+                    onclick="toggleSidebar()"
+                    class="mt-1 flex size-9 shrink-0 items-center justify-center rounded-lg border border-[#e2e8f0] bg-white lg:hidden"
+                >
+                    ☰
+                </button>
 
-                {{-- NOTIFICATION --}}
+                <div class="flex flex-col gap-1">
+
+                    <h1
+                        id="welcomeText"
+                        class="text-[20px] font-bold sm:text-[24px]"
+                    >
+                        Selamat datang, Eko Saputra 👋
+                    </h1>
+
+                    <p class="text-[12px] text-[#64748b] sm:text-[13px]">
+                        Kelola pengajuan SPPD dan perizinan perjalanan dinas Anda dengan mudah.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="flex items-center justify-between gap-4 sm:justify-end">
+
+                {{-- Notification --}}
                 <button
                     type="button"
-                    class="relative flex size-10 items-center justify-center"
+                    onclick="showNotification()"
+                    class="relative flex size-10 items-center justify-center rounded-xl bg-white"
                 >
 
                 </button>
 
-                {{-- PROFILE --}}
+
+                {{-- Profile --}}
                 <div class="relative">
 
                     <button
                         type="button"
                         id="profileToggle"
-                        class="flex items-center gap-2.5"
+                        class="flex items-center gap-[10px]"
+                        aria-expanded="false"
                     >
 
-                        <div class="flex size-9 items-center justify-center rounded-full border border-[#2563eb] bg-[#eff6ff]">
-
-                            <span
-                                id="profileInitial"
-                                class="text-[13px] font-bold text-[#2563eb]"
-                            >
-                                AR
-                            </span>
-
-                        </div>
-
-                        <div class="hidden flex-col text-left sm:flex">
+                        <div class="hidden flex-col gap-px text-left sm:flex">
 
                             <span
                                 id="profileName"
-                                class="text-[14px] font-semibold"
+                                class="text-[13px] font-semibold"
                             >
                                 Eko Saputra
                             </span>
@@ -208,26 +233,58 @@
 
                         </div>
 
-                        <span class="text-xs text-[#64748b]">
-                            ▾
-                        </span>
-
                     </button>
 
-                    {{-- PROFILE MENU --}}
+
+                    {{-- Profile Dropdown --}}
                     <div
                         id="profileMenu"
-                        class="absolute right-0 top-12 z-[60] hidden w-56 rounded-xl border border-[#e2e8f0] bg-white p-2 shadow-xl"
+                        class="absolute right-0 top-12 z-50 hidden w-52 rounded-xl border border-[#e2e8f0] bg-white p-2 shadow-lg"
                     >
+
+                        <div class="border-b border-[#e2e8f0] px-3 py-2">
+
+                            <p class="text-xs font-semibold">
+                                Mode Tampilan
+                            </p>
+
+                            <p class="mt-1 text-[11px] text-[#64748b]">
+                                Untuk simulasi FE
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            onclick="switchRole('staff')"
+                            class="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#f8fafc]"
+                        >
+                            Staff
+                        </button>
+
+                        <button
+                            onclick="switchRole('manager')"
+                            class="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#f8fafc]"
+                        >
+                            Manager
+                        </button>
+
+                        <button
+                            onclick="switchRole('ga')"
+                            class="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-[#f8fafc]"
+                        >
+                            GA
+                        </button>
+
 
                         <div class="my-1 h-px bg-[#e2e8f0]"></div>
 
-                        {{-- LOGOUT --}}
+
+                        {{-- Logout --}}
                         <form
                             method="POST"
                             action="{{ route('logout') }}"
                         >
-
                             @csrf
 
                             <button
@@ -243,204 +300,167 @@
 
                 </div>
 
+
+                {{-- Create SPPD --}}
+                <a
+                    href="/sppd"
+                    class="flex items-center gap-2 rounded-[10px] bg-[#0d6efd] px-4 py-[10px] text-[13px] font-semibold text-white transition hover:bg-[#0958c9]"
+                >
+                    <span>+</span>
+                    <span class="hidden sm:inline">
+                        Buat SPPD
+                    </span>
+                    <span class="sm:hidden">
+                        Buat SPPD
+                    </span>
+                </a>
+
             </div>
 
         </header>
 
-        {{-- =====================================================
+
+        {{-- =========================================================
              CONTENT
-        ====================================================== --}}
-        <div class="px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+        ========================================================== --}}
+        <section class="px-5 pb-8 pt-5 sm:px-7">
 
-            {{-- PAGE TITLE --}}
-            <div class="mb-6">
 
-                <h1 class="text-[22px] font-bold">
-                    Riwayat Pengajuan
-                </h1>
-
-                <p class="mt-1 text-[13px] text-[#64748b]">
-                    Melihat dan memantau riwayat pengajuan perjalanan dinas.
+            {{-- Role Indicator --}}
+            <div
+                id="roleInfo"
+                class="mb-5 rounded-xl border border-[#dbeafe] bg-[#eff6ff] px-4 py-3"
+            >
+                <p class="text-xs font-semibold text-[#1d4ed8]">
+                    Mode Staff
                 </p>
+
+                <p class="mt-1 text-[11px] text-[#64748b]">
+                    Menampilkan pengajuan milik sendiri.
+                </p>
+            </div>
+
+
+            {{-- =====================================================
+                 STAFF
+            ====================================================== --}}
+            <div id="staffSection">
+
+                <div class="rounded-2xl border border-[#f1f5f9] bg-white p-4 shadow-[0px_4px_6px_rgba(15,23,42,0.02)] sm:p-6">
+
+                    <div class="mb-5 flex items-center justify-between">
+
+                        <div>
+                            <h2 class="text-[16px] font-bold">
+                                Pengajuan Terbaru
+                            </h2>
+
+                            <p class="mt-1 text-[11px] text-[#64748b]">
+                                Pengajuan perjalanan dinas Anda
+                            </p>
+                        </div>
+
+                        <a href="/riwayat"
+                            {{-- onclick="showAll()" --}}
+                            class="text-[12px] font-semibold text-[#0d6efd]"
+                        >
+                            Lihat Semua
+                        </a>
+
+                    </div>
+
+
+                    <div id="staffList" class="space-y-3"></div>
+
+                </div>
 
             </div>
 
-            {{-- =================================================
-                 TABLE CARD
-            ================================================== --}}
-            <section class="w-full rounded-2xl border border-[#f1f5f9] bg-white p-4 shadow-[0px_4px_6px_rgba(15,23,42,0.02)] sm:p-6">
 
-                {{-- HEADER --}}
-                <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            {{-- =====================================================
+                 MANAGER
+            ====================================================== --}}
+            <div
+                id="managerSection"
+                class="hidden"
+            >
 
-                    <div>
+                {{-- Pengajuan Manager --}}
+                {{-- <div class="mb-5 rounded-2xl border border-[#f1f5f9] bg-white p-4 shadow-sm sm:p-6">
 
-                        <h2
-                            id="historyTitle"
-                            class="text-[16px] font-bold"
-                        >
-                            Riwayat Pengajuan Saya
+                    <div class="mb-5">
+
+                        <h2 class="text-[16px] font-bold">
+                            Pengajuan Saya
                         </h2>
 
-                        <p
-                            id="historyDescription"
-                            class="mt-1 text-[12px] text-[#64748b]"
-                        >
-                            Menampilkan seluruh pengajuan SPPD yang Anda miliki.
+                        <p class="mt-1 text-[11px] text-[#64748b]">
+                            Pengajuan perjalanan dinas yang dibuat oleh Anda.
                         </p>
 
                     </div>
 
-                    {{-- SEARCH + FILTER --}}
-                    <div class="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
+                    <div id="managerOwnList" class="space-y-3"></div>
 
-                        {{-- SEARCH --}}
-                        <div class="flex min-w-0 flex-1 items-center gap-2 rounded-lg bg-[#f4f6fb] px-3 py-2 sm:w-[260px] sm:flex-none">
+                </div> --}}
 
-                            <span class="text-sm text-[#94a3b8]">
-                                ⌕
-                            </span>
 
-                            <input
-                                id="searchInput"
-                                type="text"
-                                placeholder="Cari No. SPPD atau tujuan..."
-                                oninput="renderHistory()"
-                                class="min-w-0 flex-1 bg-transparent text-[12px] outline-none placeholder:text-[#94a3b8]"
-                            >
+                {{-- Approval --}}
+                <div class="rounded-2xl border border-[#f1f5f9] bg-white p-4 shadow-sm sm:p-6">
 
-                        </div>
+                    <div class="mb-5">
 
-                        {{-- FILTER --}}
-                        <select
-                            id="statusFilter"
-                            onchange="renderHistory()"
-                            class="rounded-lg border border-[#e2e8f0] bg-white px-3 py-2 text-[12px] font-semibold text-[#64748b] outline-none focus:border-[#0d6efd]"
-                        >
+                        <h2 class="text-[16px] font-bold">
+                            Perlu Persetujuan Saya
+                        </h2>
 
-                            <option value="all">
-                                Semua Status
-                            </option>
-
-                            <option value="manager">
-                                Menunggu Approval
-                            </option>
-
-                            <option value="ga">
-                                Sedang Diproses
-                            </option>
-
-                            <option value="done">
-                                Selesai
-                            </option>
-
-                            <option value="rejected">
-                                Approval
-                            </option>
-
-                        </select>
+                        <p class="mt-1 text-[11px] text-[#64748b]">
+                            Pengajuan staff/bawahan yang membutuhkan pemeriksaan Anda.
+                        </p>
 
                     </div>
 
+                    <div id="approvalList" class="space-y-3"></div>
+
                 </div>
 
-                {{-- =================================================
-                     DESKTOP TABLE
-                ================================================== --}}
-                <div class="hidden overflow-hidden rounded-xl border border-[#f1f5f9] lg:block">
+            </div>
 
-                    {{-- HEADER --}}
-                    <div class="grid grid-cols-[130px_110px_150px_160px_110px_110px] gap-3 bg-[#f4f6fb] px-4 py-3 text-[11px] font-semibold text-[#64748b]">
 
-                        <span>No. SPPD</span>
+            {{-- =====================================================
+                 GA
+            ====================================================== --}}
+            <div
+                id="gaSection"
+                class="hidden"
+            >
 
-                        <span>Tujuan</span>
+                <div class="rounded-2xl border border-[#f1f5f9] bg-white p-4 shadow-sm sm:p-6">
 
-                        <span>Tanggal Perjalanan</span>
+                    <div class="mb-5">
 
-                        <span>Status</span>
+                        <h2 class="text-[16px] font-bold">
+                            Pengajuan SPPD
+                        </h2>
 
-                        <span>Diajukan Pada</span>
-
-                        <span class="text-center">
-                            Aksi
-                        </span>
+                        <p class="mt-1 text-[11px] text-[#64748b]">
+                            Daftar pengajuan yang perlu dikelola oleh GA.
+                        </p>
 
                     </div>
 
-                    {{-- DATA --}}
-                    <div id="desktopHistoryList"></div>
+                    <div id="gaList" class="space-y-3"></div>
 
                 </div>
 
-                {{-- =================================================
-                     MOBILE CARD LIST
-                ================================================== --}}
-                <div
-                    id="mobileHistoryList"
-                    class="flex flex-col gap-3 lg:hidden"
-                ></div>
+            </div>
 
-                {{-- EMPTY STATE --}}
-                <div
-                    id="emptyState"
-                    class="hidden py-12 text-center"
-                >
-
-                    <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-[#f4f6fb] text-xl text-[#94a3b8]">
-                        ▣
-                    </div>
-
-                    <p class="mt-3 text-sm font-semibold">
-                        Data tidak ditemukan
-                    </p>
-
-                    <p class="mt-1 text-xs text-[#94a3b8]">
-                        Coba ubah kata pencarian atau filter status.
-                    </p>
-
-                </div>
-
-                {{-- =================================================
-                     PAGINATION
-                ================================================== --}}
-                <div
-                    id="pagination"
-                    class="flex items-center justify-center gap-2 pt-5"
-                >
-
-                    <button
-                        type="button"
-                        onclick="previousPage()"
-                        class="flex size-8 items-center justify-center rounded-lg text-[#64748b] hover:bg-[#f4f6fb]"
-                    >
-                        ‹
-                    </button>
-
-                    <span
-                        id="pageNumber"
-                        class="flex size-8 items-center justify-center rounded-md border border-[#0d6efd] bg-[#eff6ff] text-[13px] font-semibold text-[#0d6efd]"
-                    >
-                        1
-                    </span>
-
-                    <button
-                        type="button"
-                        onclick="nextPage()"
-                        class="flex size-8 items-center justify-center rounded-lg text-[#64748b] hover:bg-[#f4f6fb]"
-                    >
-                        ›
-                    </button>
-
-                </div>
-
-            </section>
-
-        </div>
+        </section>
 
     </main>
 
 </div>
+
 
 {{-- =============================================================
      DETAIL MODAL
@@ -449,309 +469,206 @@
     id="detailModal"
     class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/30 p-4"
 >
+    <div
+        class="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:p-6"
+    >
 
-    <div class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-2xl">
-
-        {{-- HEADER --}}
-        <div class="flex items-center justify-between border-b border-[#e2e8f0] p-5">
+        <!-- Header -->
+        <div class="mb-5 flex items-start justify-between">
 
             <div>
-
-                <h2 class="text-[16px] font-bold">
+                <p class="text-[11px] text-[#64748b]">
                     Detail Pengajuan
-                </h2>
+                </p>
 
-                <p
-                    id="modalNo"
-                    class="mt-1 text-[12px] text-[#64748b]"
-                ></p>
-
+                <h3
+                    id="modalTitle"
+                    class="mt-1 text-lg font-bold"
+                >
+                    SPPD
+                </h3>
             </div>
 
             <button
                 type="button"
-                onclick="closeDetail()"
-                class="flex size-8 items-center justify-center rounded-lg text-[#64748b] hover:bg-[#f4f6fb]"
+                onclick="closeModal()"
+                class="flex size-8 items-center justify-center rounded-lg bg-[#f8fafc] text-[#64748b] hover:bg-[#f1f5f9]"
             >
                 ✕
             </button>
 
         </div>
 
-        {{-- BODY --}}
-        <div class="space-y-4 p-5">
 
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <!-- Informasi Pengajuan -->
+        <div
+            id="modalInfo"
+            class="mb-5 rounded-xl border border-[#f1f5f9] p-4"
+        ></div>
 
-                <div>
 
-                    <p class="text-[11px] text-[#94a3b8]">
-                        Diajukan Oleh
-                    </p>
+        <!-- Daftar Dokumen -->
+        <div>
 
-                    <p
-                        id="modalUser"
-                        class="mt-1 text-sm font-semibold"
-                    ></p>
+            <div class="mb-3">
+                <h4 class="text-sm font-semibold">
+                    Dokumen Pengajuan
+                </h4>
 
-                </div>
-
-                <div>
-
-                    <p class="text-[11px] text-[#94a3b8]">
-                        Tujuan
-                    </p>
-
-                    <p
-                        id="modalTujuan"
-                        class="mt-1 text-sm font-semibold"
-                    ></p>
-
-                </div>
-
-                <div>
-
-                    <p class="text-[11px] text-[#94a3b8]">
-                        Tanggal Perjalanan
-                    </p>
-
-                    <p
-                        id="modalTanggal"
-                        class="mt-1 text-sm font-semibold">
-                    </p>
-
-                </div>
-
-                <div>
-
-                    <p class="text-[11px] text-[#94a3b8]">
-                        Diajukan Pada
-                    </p>
-
-                    <p
-                        id="modalDate"
-                        class="mt-1 text-sm font-semibold">
-                    </p>
-
-                </div>
-
-            </div>
-
-            {{-- STATUS --}}
-            <div class="rounded-xl bg-[#f8fafc] p-4">
-
-                <p class="text-[11px] text-[#94a3b8]">
-                    Status
+                <p class="mt-1 text-[12px] text-[#64748b]">
+                    Dokumen yang terkait dengan pengajuan ini.
                 </p>
-
-                <div
-                    id="modalStatus"
-                    class="mt-2">
-                </div>
-
             </div>
 
-            {{-- ALUR --}}
-            <div>
-
-                <p class="mb-3 text-[13px] font-bold">
-                    Alur Pengajuan
-                </p>
-
-                <div class="space-y-3">
-
-                    <div class="flex items-center gap-3">
-
-                        <div class="flex size-8 items-center justify-center rounded-full bg-[#eff6ff] text-xs font-bold text-[#0d6efd]">
-                            1
-                        </div>
-
-                        <div>
-
-                            <p class="text-[12px] font-semibold">
-                                Manager
-                            </p>
-
-                            <p class="text-[11px] text-[#94a3b8]">
-                                Pemeriksaan pengajuan
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="flex items-center gap-3">
-
-                        <div class="flex size-8 items-center justify-center rounded-full bg-[#eff6ff] text-xs font-bold text-[#0d6efd]">
-                            2
-                        </div>
-
-                        <div>
-
-                            <p class="text-[12px] font-semibold">
-                                General Affair
-                            </p>
-
-                            <p class="text-[11px] text-[#94a3b8]">
-                                Pemeriksaan budget dan tiket
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="flex items-center gap-3">
-
-                        <div class="flex size-8 items-center justify-center rounded-full bg-[#eff6ff] text-xs font-bold text-[#0d6efd]">
-                            3
-                        </div>
-
-                        <div>
-
-                            <p class="text-[12px] font-semibold">
-                                General Manager
-                            </p>
-
-                            <p class="text-[11px] text-[#94a3b8]">
-                                Persetujuan akhir
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
+            <div
+                id="modalContent"
+                class="space-y-3"
+            ></div>
 
         </div>
 
-        {{-- FOOTER --}}
-        <div class="flex justify-end gap-2 border-t border-[#e2e8f0] p-5">
 
-            <button
-                type="button"
-                onclick="closeDetail()"
-                class="rounded-lg border border-[#e2e8f0] px-4 py-2 text-[12px] font-semibold text-[#64748b]"
-            >
-                Tutup
-            </button>
-
-            <button
-                type="button"
-                onclick="printCurrentDetail()"
-                class="rounded-lg bg-[#0d6efd] px-4 py-2 text-[12px] font-semibold text-white"
-            >
-                Cetak
-            </button>
-
-        </div>
+        <!-- Action -->
+        <div
+            id="modalActions"
+            class="mt-6 flex justify-end gap-2"
+        ></div>
 
     </div>
-
 </div>
 
+{{-- =============================================================
+     JAVASCRIPT
+============================================================= --}}
 <script>
 
-    /* ============================================================
-       DATA FE
-    ============================================================ */
+    /*
+    |--------------------------------------------------------------------------
+    | DATA DUMMY
+    |--------------------------------------------------------------------------
+    */
 
-    const historyData = [
+    const users = {
+
+        staff: {
+            name: 'Eko Saputra',
+            position: 'Staff',
+            description: 'Menampilkan pengajuan milik sendiri.'
+        },
+
+        manager: {
+            name: 'Andi Wijaya',
+            position: 'Manager',
+            description: 'Menampilkan pengajuan sendiri dan pengajuan bawahan.'
+        },
+
+        ga: {
+            name: 'Budi Santoso',
+            position: 'General Affair',
+            description: 'Menampilkan seluruh pengajuan yang dikelola GA.'
+        }
+
+    };
+
+    let applications = [
 
         {
             no: 'SPPD-2026-00124',
-            tujuan: 'Bandung',
-            tanggal: '20 - 22 Agustus 2026',
-            status: 'Sedang Diproses',
-            type: 'manager',
-            date: '11 Agustus 2026',
-            user: 'Eko Saputra',
+            applicant: 'Eko Saputra',
+            destination: 'Bandung',
+            date: '20 - 22 Aug 2026',
+            submitted: '11 Aug 2026',
+            status: 'Menunggu Approval',
+            type: 'waiting',
             owner: 'staff',
-            manager: 'Andi Wijaya'
+            approval: true
         },
 
         {
             no: 'SPPD-2026-00123',
-            tujuan: 'Yogyakarta',
-            tanggal: '15 - 17 Agustus 2026',
+            applicant: 'Eko Saputra',
+            destination: 'Yogyakarta',
+            date: '15 - 17 Aug 2026',
+            submitted: '8 Aug 2026',
             status: 'Sedang Diproses',
-            type: 'ga',
-            date: '8 Agustus 2026',
-            user: 'Eko Saputra',
+            type: 'process',
             owner: 'staff',
-            manager: 'Budi Santoso'
+            approval: false
         },
 
         {
             no: 'SPPD-2026-00122',
-            tujuan: 'Surabaya',
-            tanggal: '05 - 06 Agustus 2026',
+            applicant: 'Budi Santoso',
+            destination: 'Surabaya',
+            date: '05 - 06 Aug 2026',
+            submitted: '5 Aug 2026',
             status: 'Menunggu Approval',
-            type: 'gm',
-            date: '5 Agustus 2026',
-            user: 'Eko Saputra',
-            owner: 'staff',
-            manager: 'Andi Wijaya'
+            type: 'waiting',
+            owner: 'manager',
+            approval: false
         },
 
         {
             no: 'SPPD-2026-00121',
-            tujuan: 'Jakarta',
-            tanggal: '28 Juli 2026',
-            status: 'Selesai',
+            applicant: 'Eko Saputra',
+            destination: 'Jakarta',
+            date: '28 - 30 Jun 2026',
+            submitted: '20 Jul 2026',
+            status: 'Approval',
             type: 'done',
-            date: '20 Juli 2026',
-            user: 'Eko Saputra',
-            owner: 'staff',
-            manager: 'Andi Wijaya'
+            owner: 'ga',
+            approval: false
+        },
+
+        {
+            no: 'SPPD-2026-00125',
+            applicant: 'Budi Santoso',
+            destination: 'Jakarta',
+            date: '25 - 28 Jul 2026',
+            submitted: '20 Jul 2026',
+            status: 'Approval',
+            type: 'done',
+            owner: 'ga',
+            approval: false
         },
 
         {
             no: 'SPPD-2026-00120',
-            tujuan: 'Semarang',
-            tanggal: '18 - 19 Juli 2026',
-            status: 'Selesai',
+            applicant: 'Andi Wijaya',
+            destination: 'Semarang',
+            date: '18 - 19 Jul 2026',
+            submitted: '11 Jul 2026',
+            status: 'Approval',
             type: 'done',
-            date: '11 Juli 2026',
-            user: 'Eko Saputra',
-            owner: 'staff',
-            manager: 'Budi Santoso'
-        },
-
-        {
-            no: 'SPPD-2026-00118',
-            tujuan: 'Bandung',
-            tanggal: '10 - 11 Juli 2026',
-            status: 'Selesai',
-            type: 'done',
-            date: '1 Juli 2026',
-            user: 'Eko Saputra',
-            owner: 'staff',
-            manager: 'Budi Santoso'
-        },
-
-        {
-            no: 'SPPD-2026-00117',
-            tujuan: 'Surabaya',
-            tanggal: '1 - 3 Juli 2026',
-            status: 'Selesai',
-            type: 'done',
-            date: '25 Juni 2026',
-            user: 'Eko Saputra',
-            owner: 'staff',
-            manager: 'Budi Santoso'
+            owner: 'manager',
+            approval: false
         }
 
     ];
 
-    /* ============================================================
-       ROLE
-    ============================================================ */
+    const savedApplications =
+    JSON.parse(localStorage.getItem("sppd_applications")) || [];
+    
+    
+    applications = [
+        ...savedApplications,
+        ...applications
+    ];
+    
 
     let currentRole = 'staff';
 
-    let currentDetail = null;
+    /*
+    |--------------------------------------------------------------------------
+    | PROFILE DROPDOWN
+    |--------------------------------------------------------------------------
+    */
+
+    /*
+    |--------------------------------------------------------------------------
+    | ROLE SWITCH
+    |--------------------------------------------------------------------------
+    */
 
     function switchRole(role) {
 
@@ -759,603 +676,923 @@
 
         localStorage.setItem('sppd_role', role);
 
-        const roleName = document.getElementById('profileRole');
-        const profileName = document.getElementById('profileName');
-        const initial = document.getElementById('profileInitial');
+        const user = users[role];
+
+        document
+            .getElementById('profileName')
+            .innerText = user.name;
+
+        document
+            .getElementById('profileRole')
+            .innerText = user.position;
+
+        document
+            .getElementById('welcomeText')
+            .innerText = `Selamat datang, ${user.name} 👋`;
+
+        document
+            .getElementById('roleInfo')
+            .innerHTML = `
+                <p class="text-xs font-semibold text-[#1d4ed8]">
+                    Mode ${role.toUpperCase()}
+                </p>
+
+                <p class="mt-1 text-[11px] text-[#64748b]">
+                    ${user.description}
+                </p>
+            `;
+
+        document.getElementById('staffSection').classList.add('hidden');
+        document.getElementById('managerSection').classList.add('hidden');
+        document.getElementById('gaSection').classList.add('hidden');
 
         if (role === 'staff') {
-
-            roleName.textContent = 'Staff';
-
-            profileName.textContent = 'Eko Saputra';
-
-            initial.textContent = 'ES';
-
-            document.getElementById('historyTitle').textContent =
-                'Riwayat Pengajuan Saya';
-
-            document.getElementById('historyDescription').textContent =
-                'Menampilkan seluruh pengajuan SPPD yang Anda ajukan.';
-
+            document.getElementById('staffSection').classList.remove('hidden');
         }
 
-        else if (role === 'manager') {
-
-            roleName.textContent = 'Manager';
-
-            profileName.textContent = 'Andi Wijaya';
-
-            initial.textContent = 'AW';
-
-            document.getElementById('historyTitle').textContent =
-                'Riwayat Pengajuan';
-
-            document.getElementById('historyDescription').textContent =
-                'Menampilkan riwayat pengajuan SPPD yang menjadi tanggung jawab Anda.';
-
+        if (role === 'manager') {
+            document.getElementById('managerSection').classList.remove('hidden');
         }
 
-        else if (role === 'ga') {
-
-            roleName.textContent = 'General Affair';
-
-            profileName.textContent = 'Budi Santoso';
-
-            initial.textContent = 'BS';
-
-            document.getElementById('historyTitle').textContent =
-                'Seluruh Riwayat Pengajuan';
-
-            document.getElementById('historyDescription').textContent =
-                'Menampilkan seluruh riwayat pengajuan SPPD yang masuk ke General Affair.';
-
+        if (role === 'ga') {
+            document.getElementById('gaSection').classList.remove('hidden');
         }
 
-        closeProfileMenu();
+        document
+            .getElementById('profileMenu')
+            .classList.add('hidden');
 
-        renderHistory();
+        renderData();
 
     }
 
-    /* ============================================================
-       ROLE FILTER
-    ============================================================ */
+    /*
+    |--------------------------------------------------------------------------
+    | RENDER DATA
+    |--------------------------------------------------------------------------
+    */
 
-    function getRoleData() {
+    function renderData() {
 
-        if (currentRole === 'staff') {
+        renderStaff();
 
-            return historyData.filter(item =>
-                item.user === 'Eko Saputra'
-            );
+        renderManager();
 
-        }
-
-        if (currentRole === 'manager') {
-
-            return historyData.filter(item =>
-                item.manager === 'Andi Wijaya'
-            );
-
-        }
-
-
-        if (currentRole === 'ga') {
-
-            return historyData;
-
-        }
-
-        return [];
+        renderGA();
 
     }
 
-    /* ============================================================
-       STATUS BADGE
-    ============================================================ */
 
     function statusBadge(item) {
 
         let classes = '';
 
-        if (item.type === 'manager') {
-
-            classes =
-                'bg-[#fff7ed] text-[#d97706]';
-
+        if (item.type === 'waiting') {
+            classes = 'bg-[#fff7ed] text-[#d97706]';
         }
 
-        else if (item.type === 'ga') {
-
-            classes =
-                'bg-[#eff6ff] text-[#2563eb]';
-
+        else if (item.type === 'process') {
+            classes = 'bg-[#eff6ff] text-[#2563eb]';
         }
 
-        else if (item.type === 'gm') {
-
-            classes =
-                'bg-[#f3e8ff] text-[#9333ea]';
-
-        }
-
-        else if (item.type === 'done') {
-
-            classes =
-                'bg-[#f0fdf4] text-[#16a34a]';
-
+        else if (item.type === 'rejected') {
+            classes = 'bg-[#fef2f2] text-[#dc2626]';
         }
 
         else {
-
-            classes =
-                'bg-[#fef2f2] text-[#dc2626]';
-
+            classes = 'bg-[#f0fdf4] text-[#16a34a]';
         }
 
         return `
-            <span class="inline-flex rounded-lg px-[10px] py-[6px] text-center text-[11px] font-semibold leading-[1.2] ${classes}">
+            <span class="inline-flex rounded-lg px-2.5 py-1.5 text-[11px] font-semibold ${classes}">
                 ${item.status}
             </span>
         `;
 
     }
 
-    /* ============================================================
-       RENDER HISTORY
-    ============================================================ */
+    function applicationCard(item, options = {}) {
+        const approval = options.approval || false;
+        // Pastikan nomor SPPD aman dari karakter pengganggu
+        const noSPPD = String(item.no || '').trim();
 
-    function renderHistory() {
+        return `
+            <div class="rounded-xl border border-[#eef2f7] p-4 transition hover:border-[#dbeafe] hover:shadow-sm">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-        const search =
-            document
-                .getElementById('searchInput')
-                .value
-                .toLowerCase()
-                .trim();
-
-        const filter =
-            document
-                .getElementById('statusFilter')
-                .value;
-
-        let data = getRoleData();
-
-        if (search !== '') {
-
-            data = data.filter(item =>
-
-                item.no.toLowerCase().includes(search) ||
-
-                item.tujuan.toLowerCase().includes(search) ||
-
-                item.user.toLowerCase().includes(search)
-
-            );
-
-        }
-
-        if (filter !== 'all') {
-
-            data = data.filter(item =>
-                item.type === filter
-            );
-
-        }
-
-        renderDesktop(data);
-
-        renderMobile(data);
-
-    }
-
-    /* ============================================================
-       DESKTOP
-    ============================================================ */
-
-    function renderDesktop(data) {
-
-        const container =
-            document.getElementById('desktopHistoryList');
-
-        container.innerHTML = '';
-
-        if (data.length === 0) {
-
-            showEmpty();
-
-            return;
-
-        }
-
-        hideEmpty();
-
-        data.forEach(item => {
-
-            container.innerHTML += `
-
-                <div
-                    class="grid grid-cols-[130px_110px_150px_160px_110px_110px] items-center gap-3 border-b border-[#f1f5f9] px-4 py-[14px] text-[12px] hover:bg-[#fafcff]"
-                >
-
-                    <span class="font-semibold">
-                        ${item.no}
-                    </span>
-
-                    <span>
-                        ${item.tujuan}
-                    </span>
-
-                    <span>
-                        ${item.tanggal}
-                    </span>
-
-                    <span>
-                        ${statusBadge(item)}
-                    </span>
-
-                    <span class="text-[#64748b]">
-                        ${item.date}
-                    </span>
-
-                    <div class="flex items-center justify-center gap-1">
-
-                        <button
-                            type="button"
-                            onclick="openDetail('${item.no}')"
-                            class="flex size-8 items-center justify-center rounded-lg hover:bg-[#eff6ff]"
-                            title="Lihat"
-                        >
-                            <span class="text-[#64748b]">
-                                👁
+                    <div class="min-w-0">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-[13px] font-bold">
+                                ${noSPPD}
                             </span>
-                        </button>
+                            ${typeof statusBadge === 'function' ? statusBadge(item) : ''}
+                        </div>
 
-                        <button
-                            type="button"
-                            onclick="printItem('${item.no}')"
-                            class="flex size-8 items-center justify-center rounded-lg hover:bg-[#eff6ff]"
-                            title="Cetak"
-                        >
-                            <span class="text-[#0d6efd]">
-                                🖨
-                            </span>
-                        </button>
+                        <div class="mt-2 grid gap-1 text-[11px] text-[#64748b] sm:grid-cols-2 sm:gap-x-6">
+                            <span>Pemohon: <b class="text-[#1e293b]">${item.applicant || '-'}</b></span>
+                            <span>Tujuan: <b class="text-[#1e293b]">${item.destination || '-'}</b></span>
+                            <span>Waktu Dinas: <b class="text-[#1e293b]">${item.date || '-'}</b></span>
+                            <span>Diajukan: <b class="text-[#1e293b]">${item.submitted || '-'}</b></span>
+                        </div>
+                    </div>
 
+                    <div class="flex shrink-0 gap-2">
+                        ${
+                            approval
+                            ? `
+                                <button
+                                    onclick="processApplication('${noSPPD}')"
+                                    class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]"
+                                >
+                                    Proses
+                                </button>
+                            `
+                            : `
+                                <button
+                                    onclick="showDetail('${noSPPD}')"
+                                    class="rounded-lg border border-[#dbeafe] px-3 py-2 text-[11px] font-semibold text-[#0d6efd] hover:bg-[#eff6ff]"
+                                >
+                                    Detail
+                                </button>
+                            `
+                        }
                     </div>
 
                 </div>
-
-            `;
-
-        });
-
+            </div>
+        `;
     }
 
-    /* ============================================================
-       MOBILE
-    ============================================================ */
+    function editApplication(id) {
+        // Cari data berdasarkan ID
+        const itemToEdit = applications.find(app => app.id === id);
 
-    function renderMobile(data) {
+        if (!itemToEdit) return;
 
-        const container =
-            document.getElementById('mobileHistoryList');
+        // Isi input form kamu dengan data lama
+        // Sesuaikan ID input di bawah ini dengan ID elemen <input> pada HTML form kamu
+        document.getElementById('inputAppId').value = itemToEdit.id; // Input Hidden untuk simpan ID
+        document.getElementById('inputDestination').value = itemToEdit.destination || '';
+        // ... masukan field form lainnya di sini ...
 
-        container.innerHTML = '';
+        // Buka Modal / Tampilkan Form Edit kamu jika menggunakan modal
+        // document.getElementById('myModal').classList.remove('hidden');
+    }
 
-        if (data.length === 0) {
+    function saveEditApplication(event) {
+        event.preventDefault(); // Cegah reload halaman
 
-            return;
+        const appId = parseInt(document.getElementById('inputAppId').value);
 
+        // Cari index data di dalam array
+        const index = applications.findIndex(app => app.id === appId);
+
+        if (index !== -1) {
+            // Update data di array dengan nilai input baru dari Form
+            applications[index].destination = document.getElementById('inputDestination').value;
+            // ... update field lainnya di sini ...
+
+            // 1. Simpan Array yang sudah di-update ke LocalStorage
+            localStorage.setItem("sppd_applications", JSON.stringify(applications));
+
+            // 2. Render ulang tampilan layar agar data terbaru langsung terlihat
+            renderData();
+
+            alert("Data pengajuan berhasil diperbarui!");
         }
+    }
 
-        data.forEach(item => {
 
-            container.innerHTML += `
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF
+    |--------------------------------------------------------------------------
+    */
 
-                <div
-                    class="rounded-xl border border-[#f1f5f9] p-4 hover:bg-[#fafcff]"
-                >
+    function renderStaff() {
 
-                    <div class="flex items-start justify-between gap-3">
+        const data = applications.filter(item =>
+            item.applicant === users.staff.name
+        );
 
-                        <div class="min-w-0">
+        document
+            .getElementById('staffList')
+            .innerHTML = data
+            .map(item => applicationCard(item))
+            .join('');
 
-                            <p class="truncate text-[13px] font-bold">
-                                ${item.no}
-                            </p>
+    }
 
-                            <p class="mt-1 text-[12px] text-[#64748b]">
-                                ${item.tujuan}
-                            </p>
+    /*
+    |--------------------------------------------------------------------------
+    | MANAGER
+    |--------------------------------------------------------------------------
+    */
 
-                        </div>
+    function renderManager() {
 
-                        ${statusBadge(item)}
+        // const own = applications.filter(item =>
+        //     item.owner === 'manager'
+        // );
 
+        const approval = applications.filter(item =>
+            item.approval === true
+        );
+
+        // document
+        //     .getElementById('managerOwnList')
+        //     .innerHTML = own.length
+        //         ? own.map(item => applicationCard(item)).join('')
+        //         : emptyState('Belum ada pengajuan Anda.');
+
+        document
+            .getElementById('approvalList')
+            .innerHTML = approval.length
+                ? approval.map(item => applicationCard(item, {
+                    approval: true
+                })).join('')
+                : emptyState('Tidak ada pengajuan yang menunggu persetujuan.');
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | GA
+    |--------------------------------------------------------------------------
+    */
+
+    function renderGA() {
+        // Ambil data gabungan dari window/static dan localStorage
+        const localData = JSON.parse(localStorage.getItem('sppd_applications')) || [];
+        const allApplications = [...(window.applicationsDetails || []), ...localData];
+
+        // Filter data yang butuh tindakan/proses dari GA
+        // (Pengajuan yang sudah lolos persetujuan Manager)
+        const gaItems = allApplications.filter(item => 
+            item.status === 'Disetujui Manager' || 
+            item.status === 'Waiting GA' ||
+            item.status === 'Sedang Diproses'
+        );
+
+        const container = document.getElementById('gaList');
+        if (!container) return;
+
+        // Render ke HTML
+        container.innerHTML = gaItems.length > 0 
+            ? gaItems.map(item => gaApplicationCard(item)).join('')
+            : emptyState('Tidak ada pengajuan yang perlu dikelola GA.');
+    }
+    // function renderGA() {
+
+    //     document
+    //         .getElementById('gaList')
+    //         .innerHTML = applications
+    //             .map(item => applicationCard(item))
+    //             .join('');
+
+    // }
+
+    function gaApplicationCard(item) {
+        return `
+            <div class="flex flex-col gap-4 rounded-xl border border-[#e2e8f0] bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-[#0f172a]">${item.no}</span>
+                        <span class="rounded bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-700">${item.status}</span>
                     </div>
-
-                    <div class="mt-4 grid grid-cols-2 gap-3">
-
-                        <div>
-
-                            <p class="text-[10px] text-[#94a3b8]">
-                                Tanggal Perjalanan
-                            </p>
-
-                            <p class="mt-1 text-[11px] font-semibold">
-                                ${item.tanggal}
-                            </p>
-
-                        </div>
-
-                        <div>
-
-                            <p class="text-[10px] text-[#94a3b8]">
-                                Diajukan Pada
-                            </p>
-
-                            <p class="mt-1 text-[11px] font-semibold">
-                                ${item.date}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="mt-4 flex justify-end gap-2 border-t border-[#f1f5f9] pt-3">
-
-                        <button
-                            type="button"
-                            onclick="openDetail('${item.no}')"
-                            class="rounded-lg border border-[#e2e8f0] px-3 py-2 text-[11px] font-semibold text-[#64748b]"
-                        >
-                            Lihat
-                        </button>
-
-                        <button
-                            type="button"
-                            onclick="printItem('${item.no}')"
-                            class="rounded-lg border border-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-[#0d6efd]"
-                        >
-                            Cetak
-                        </button>
-
-                    </div>
-
+                    <p class="mt-1 text-xs text-[#64748b]">Pemohon: <strong>${item.applicant || '-'}</strong> | Tujuan: <strong>${item.destination || '-'}</strong></p>
+                    <p class="text-[11px] text-[#94a3b8]">Tgl Pengajuan: ${item.date || '-'}</p>
                 </div>
-
-            `;
-
-        });
-
+                
+                <div class="flex items-center gap-2">
+                    <!-- Tombol Proses Khusus GA -->
+                    <button type="button" 
+                            onclick="prosesOlehGA('${item.no}')" 
+                            class="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
+                        Proses
+                    </button>
+                </div>
+            </div>
+        `;
     }
 
-    /* ============================================================
-       EMPTY
-    ============================================================ */
+    function emptyState(message) {
 
-    function showEmpty() {
+        return `
+            <div class="rounded-xl border border-dashed border-[#e2e8f0] px-4 py-8 text-center">
 
-        document
-            .getElementById('emptyState')
-            .classList
-            .remove('hidden');
-
-        document
-            .getElementById('pagination')
-            .classList
-            .add('hidden');
-
-    }
-
-    function hideEmpty() {
-
-        document
-            .getElementById('emptyState')
-            .classList
-            .add('hidden');
-
-        document
-            .getElementById('pagination')
-            .classList
-            .remove('hidden');
-
-    }
-
-    /* ============================================================
-       DETAIL
-    ============================================================ */
-
-    function openDetail(no) {
-
-        const item =
-            historyData.find(data =>
-                data.no === no
-            );
-
-        if (!item) return;
-
-        currentDetail = item;
-
-        document.getElementById('modalNo').textContent =
-            item.no;
-
-        document.getElementById('modalUser').textContent =
-            item.user;
-
-        document.getElementById('modalTujuan').textContent =
-            item.tujuan;
-
-        document.getElementById('modalTanggal').textContent =
-            item.tanggal;
-
-        document.getElementById('modalDate').textContent =
-            item.date;
-
-        document.getElementById('modalStatus').innerHTML =
-            statusBadge(item);
-
-        const modal =
-            document.getElementById('detailModal');
-
-        modal.classList.remove('hidden');
-
-        modal.classList.add('flex');
-
-        document.body.classList.add('overflow-hidden');
-
-    }
-
-    function closeDetail() {
-
-        const modal =
-            document.getElementById('detailModal');
-
-        modal.classList.add('hidden');
-
-        modal.classList.remove('flex');
-
-        document.body.classList.remove('overflow-hidden');
-
-    }
-
-    /* ============================================================
-       PRINT
-    ============================================================ */
-
-    function printItem(no) {
-
-        const item =
-            historyData.find(data =>
-                data.no === no
-            );
-
-        if (!item) return;
-
-        const printWindow =
-            window.open('', '_blank', 'width=900,height=700');
-
-        printWindow.document.write(`
-
-            <!DOCTYPE html>
-
-            <html>
-
-            <head>
-
-                <title>${item.no}</title>
-
-                <style>
-
-                    body {
-                        font-family: Arial, sans-serif;
-                        padding: 40px;
-                        color: #1e293b;
-                    }
-
-                    h1 {
-                        font-size: 22px;
-                        margin-bottom: 25px;
-                    }
-
-                    .row {
-                        margin-bottom: 15px;
-                    }
-
-                    .label {
-                        color: #64748b;
-                        font-size: 12px;
-                    }
-
-                    .value {
-                        font-weight: bold;
-                        margin-top: 5px;
-                    }
-
-                </style>
-
-            </head>
-
-            <body>
-
-                <h1>Riwayat Pengajuan SPPD</h1>
-
-                <div class="row">
-                    <div class="label">No. SPPD</div>
-                    <div class="value">${item.no}</div>
-                </div>
-
-                <div class="row">
-                    <div class="label">Diajukan Oleh</div>
-                    <div class="value">${item.user}</div>
-                </div>
-
-                <div class="row">
-                    <div class="label">Tujuan</div>
-                    <div class="value">${item.tujuan}</div>
-                </div>
-
-                <div class="row">
-                    <div class="label">Tanggal Perjalanan</div>
-                    <div class="value">${item.tanggal}</div>
-                </div>
-
-                <div class="row">
-                    <div class="label">Status</div>
-                    <div class="value">${item.status}</div>
-                </div>
-
-                <div class="row">
-                    <div class="label">Diajukan Pada</div>
-                    <div class="value">${item.date}</div>
-                </div>
-
-                <hr>
-
-                <p>
-                    Dokumen ini merupakan simulasi Frontend
-                    SPPD System.
+                <p class="text-sm font-medium text-[#64748b]">
+                    ${message}
                 </p>
 
-            </body>
-
-            </html>
-
-        `);
-
-        printWindow.document.close();
-
-        printWindow.focus();
-
-        printWindow.print();
+            </div>
+        `;
 
     }
 
-    function printCurrentDetail() {
 
-        if (!currentDetail) return;
+    /*
+    |--------------------------------------------------------------------------
+    | DETAIL
+    |--------------------------------------------------------------------------
+    */
+    const applicationsDetails = [
 
-        printItem(currentDetail.no);
+            {
+                no: "SPPD-2026-00123",
+                applicant: "Eko Saputra",
+                destination: "Yogyakarta",
+                date: "15 - 17 Agustus 2026",
+                status: "Sedang Diproses",
 
+                dokumen: [
+                    "form_sppd",
+                    "form_ilpd",
+                ]
+            },
+
+            {
+                no: "SPPD-2026-00124",
+                applicant: "Eko Saputra",
+                destination: "Bandung",
+                date: "20 - 22 Agustus 2026",
+                status: "Menunggu Approval",
+
+                dokumen: [
+                    "form_sppd",
+                    "form_ilpd",
+                ]
+            },
+
+            {
+                no: 'SPPD-2026-00122',
+                applicant: 'Budi Santoso',
+                destination: 'Surabaya',
+                date: '05 - 06 Aug 2026',
+                status: 'Menunggu Approval',
+                
+                dokumen: [
+                    "form_sppd",
+                    "form_ilpd",
+                ]
+            },
+
+            {
+                no: 'SPPD-2026-00121',
+                applicant: 'Eko Saputra',
+                destination: 'Jakarta',
+                date: '28 - 30 Jun 2026',
+                status: 'Disetujui',
+
+                dokumen: [
+                    "form_sppd",
+                    "form_ilpd",
+                    "tiket"
+                ]
+            },
+
+            {
+                no: 'SPPD-2026-00125',
+                applicant: 'Budi Santoso',
+                destination: 'Jakarta',
+                date: '25 - 28 Jul 2026',
+                status: 'Disetujui',
+
+                dokumen: [
+                    "form_sppd",
+                    "form_ilpd",
+                    "tiket"
+                ]
+            },
+
+            {
+                no: "SPPD-2026-00120",
+                applicant: "Andi Wijaya",
+                destination: "Semarang",
+                date: "18 - 19 Juli 2026",
+                status: "Disetujui",
+
+                dokumen: [
+                    "form_sppd",
+                    "form_ilpd",
+                    "tiket"
+                ]
+            }
+
+        ];
+
+    function getDocumentData(type) {
+        const documents = {
+            form_sppd: {
+                title: "Form SPPD",
+                description: "Dokumen surat tugas perjalanan dinas.",
+                date: "Dibuat 20 Agustus 2026",
+                iconBg: "bg-blue-50",
+                iconColor: "text-blue-600",
+                border: "border-blue-100"
+            },
+            form_ilpd: {
+                title: "Form ILPD",
+                description: "Form ILPD perjalanan dinas.",
+                date: "Dibuat 20 Agustus 2026",
+                iconBg: "bg-emerald-50",
+                iconColor: "text-emerald-600",
+                border: "border-emerald-100"
+            },
+            tiket: {
+                title: "Tiket",
+                description: "Laporan hasil perjalanan dinas.",
+                date: "Dibuat 22 Agustus 2026",
+                iconBg: "bg-purple-50",
+                iconColor: "text-purple-600",
+                border: "border-purple-100"
+            }
+        };
+
+        return documents[type] || {
+            title: "Dokumen",
+            description: "Dokumen pengajuan.",
+            date: "-",
+            iconBg: "bg-gray-50",
+            iconColor: "text-gray-600",
+            border: "border-gray-100"
+        };
     }
 
-    /* ============================================================
-       PROFILE
-    ============================================================ */
+    function showDetail(no) {
 
-    function closeProfileMenu() {
+        // 1. Ambil data dari localStorage (sesuaikan nama key storage-nya, misal: 'sppd_data')
+        const localData = JSON.parse(localStorage.getItem('sppd_applications')) || [];
+        
+        // Optional: Gabungkan data localStorage dengan applicationsDetails jika masih butuh data dummy
+        const allItems = [...applicationsDetails, ...localData];
+
+        // 2. Cari berdasarkan nomor SPPD
+        const item = allItems.find(item => item.no === no);
+
+        // Debugging: Cek di console jika item tidak ditemukan
+        if (!item) {
+            console.error('Data tidak ditemukan untuk No:', no);
+            return;
+        }
+
+        // const item = applicationsDetails.find(item =>
+        //     item.no === no
+        // );
+
+        // if (!item) return;
+
+        // =========================
+        // HEADER
+        // =========================
 
         document
-            .getElementById('profileMenu')
-            .classList
-            .add('hidden');
+            .getElementById('modalTitle')
+            .innerText = item.no;
+
+        // =========================
+        // INFORMASI PENGAJUAN
+        // =========================
+
+        document
+            .getElementById('modalInfo')
+            .innerHTML = `
+
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+                    <div>
+                        <p class="text-[11px] text-[#64748b]">
+                            Pemohon
+                        </p>
+
+                        <p class="mt-1 text-sm font-semibold">
+                            ${item.applicant}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-[11px] text-[#64748b]">
+                            Tujuan
+                        </p>
+
+                        <p class="mt-1 text-sm font-semibold">
+                            ${item.destination}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-[11px] text-[#64748b]">
+                            Tanggal
+                        </p>
+
+                        <p class="mt-1 text-sm font-semibold">
+                            ${item.date}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-[11px] text-[#64748b]">
+                            Status
+                        </p>
+
+                        <div class="mt-1">
+                            ${statusBadge(item)}
+                        </div>
+                    </div>
+
+                </div>
+
+            `;
+
+        // =========================
+        // DOKUMEN
+        // =========================
+
+        const container =
+            document.getElementById('modalContent');
+
+        container.innerHTML = '';
+
+        /*
+        * Kalau item.dokumen kosong,
+        * tampilkan pesan.
+        */
+
+        if (!item.dokumen || item.dokumen.length === 0) {
+
+            container.innerHTML = `
+
+                <div class="rounded-xl border border-dashed border-[#e2e8f0] p-6 text-center">
+
+                    <p class="text-sm font-medium text-[#64748b]">
+                        Belum ada dokumen
+                    </p>
+
+                    <p class="mt-1 text-[12px] text-[#94a3b8]">
+                        Dokumen pengajuan belum tersedia.
+                    </p>
+
+                </div>
+
+            `;
+
+        } else {
+
+            item.dokumen.forEach(type => {
+
+                const doc =
+                    getDocumentData(type);
+
+                function getDocumentData(type) {
+
+                const documents = {
+
+                    form_sppd: {
+
+                        title: "Form SPPD",
+
+                        description:
+                            "Dokumen surat tugas perjalanan dinas.",
+
+                        date:
+                            "Dibuat 20 Agustus 2026",
+
+                        iconBg:
+                            "bg-blue-50",
+
+                        iconColor:
+                            "text-blue-600",
+
+                        border:
+                            "border-blue-100"
+
+                    },
+
+                    form_ilpd: {
+
+                        title: "Form ILPD",
+
+                        description:
+                            "Form ILPD perjalanan dinas.",
+
+                        date:
+                            "Dibuat 20 Agustus 2026",
+
+                        iconBg:
+                            "bg-emerald-50",
+
+                        iconColor:
+                            "text-emerald-600",
+
+                        border:
+                            "border-emerald-100"
+
+                    },
+
+                    tiket: {
+
+                        title: "Tiket",
+
+                        description:
+                            "Laporan hasil perjalanan dinas.",
+
+                        date:
+                            "Dibuat 22 Agustus 2026",
+
+                        iconBg:
+                            "bg-purple-50",
+
+                        iconColor:
+                            "text-purple-600",
+
+                        border:
+                            "border-purple-100"
+
+                    }
+
+                };
+
+                return documents[type] || {
+
+                    title: "Dokumen",
+
+                    description:
+                        "Dokumen pengajuan.",
+
+                    date:
+                        "-",
+
+                    iconBg:
+                        "bg-gray-50",
+
+                    iconColor:
+                        "text-gray-600",
+
+                    border:
+                        "border-gray-100"
+
+                };
+
+            }
+
+                const wrapper =
+                    document.createElement('div');
+
+                wrapper.className =
+                    'flex flex-col gap-4 rounded-xl border border-[#f1f5f9] p-4 sm:flex-row sm:items-center';
+
+                // =========================
+                // TOMBOL DOKUMEN
+                // =========================
+
+                let documentButtons = '';
+
+                /*
+                * MENUNGGU APPROVAL
+                * Edit + Lihat
+                */
+
+                if (
+                    item.status === 'Menunggu Approval'
+                ) {
+
+                    documentButtons = `
+
+                        <button
+                            type="button"
+                            class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b]"
+                            onclick="editDocument('${type}', '${item.no}')"
+                        >
+
+                            <span>
+                                ✎
+                            </span>
+
+                            Edit
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b]"
+                            onclick="openDocumentModal('${type}', '${item.no}')"
+                        >
+
+                            <span>
+                                👁
+                            </span>
+
+                            Lihat
+
+                        </button>
+
+                    `;
+
+                }
+
+                /*
+                * SEDANG DIPROSES
+                * Hanya Lihat
+                */
+
+                else if (
+                    item.status === 'Sedang Diproses'
+                ) {
+
+                    documentButtons = `
+
+                        <button
+                            type="button"
+                            class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b]"
+                            onclick="openDocumentModal('${type}', '${item.no}')"
+                        >
+
+                            <span>
+                                👁
+                            </span>
+
+                            Lihat
+
+                        </button>
+
+                    `;
+
+                }
+
+                /*
+                * DISETUJUI / APPROVAL
+                * Lihat + Cetak
+                */
+
+                else if (
+                    item.status === 'Disetujui' ||
+                    item.status === 'Approved' ||
+                    item.status === 'Approval'
+                ) {
+
+                    documentButtons = `
+
+                        <button
+                            type="button"
+                            class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b]"
+                            onclick="openDocumentModal('${type}', '${item.no}')"
+                        >
+
+                            <span>
+                                👁
+                            </span>
+
+                            Lihat
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor}"
+                            onclick="printSpecificDocument('${type}', '${item.no}')"
+                        >
+
+                            <span>
+                                🖨
+                            </span>
+
+                            Cetak
+
+                        </button>
+
+                    `;
+
+                }
+
+                // =========================
+                // HTML DOKUMEN
+                // =========================
+
+                wrapper.innerHTML = `
+
+                    <div class="flex size-11 shrink-0 items-center justify-center rounded-lg ${doc.iconBg}">
+
+                        <span class="${doc.iconColor} text-lg">
+                            ▣
+                        </span>
+
+                    </div>
+
+                    <div class="min-w-0 flex-1">
+
+                        <h3 class="text-[15px] font-semibold">
+                            ${doc.title}
+                        </h3>
+
+                        <p class="mt-1 text-[12px] text-[#64748b]">
+                            ${doc.description}
+                        </p>
+
+                        <p class="mt-1 text-[11px] text-[#94a3b8]">
+                            ${doc.date}
+                        </p>
+
+                    </div>
+
+                    <div class="flex shrink-0 gap-2">
+
+                        ${documentButtons}
+
+                    </div>
+
+                `;
+
+                container.appendChild(wrapper);
+
+            });
+
+        }
+
+        // =========================
+        // MODAL ACTIONS
+        // =========================
+
+        document
+            .getElementById('modalActions')
+            .innerHTML = '';
+
+        // =========================
+        // OPEN MODAL
+        // =========================
+
+        document
+            .getElementById('detailModal')
+            .classList.remove('hidden');
+
+        document
+            .getElementById('detailModal')
+            .classList.add('flex');
 
     }
 
-    /* ============================================================
-       MOBILE SIDEBAR
-    ============================================================ */
+    function closeModal() {
+
+        document
+            .getElementById('detailModal')
+            .classList.add('hidden');
+
+        document
+            .getElementById('detailModal')
+            .classList.remove('flex');
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | APPROVAL SIMULATION
+    |--------------------------------------------------------------------------
+    */
+    function processApplication(no) {
+        if (!no) {
+            alert("Nomor SPPD tidak valid.");
+            return;
+        }
+        // Arahkan ke halaman manager approval dengan query string ?no=...
+        window.location.href = `/manager/sam?no=${encodeURIComponent(no)}`;
+    }
+    // function processApplication(no) {
+    //     window.location.href =
+    //         `/manager/sam?no=${encodeURIComponent(no)}`;
+    // }
+    // function processApplication(no) {
+    //     // 1. Cari data pengajuan berdasarkan nomor SPPD
+    //     const item = applications.find(app => app.no === no);
+    //     if (!item) return;
+
+    //     // 2. Isi data staff ke dalam form SPPD (autofill)
+    //     document.getElementById('noSppdInput').value = item.no;
+    //     document.getElementById('namaPemohonInput').value = item.applicant;
+    //     document.getElementById('tujuanInput').value = item.destination;
+    //     document.getElementById('tanggalInput').value = item.date;
+
+    //     // 3. Sembunyikan view dashboard/list dan tampilkan view form
+    //     document.getElementById('dashboardView').classList.add('hidden');
+    //     document.getElementById('formSppdView').classList.remove('hidden');
+    // }
+
+    /*
+    |--------------------------------------------------------------------------
+    | NOTIFICATION
+    |--------------------------------------------------------------------------
+    */
+
+    function showNotification() {
+
+        alert('Belum ada notifikasi baru.');
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | MOBILE SIDEBAR
+    |--------------------------------------------------------------------------
+    */
 
     function toggleSidebar() {
 
@@ -1371,48 +1608,27 @@
 
     }
 
-    /* ============================================================
-       PAGINATION SIMULATION
-    ============================================================ */
 
-    function previousPage() {
+    /*
+    |--------------------------------------------------------------------------
+    | VIEW ALL
+    |--------------------------------------------------------------------------
+    */
 
-        alert('Halaman sebelumnya - simulasi Frontend.');
+    // function showAll() {
 
-    }
+    //     alert('Halaman Riwayat Pengajuan akan digunakan untuk melihat seluruh pengajuan.');
 
-    function nextPage() {
+    // }
 
-        alert('Halaman berikutnya - simulasi Frontend.');
 
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | INITIAL
+    |--------------------------------------------------------------------------
+    */
 
-    /* ============================================================
-       INIT
-    ============================================================ */
-
-    document.addEventListener('DOMContentLoaded', function() {
-
-        const savedRole =
-            localStorage.getItem('sppd_role');
-
-        if (
-            savedRole === 'staff' ||
-            savedRole === 'manager' ||
-            savedRole === 'ga'
-        ) {
-
-            switchRole(savedRole);
-
-        }
-
-        else {
-
-            switchRole('staff');
-
-        }
-
-    });
+    renderData();
 
 </script>
 

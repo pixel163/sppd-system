@@ -15,6 +15,7 @@ class Ilpd extends Model
         'dinas_id',
         'sppd_id',
         'no_ilpd',
+        'status',
         'tanggal_awal',
         'tanggal_akhir',
     ];
@@ -43,6 +44,11 @@ class Ilpd extends Model
     {
         return $this->hasMany(Ticket::class);
     }
+
+    // public function tiket(): HasMany
+    // {
+    //     return $this->hasMany(Tiket::class);
+    // }
 
     public function ilpd_approval(): HasMany
     {

@@ -261,6 +261,47 @@
 
     {{-- MAIN CONTENT --}}
     <main class="min-h-screen w-full">
+    
+    {{-- ALERT PESAN SUKSES --}}
+    @if (session('success'))
+        <div class="mb-5 flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800 shadow-sm">
+            <div class="flex items-center gap-3">
+                <i data-lucide="check-circle-2" class="size-5 text-emerald-600"></i>
+                <span class="text-[13px] font-semibold">{{ session('success') }}</span>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">
+                <i data-lucide="x" class="size-4"></i>
+            </button>
+        </div>
+    @endif
+
+    {{-- ALERT PESAN ERROR (TRANSACTION ROLLBACK / EXCEPTION) --}}
+    @if (session('error'))
+        <div class="mb-5 flex items-center justify-between rounded-xl border border-rose-200 bg-rose-50 p-4 text-rose-800 shadow-sm">
+            <div class="flex items-center gap-3">
+                <i data-lucide="alert-circle" class="size-5 text-rose-600"></i>
+                <span class="text-[13px] font-semibold">{{ session('error') }}</span>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700">
+                <i data-lucide="x" class="size-4"></i>
+            </button>
+        </div>
+    @endif
+
+    {{-- ALERT ERROR VALIDASI INPUT (Misal File Kegedean / Kosong) --}}
+    @if ($errors->any())
+        <div class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900 shadow-sm">
+            <div class="mb-1 flex items-center gap-2 font-bold text-[13px] text-amber-800">
+                <i data-lucide="alert-triangle" class="size-4 text-amber-600"></i>
+                <span>Gagal Memproses Data:</span>
+            </div>
+            <ul class="ml-6 list-disc text-[12px] text-amber-700 space-y-0.5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
         {{-- =====================================================
              CONTENT
@@ -280,7 +321,7 @@
 
             </div>
 
-            <form id="ilpdForm" action="{{ route('ilpd.store') }}" method="POST" class="space-y-0">
+            <form id="ilpdForm" action="{{ route('ilpd.approve', $ilpd->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                 {{-- =================================================
                     SECTION 1
@@ -311,7 +352,7 @@
                             id="kota"
                             name="kota"
                             type="text"
-                            value="{{ $sppd->kota->name }}"
+                            value="{{ $ilpd->sppd->kota->name ?? '-' }}"
                             class="form-input flex-1"
                             readonly>
                     </div>
@@ -330,8 +371,8 @@
                                     name="tanggal_awal"
                                     type="date"
                                     class="w-full border-0 text-[14px] outline-none"
-                                    value="{{ $sppd->tanggal_awal?->format('Y-m-d') ?? '' }}"
-                                    onchange="hitunglSemua()">
+                                    value="{{ isset($ilpd->tanggal_awal) ? \Carbon\Carbon::parse($ilpd->tanggal_awal)->format('Y-m-d') : '-' }}"
+                                    readonly>
                             </div>
 
                             <span class="text-[14px] font-semibold text-[#64748b]">s/d</span>
@@ -343,7 +384,7 @@
                                     name="tanggal_akhir"
                                     type="date"
                                     class="w-full border-0 bg-transparent text-[14px] outline-none"
-                                    value="{{ $sppd->tanggal_akhir?->format('Y-m-d') ?? '' }}"
+                                    value="{{ isset($ilpd->tanggal_akhir) ? \Carbon\Carbon::parse($ilpd->tanggal_akhir)->format('Y-m-d') : '-' }}"
                                     readonly>
                             </div>
                         </div>
@@ -353,108 +394,101 @@
 
                     {{-- TRANSPORTASI --}}
                     <div class="mb-4">
-
-                        <label class="mb-2 block text-[13px] font-semibold">
-                            Transportasi <span class="text-red-500">*</span>
+                        <label class="mb-2 block text-[13px] font-semibold text-[#0f172a]">
+                            Transportasi
                         </label>
 
                         <div class="transport-grid grid grid-cols-3 gap-x-6 gap-y-3">
-                            {{-- Loop data resmi dari tabel 'transports' --}}
+                            {{-- Loop data dari tabel 'transports' --}}
                             @foreach ($transports as $transport)
-                                <label class="flex items-center gap-2">
+                                @php
+                                    $isChecked = isset($ilpd->sppd) && $ilpd->sppd->transport_id == $transport->id;
+                                @endphp
+                                <label class="flex items-center gap-2 cursor-default select-none">
                                     <input
                                         type="checkbox"
-                                        name="transport_id"
-                                        value="{{ $transport->id }}"
-                                        class="size-[18px] accent-[#2563eb]"
-                                        {{ $sppd->transport_id == $transport->id ? 'checked' : '' }}>
-                                    <span class="text-[14px]">
+                                        disabled
+                                        {{ $isChecked ? 'checked' : '' }}
+                                        class="size-[18px] accent-[#2563eb] disabled:opacity-100 cursor-default">
+                                    <span class="text-[14px] {{ $isChecked ? 'font-medium text-[#0f172a]' : 'text-[#64748b]' }}">
                                         {{ $transport->name }}
                                     </span>
                                 </label>
                             @endforeach
                         </div>
                         
-                        <div class="mt-2 flex items-center gap-3">
-
-                            <label class="flex items-center gap-2">
-
-                                <input type="checkbox"
-                                    class="size-[18px] accent-[#2563eb]">
-
-                                <span class="text-[14px]">
-                                    Lainnya
-                                </span>
-
-                            </label>
-
-                            <input
-                                type="text"
-                                placeholder="Sebutkan..."
-                                class="w-[180px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[12px] outline-none">
-                        </div>
+                        {{-- Input Lainnya (Read-only) --}}
+                        @if(isset($ilpd->sppd->transport_lainnya))
+                            <div class="mt-2 flex items-center gap-3">
+                                <label class="flex items-center gap-2 cursor-default">
+                                    <input type="checkbox" checked disabled class="size-[18px] accent-[#2563eb] disabled:opacity-100">
+                                    <span class="text-[14px] font-medium text-[#0f172a]">Lainnya</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    readonly
+                                    value="{{ $ilpd->sppd->transport_lainnya }}"
+                                    class="w-[180px] rounded-md border border-[#cbd5e1] bg-[#f8fafc] px-3 py-1.5 text-[12px] text-[#0f172a] outline-none cursor-default">
+                            </div>
+                        @endif
                     </div>
 
                     {{-- KEPERLUAN --}}
                     <div class="mb-4">
-
-                        <label class="mb-2 block text-[13px] font-semibold">
-                            Keperluan <span class="text-red-500">*</span>
+                        <label class="mb-2 block text-[13px] font-semibold text-[#0f172a]">
+                            Keperluan
                         </label>
 
                         <div class="keperluan-grid grid grid-cols-3 gap-x-6 gap-y-3">
-                            {{-- Loop data resmi dari tabel 'keperluans' --}}
+                            {{-- Loop data dari tabel 'keperluans' --}}
                             @foreach ($keperluans as $keperluan)
-                                <label class="flex items-center gap-2">
+                                @php
+                                    $isChecked = isset($ilpd->sppd) && $ilpd->sppd->keperluan_id == $keperluan->id;
+                                @endphp
+                                <label class="flex items-center gap-2 cursor-default select-none">
                                     <input
                                         type="checkbox"
-                                        name="keperluan_id"
-                                        value="{{ $keperluan->id }}"
-                                        class="size-[18px] accent-[#2563eb]"
-                                        {{ $sppd->keperluan_id == $keperluan->id ? 'checked' : '' }}>
-                                    <span class="text-[14px]">
+                                        disabled
+                                        {{ $isChecked ? 'checked' : '' }}
+                                        class="size-[18px] accent-[#2563eb] disabled:opacity-100 cursor-default">
+                                    <span class="text-[14px] {{ $isChecked ? 'font-medium text-[#0f172a]' : 'text-[#64748b]' }}">
                                         {{ $keperluan->name }}
                                     </span>
                                 </label>
                             @endforeach
                         </div>
 
-                        <div class="mt-2 flex items-center gap-3">
-
-                            <label class="flex items-center gap-2">
-
-                                <input type="checkbox"
-                                    class="size-[18px] accent-[#2563eb]">
-
-                                <span class="text-[14px]">
-                                    Lainnya
-                                </span>
-
-                            </label>
-
-                            <input
-                                type="text"
-                                placeholder="Sebutkan..."
-                                class="w-[180px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[12px] outline-none">
-                        </div>
-
+                        {{-- Input Lainnya (Read-only) --}}
+                        @if(isset($ilpd->sppd->keperluan_lainnya))
+                            <div class="mt-2 flex items-center gap-3">
+                                <label class="flex items-center gap-2 cursor-default">
+                                    <input type="checkbox" checked disabled class="size-[18px] accent-[#2563eb] disabled:opacity-100">
+                                    <span class="text-[14px] font-medium text-[#0f172a]">Lainnya</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    readonly
+                                    value="{{ $ilpd->sppd->keperluan_lainnya }}"
+                                    class="w-[180px] rounded-md border border-[#cbd5e1] bg-[#f8fafc] px-3 py-1.5 text-[12px] text-[#0f172a] outline-none cursor-default">
+                            </div>
+                        @endif
                     </div>
 
                     {{-- TUGAS --}}
                     <div>
-                        <label for="tugas" class="mb-1.5 block text-[13px] font-semibold">
-                            Tugas <span class="text-red-500">*</span>
+                        <label for="tugas" class="mb-1.5 block text-[13px] font-semibold text-[#0f172a]">
+                            Tugas
                         </label>
 
                         <textarea
                             id="tugas"
-                            name="tugas"
+                            readonly
                             rows="4"
-                            class="form-textarea"
-                            placeholder="1.&#10;2.&#10;3.">{{ $sppd->tugas ?? '' }}</textarea>
+                            class="w-full rounded-xl border border-[#cbd5e1] bg-[#f8fafc] p-3 text-[13px] leading-relaxed text-[#0f172a] outline-none resize-none cursor-default"
+                            placeholder="Tidak ada detail tugas.">{{ $ilpd->sppd->tugas ?? '' }}</textarea>
 
                         <p class="mt-1 text-[11px] text-[#64748b]">
-                            Jelaskan tugas yang akan dilakukan selama perjalanan dinas (maks. 3 poin)
+                            Rincian tugas yang diisikan oleh pemohon.
                         </p>
                     </div>
 
@@ -475,6 +509,47 @@
                             Perkiraan Biaya
                         </h2>
 
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="mb-2 block text-[13px] font-semibold text-[#0f172a]">
+                            Tiket <span class="text-red-500">*</span>
+                        </label>
+
+                        {{-- DROPZONE BOX --}}
+                        <div class="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#2563eb]/40 bg-[#f8fafc] px-6 py-8 text-center transition-all hover:border-[#2563eb] hover:bg-[#eff6ff]/30">
+                            
+                            {{-- INPUT FILE TERSEMBUNYI --}}
+                            <input 
+                                type="file" 
+                                id="tiket_file" 
+                                name="tiket_file" 
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                required
+                                class="absolute inset-0 z-10 cursor-pointer opacity-0" 
+                                onchange="updateFileName(this)"
+                            />
+
+                            {{-- IKON CLOUD UPLOAD --}}
+                            <div class="mb-3 flex size-10 items-center justify-center rounded-full text-[#2563eb]">
+                                <i data-lucide="cloud-upload" class="size-8"></i>
+                            </div>
+
+                            {{-- TEKS INSTRUKSI --}}
+                            <p id="file-label" class="text-[14px] font-bold text-[#0f172a]">
+                                Upload tiket perjalanan
+                            </p>
+                            <p class="mt-0.5 text-[11px] text-[#64748b]">
+                                Format: PDF, JPG, JPEG, PNG (Maks. 5MB)
+                            </p>
+
+                            {{-- TOMBOL PILIH FILE --}}
+                            <div class="mt-4">
+                                <span class="inline-flex items-center justify-center rounded-xl border border-[#2563eb] bg-white px-5 py-2 text-[12px] font-semibold text-[#2563eb] shadow-sm transition-colors hover:bg-[#eff6ff]">
+                                    Pilih File
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- BBM --}}
@@ -524,7 +599,7 @@
                                         name="uang_dinas"
                                         type="text"
                                         class="currency-input"
-                                        value="{{ number_format($tarif->dinas ?? 0, 0, ',', '.') }}"
+                                        value="{{ number_format($ilpd->detailIlpd->dinas ?? 0, 0, ',', '.') }}"
                                         readonly>
                                 </div>
                             </div>
@@ -541,7 +616,7 @@
                                         name="uang_makan"
                                         type="text"
                                         class="currency-input"
-                                        value="{{ number_format($tarif->makan ?? 0, 0, ',', '.') }}"
+                                        value="{{ number_format($ilpd->detailIlpd->makan ?? 0, 0, ',', '.') }}"
                                         readonly>
                                 </div>
                             </div>
@@ -558,7 +633,7 @@
                                         name="uang_hotel"
                                         type="text"
                                         class="currency-input"
-                                        value="{{ number_format($tarif->hotel ?? 0, 0, ',', '.') }}"
+                                        value="{{ number_format($ilpd->detailIlpd->hotel ?? 0, 0, ',', '.') }}"
                                         readonly>
                                 </div>
                             </div>
@@ -779,7 +854,7 @@
                                     id="total"
                                     name="total_biaya"
                                     type="text"
-                                    value="0"
+                                    value="{{ number_format($ilpd->detailIlpd->total ?? 0, 0, ',', '.') }}"
                                     class="currency-input readonly-input font-semibold"
                                     readonly>
                             </div>
@@ -806,7 +881,7 @@
                                     id="uangMuka"
                                     name="uang_muka"
                                     type="text"
-                                    value="0"
+                                    value="{{ number_format($ilpd->detailIlpd->total ?? 0, 0, ',', '.') }}"
                                     class="currency-input readonly-input font-semibold"
                                     readonly>
                             </div>
@@ -814,8 +889,6 @@
                     </div>
 
                 </section>
-
-                <input type="hidden" name="sppd_id" value="{{ $sppd->id }}">
 
                 {{-- BUTTON --}}
                 <div class="button-wrapper flex justify-end gap-3 pb-6 pt-6">
@@ -848,27 +921,16 @@
 @push('scripts')
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const inputMulai = document.getElementById('tanggalMulai');
-        
-        if (inputMulai) {
-            // 1. Set minimal tanggal awal = H+1 (Besok)
-            const besok = new Date();
-            besok.setDate(besok.getDate() + 1);
-            
-            // Format ke YYYY-MM-DD
-            const minDate = besok.toISOString().split('T')[0];
-            inputMulai.setAttribute('min', minDate);
-
-            // 2. Pasang event listener saat tanggal awal diubah
-            inputMulai.addEventListener('change', hitungSemua);
-
-            // 3. Jalankan perhitungan otomatis jika tanggalMulai sudah terisi saat halaman dimuat
-            if (inputMulai.value) {
-                hitungSemua();
-            }
+    function updateFileName(input) {
+        const label = document.getElementById('file-label');
+        if (input.files && input.files[0]) {
+            label.innerText = 'File Terpilih: ' + input.files[0].name;
+            label.classList.add('text-[#2563eb]');
+        } else {
+            label.innerText = 'Upload tiket perjalanan';
+            label.classList.remove('text-[#2563eb]');
         }
-    });
+    }
 
     // Helper: Membersihkan format Rupiah (titik/koma) menjadi angka murni
     function parseRupiah(val) {
@@ -879,50 +941,6 @@
     // Helper: Format angka murni ke format ribuan Indonesia (contoh: 1500000 -> 1.500.000)
     function formatRupiah(angka) {
         return new Intl.NumberFormat('id-ID').format(angka);
-    }
-
-    // Fungsi Utama: Menghitung Tanggal Selesai & Total Biaya Sekaligus
-    function hitungSemua() {
-        const inputMulai = document.getElementById('tanggalMulai');
-        const inputSelesai = document.getElementById('tanggalSelesai');
-        const info = document.getElementById('infoLamaPerjalanan');
-
-        // Ambil durasi dari Blade (default: 1)
-        const durasiHari = parseInt("{{ $sppd->durasi ?? 1 }}");
-
-        if (!inputMulai || !inputMulai.value) return;
-
-        // A. HITUNG TANGGAL SELESAI
-        const tglMulai = new Date(inputMulai.value);
-        const tglSelesai = new Date(tglMulai);
-        tglSelesai.setDate(tglMulai.getDate() + (durasiHari - 1));
-
-        const yyyy = tglSelesai.getFullYear();
-        const mm = String(tglSelesai.getMonth() + 1).padStart(2, '0');
-        const dd = String(tglSelesai.getDate()).padStart(2, '0');
-        const formattedSelesai = `${yyyy}-${mm}-${dd}`;
-
-        if (inputSelesai) inputSelesai.value = formattedSelesai;
-        if (info) {
-            info.innerText = `Total perjalanan: ${durasiHari} Hari (${inputMulai.value} s/d ${formattedSelesai})`;
-            info.classList.remove('hidden');
-        }
-
-        // B. HITUNG TOTAL BIAYA & UANG MUKA
-        const dinas = parseRupiah(document.getElementById('dinas')?.value);
-        const makan = parseRupiah(document.getElementById('makan')?.value);
-        const hotel = parseRupiah(document.getElementById('hotel')?.value);
-
-        // Rumus: (Dinas + Makan + Hotel) x Durasi
-        const totalPerHari = dinas + makan + hotel;
-        const totalBiaya = totalPerHari * durasiHari;
-
-        // Masukkan ke Input Total & Uang Muka
-        const inputTotal = document.getElementById('total');
-        const inputUangMuka = document.getElementById('uangMuka');
-
-        if (inputTotal) inputTotal.value = formatRupiah(totalBiaya);
-        if (inputUangMuka) inputUangMuka.value = formatRupiah(totalBiaya);
     }
 </script>
 

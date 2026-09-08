@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sppd;
+use App\Models\Ilpd;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -28,9 +29,11 @@ class DashboardController extends Controller
             ->latest()
             ->get();
         
-        // $pengajuanGa = Sppd::latest()->get();
+        // General Affair
+        $pengajuanGa = Ilpd::where('status', 'Menunggu Approval')
+            ->latest()
+            ->get();
 
-        return view('dashboard', compact('pengajuanSaya' ,'approvalManager'));
-        // return view('dashboard', compact('approvalManager', 'pengajuanGa'));
+        return view('dashboard', compact('pengajuanSaya' ,'approvalManager', 'pengajuanGa'));
     }
 }

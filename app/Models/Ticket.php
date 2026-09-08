@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Ticket extends Model
+// class Tiket extends Model
 {
     protected $table = 'ticket';
 

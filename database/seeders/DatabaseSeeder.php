@@ -60,43 +60,16 @@ class DatabaseSeeder extends Seeder
         // =========================
         // KOTA
         // =========================
-        // DB::table('kota')->insert([
-        //     [
-        //         'kota_kategori_id' => 1,
-        //         'name' => 'Pontianak',
-        //     ],
-        //     [
-        //         'kota_kategori_id' => 1,
-        //         'name' => 'Pekanbaru',
-        //     ],
-        //     [
-        //         'kota_kategori_id' => 1,
-        //         'name' => 'Jayapura',
-        //     ],
-        //     [
-        //         'kota_kategori_id' => 2,
-        //         'name' => 'Yogyakarta',
-        //     ],
-        //     [
-        //         'kota_kategori_id' => 2,
-        //         'name' => 'Padang',
-        //     ],
-        //     [
-        //         'kota_kategori_id' => 2,
-        //         'name' => 'Ambon',
-        //     ],
-        //     ]);
         // 1. Definisikan daftar kota berdasarkan kategori ID-nya
         $dataKota = [
             1 => [
                 'Balikpapan', 'Pontianak', 'Samarinda', 'Palangkaraya', 'Manadao', 'Gorontalo',
                 'Medan', 'Pekanbaru', 'Jayapura', 'Jakarta', 'Surabaya', 'NTT/NTB', 'Bandung', 
-                'Padang Sidempuan', 'Medan', 'Anyer/Cilegon', 'Batam', 'Denpasar'
+                'Padang Sidempuan', 'Anyer/Cilegon', 'Batam', 'Denpasar'
             ],
             2 => [
                 'Yogyakarta', 'Serang', 'Banda Aceh', 'Palembang', 'Padang', 'Ambon', 'Semarang', 
-                'Anambas', 'Cirebon', 'Solo', 'Malang', 'Bandung', 'Cirebon', 'Jambi', 'Bengkulu',
-                'Tj.Karang', 'Palu', 'Ambon'
+                'Anambas', 'Cirebon', 'Solo', 'Malang', 'Jambi', 'Bengkulu', 'Tj.Karang', 'Palu'
             ],
         ];
 
@@ -145,14 +118,26 @@ class DatabaseSeeder extends Seeder
         // Nanti nominalnya tinggal diganti sesuai data kantor.
         $tarif = [];
 
-        for ($golongan = 1; $golongan <= 4; $golongan++) {
+        // Map nominal berdasarkan [golongan_id][kota_kategori_id]
+        $nominalTarif = [
+            1 => [ // Golongan 1
+                1 => ['makan' => 150000, 'dinas' => 75000, 'hotel' => 450000], // Kategori 1
+                2 => ['makan' => 150000, 'dinas' => 75000, 'hotel' => 300000], // Kategori 2
+            ],
+            2 => [ // Golongan 2
+                1 => ['makan' => 150000, 'dinas' => 100000, 'hotel' => 500000], // Kategori 1
+                2 => ['makan' => 150000,  'dinas' => 100000, 'hotel' => 350000], // Kategori 2
+            ],
+        ];
+
+        for ($golongan = 1; $golongan <= 2; $golongan++) { // Cuma golongan 1 & 2
             for ($kategori = 1; $kategori <= 2; $kategori++) {
                 $tarif[] = [
-                    'golongan_id' => $golongan,
+                    'golongan_id'      => $golongan,
                     'kota_kategori_id' => $kategori,
-                    'makan' => 100000,
-                    'dinas' => 150000,
-                    'hotel' => 300000,
+                    'makan'            => $nominalTarif[$golongan][$kategori]['makan'],
+                    'dinas'            => $nominalTarif[$golongan][$kategori]['dinas'],
+                    'hotel'            => $nominalTarif[$golongan][$kategori]['hotel'],
                 ];
             }
         }
@@ -187,7 +172,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
         
-        // Staff GA - Pemohon
+        // Manager GA - Approval
         User::create([
             'name' => 'Citra',
             'email' => 'citra@example.com',
@@ -199,14 +184,14 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             ]);
         
-        // Manager GA - Approval
+        // Staff GA - Pemohon
         User::create([
             'name' => 'Andi',
             'email' => 'andi@example.com',
             'nik' => '210987654',
             'role_id' => 1,
             'department_id' => 2,
-            'jabatan_id' => 3,
+            'jabatan_id' => 1,
             'golongan_id' => 1,
             'password' => Hash::make('password'),
             ]);    

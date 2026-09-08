@@ -15,7 +15,17 @@ class DetailIlpd extends Model
         'makan',
         'dinas',
         'hotel',
+        'laundry',
+        'bbm',
+        'transport_lokal',
+        'visa',
+        'fiskal',
+        'airport_tax',
+        'parkir&toll',
+        'entertaiment',
+        'dll',
         'total',
+        'uang_muka',
     ];
 
     protected $casts = [

@@ -407,8 +407,7 @@
                                 name="tugas"
                                 class="form-textarea mt-1 flex-1"
                                 placeholder="1.&#10;2.&#10;3.&#10;4."
-                                required>
-                            </textarea>
+                                required></textarea>
 
                         </div>
 

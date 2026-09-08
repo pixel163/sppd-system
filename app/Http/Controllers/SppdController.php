@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Sppd;
+use App\Models\SppdApproval;
 use App\Models\Dinas;
 use App\Models\Kota;
 use App\Models\Keperluan;
@@ -34,28 +35,26 @@ class SppdController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kota_id'       => ['required', 'exists:kota,id'],
-            'durasi'        => ['required', 'integer', 'min:1', 'max:14'],
-            'keperluan_id'  => ['required', 'exists:keperluan,id'],
-            'transport_id'  => ['required', 'exists:transport,id'],
-            'tugas'         => ['required', 'string'],
-        ]);
+                'kota_id'       => ['required', 'exists:kota,id'],
+                'durasi'        => ['required', 'integer', 'min:1', 'max:14'],
+                'keperluan_id'  => ['required', 'exists:keperluan,id'],
+                'transport_id'  => ['required', 'exists:transport,id'],
+                'tugas'         => ['required', 'string'],
+            ]);
 
         $user = Auth::user();
 
-        // Gunakan Database Transaction agar aman
-        DB::transaction(function () use ($request, $user) {
-            
-            // Hitung nomor urut berikutnya dari tabel Dinas
+        // 1. Jalankan Transaksi untuk Simpan Data
+        $sppd = DB::transaction(function () use ($request, $user) {
             $nextDinasId = (Dinas::max('id') ?? 0) + 1;
             $noDinas = 'DINAS-' . date('Y') . '-' . str_pad($nextDinasId, 5, '0', STR_PAD_LEFT);
 
-            // 1. Buat record parent Dinas dulu (Jangan lupa nama kolom 'no_dinas')
             $dinas = Dinas::create([
                 'no_dinas' => $noDinas,
             ]);
 
-            $sppd = Sppd::create([
+            // Return objek $sppd agar bisa ditangkap oleh variabel $sppd di luar
+            return Sppd::create([
                 'dinas_id'      => $dinas->id,
                 'no_sppd'       => 'XXXX-HRD/RF/03-X',
                 'user_id'       => $user->id,
@@ -66,10 +65,50 @@ class SppdController extends Controller
                 'tugas'         => $request->tugas,
                 'status'        => 'Menunggu Approval',
             ]);
-
-            return redirect()->route('ilpd.create', $sppd->id)->with('success', 'Form SPPD berhasil disimpan. Silakan lanjut mengisi Form Perizinan.');
         });
+
+        // 2. Redirect dilakukan DI LUAR Transaksi membawa ID SPPD
+        return redirect()->route('ilpd.create', ['sppd' => $sppd->id])
+            ->with('success', 'Form SPPD berhasil disimpan. Silakan lanjut mengisi Form Perizinan.');
     }
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'kota_id'       => ['required', 'exists:kota,id'],
+    //         'durasi'        => ['required', 'integer', 'min:1', 'max:14'],
+    //         'keperluan_id'  => ['required', 'exists:keperluan,id'],
+    //         'transport_id'  => ['required', 'exists:transport,id'],
+    //         'tugas'         => ['required', 'string'],
+    //     ]);
+
+    //     $user = Auth::user();
+
+    //     // Gunakan Database Transaction agar aman
+    //     $sppd = DB::transaction(function () use ($request, $user) {
+    //         // Hitung nomor urut berikutnya dari tabel Dinas
+    //         $nextDinasId = (Dinas::max('id') ?? 0) + 1;
+    //         $noDinas = 'DINAS-' . date('Y') . '-' . str_pad($nextDinasId, 5, '0', STR_PAD_LEFT);
+
+    //         // 1. Buat record parent Dinas dulu (Jangan lupa nama kolom 'no_dinas')
+    //         $dinas = Dinas::create([
+    //             'no_dinas' => $noDinas,
+    //         ]);
+
+    //         return Sppd::create([
+    //             'dinas_id'      => $dinas->id,
+    //             'no_sppd'       => 'XXXX-HRD/RF/03-X',
+    //             'user_id'       => $user->id,
+    //             'kota_id'       => $request->kota_id,
+    //             'keperluan_id'  => $request->keperluan_id,
+    //             'transport_id'  => $request->transport_id,
+    //             'durasi'        => $request->durasi,
+    //             'tugas'         => $request->tugas,
+    //             'status'        => 'Menunggu Approval',
+    //         ]);
+
+    //         return redirect()->route('ilpd.create', ['sppd' => $sppd->id])->with('success', 'Form SPPD berhasil disimpan. Silakan lanjut mengisi Form Perizinan.');
+    //     });
+    // }
 
     // public function edit($id)
     // {
@@ -123,7 +162,6 @@ class SppdController extends Controller
 
         // 4. Redirect Kembali dengan Pesan Sukses
         return redirect('/dashboard')->with('success', 'Data SPPD berhasil diperbarui');
-        // return redirect()->route('sppd.index')->with('success', 'Data SPPD berhasil diperbarui.');}
     }
 
     /**
@@ -140,39 +178,10 @@ class SppdController extends Controller
     /**
      * Proses Menyetujui SPPD.
      */
-    // public function approve(Request $request, $id)
-    // {
-    //     $sppd = Sppd::findOrFail($id);
-
-    //     $ttdPath = null;
-    //     if ($request->ttd_digital) {
-    //         // Decode string Base64 gambar TTD
-    //         $imageParts = explode(";base64,", $request->ttd_digital);
-    //         $imageDecoded = base64_decode($imageParts[1]);
-
-    //         // Buat nama file unik
-    //         $fileName = 'ttd_manager_' . time() . '.png';
-    //         $ttdPath = 'ttd/' . $fileName;
-
-    //         // Simpan file ke folder storage/app/public/ttd/
-    //         Storage::disk('public')->put($ttdPath, $imageDecoded);
-    //     }
-
-    //     // Update status & simpan path TTD ke database
-    //     $sppd->update([
-    //         'status'           => 'Disetujui',
-    //         'catatan_approval' => $request->catatan,
-    //         'ttd_manager'      => $ttdPath,
-    //         'approved_at'      => now(),
-    //     ]);
-
-    //     return redirect()->back()->with('success', 'Dokumen SPPD berhasil disetujui beserta Tanda Tangan.');
-    // }
-
     public function approve(Request $request, $id)
     {
         $request->validate([
-            'ttd_file' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'ttd_file' => 'required|image|mimes:png,jpg,jpeg|max:2048',
         ]);
 
         $sppd = Sppd::findOrFail($id);
@@ -183,13 +192,22 @@ class SppdController extends Controller
             $ttdPath = $request->file('ttd_file')->store('ttd', 'public');
         }
 
-        $sppd->update([
-            'status'           => 'Disetujui',
-            'catatan_approval' => $request->catatan,
-            'ttd_manager'      => $ttdPath,
-            'approved_at'      => now(),
-        ]);
+        DB::transaction(function () use ($sppd, $request, $ttdPath) {
+            // 1. Update status di tabel sppds
+            $sppd->update([
+                'status' => 'Disetujui',
+            ]);
 
-        return redirect()->back()->with('success', 'Dokumen SPPD berhasil disetujui.');
+            // 2. Simpan jejak approval di tabel sppd_approvals
+            SppdApproval::create([
+                'sppd_id'     => $sppd->id,
+                'approver_id' => Auth::id(), // Ambil ID user yang sedang login
+                'status'      => 'Disetujui',
+                'signature'   => $ttdPath,
+                'approved_at' => now(),
+            ]);
+        });
+
+        return redirect()->route('dashboard')->with('success', 'Dokumen SPPD berhasil disetujui.');
     }
 }

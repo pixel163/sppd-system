@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Approval extends Model
+class IlpdApproval extends Model
 {
     protected $table = 'ilpd_approval';
 

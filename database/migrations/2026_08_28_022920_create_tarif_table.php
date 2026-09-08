@@ -22,8 +22,6 @@ return new class extends Migration
                 ->constrained('kota_kategori')
                 ->restrictOnDelete();
 
-            // $table->string('travel_scope');
-
             $table->decimal('makan', 15, 2);
             $table->decimal('dinas', 15, 2);
             $table->decimal('hotel', 15, 2);

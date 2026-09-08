@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('dinas', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('user_id')
+                    ->constrained('users')
+                    ->restrictOnDelete();
             $table->string('no_dinas')->unique();
-            $table->string('status')->default('draft');
+            $table->string('status')->default('Menunggu Approval');
 
             $table->timestamps();
         });
