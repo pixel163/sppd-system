@@ -113,6 +113,10 @@
                     <i data-lucide="user" class="size-4"></i>
                     Profile
                 </a> --}}
+                <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-[#475569] hover:bg-[#f8fafc]">
+                    <i data-lucide="user" class="size-4"></i>
+                    Profile
+                </a>
 
                 <div class="my-1 h-px bg-[#e2e8f0]"></div>
 

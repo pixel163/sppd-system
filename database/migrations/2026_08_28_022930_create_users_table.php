@@ -34,6 +34,7 @@ return new class extends Migration
                 ->constrained('golongan')
                 ->restrictOnDelete();
 
+            $table->string('signature')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

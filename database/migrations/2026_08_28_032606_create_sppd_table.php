@@ -18,7 +18,7 @@ return new class extends Migration
                     ->constrained('dinas')
                     ->cascadeOnDelete();
 
-                $table->string('no_sppd')->unique();
+                $table->string('no_sppd');
 
                 $table->foreignId('user_id')
                     ->constrained('users')
@@ -39,7 +39,7 @@ return new class extends Migration
                 $table->unsignedInteger('durasi');
 
                 $table->text('tugas');
-                $table->string('status')->default('Menunggu Approval');
+                $table->string('status')->default('Draft');
 
                 $table->timestamps();
             });

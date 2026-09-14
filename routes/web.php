@@ -20,6 +20,8 @@ Route::get('/test1', function () {return view('test1');})->name('test1');
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [AuthController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/signature', [AuthController::class, 'update'])->name('profile.update');
     
     // all
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');

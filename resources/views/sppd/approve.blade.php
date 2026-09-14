@@ -332,107 +332,8 @@
                 {{-- =================================================
                     SECTION KEPUTUSAN APPROVAL MANAGER
                 ================================================== --}}
-                {{-- <hr class="my-6 border-[#f1f5f9]" />
-
-                <form id="approvalForm" method="POST" action="" enctype="multipart/form-data">
-                    @csrf --}}
-
-                    {{-- Catatan Manager --}}
-                    {{-- <div class="form-row flex gap-6 py-3">
-                        <label for="catatan" class="form-label w-[180px] pt-2.5 text-[14px] font-bold text-slate-800">
-                            Catatan Manager
-                        </label>
-                        <div class="flex-1">
-                            <textarea
-                                id="catatan"
-                                name="catatan"
-                                rows="3"
-                                placeholder="Tambahkan catatan persetujuan atau alasan penolakan (Wajib diisi jika menolak)..."
-                                class="w-full rounded-lg border border-[#e2e8f0] px-4 py-2.5 text-[14px] text-slate-800 outline-none transition focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20"></textarea>
-                            @error('catatan')
-                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div> --}}
-
-                    {{-- Kolom Tanda Tangan Digital (Canvas Pad) --}}
-                    {{-- <div class="form-row flex gap-6 py-3">
-                        <label class="form-label w-[180px] pt-2.5 text-[14px] font-bold text-slate-800">
-                            Tanda Tangan
-                        </label>
-                        <div class="flex-1">
-                            <div class="relative w-full max-w-md rounded-xl border border-[#e2e8f0] bg-slate-50 p-3">
-                                <div class="mb-2 flex items-center justify-between">
-                                    <span class="text-[12px] font-medium text-slate-500">Goreskan tanda tangan di bawah ini:</span>
-                                    <button type="button" onclick="clearSignature()" class="text-[12px] font-semibold text-red-500 hover:text-red-700">
-                                        ↺ Bersihkan
-                                    </button>
-                                </div> --}}
-
-                                {{-- Area Coret TTD --}}
-                                {{-- <canvas id="signatureCanvas" class="h-40 w-full touch-none rounded-lg border border-dashed border-slate-300 bg-white cursor-crosshair"></canvas> --}}
-                                
-                                {{-- Input Hidden untuk simpan string Base64 gambar TTD --}}
-                                {{-- <input type="hidden" name="ttd_digital" id="ttdInput">
-                            </div>
-                            <p class="mt-1.5 text-[11px] text-[#94a3b8]">Tanda tangan wajib diisi sebelum menyetujui dokumen.</p>
-                        </div>
-                    </div> --}}
-
-                    {{-- BUTTON ACTIONS --}}
-                    {{-- <div class="form-actions flex justify-end gap-3 pt-6">
-
-                        <button type="submit"
-                            onclick="submitApproval('{{ route('sppd.approve', $sppd->id) }}')"
-                            class="rounded-lg bg-[#2563eb] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#1d4ed8]">
-                            Setujui
-                        </button>
-
-                    </div>
-                </form> --}}
-
-                <hr class="my-6 border-[#f1f5f9]" />
-
                 <form id="approvalForm" method="POST" action="{{ route('sppd.approve', $sppd->id) }}" enctype="multipart/form-data">
                     @csrf
-
-                    {{-- Upload File Tanda Tangan --}}
-                    <div class="form-row flex gap-6 py-3">
-                        <label for="ttd_file" class="form-label w-[180px] pt-2.5 text-[14px] font-bold text-slate-800">
-                            Tanda Tangan (PNG/JPG)
-                        </label>
-                        <div class="flex-1">
-                            <div class="flex items-center gap-4">
-                                {{-- Input File --}}
-                                <label class="flex cursor-pointer items-center justify-center rounded-lg border border-dashed border-[#cbd5e1] bg-slate-50 px-5 py-3 transition hover:border-[#2563eb] hover:bg-slate-100">
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-5 w-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                        </svg>
-                                        <span class="text-[13px] font-medium text-slate-600" id="fileNameLabel">Upload File TTD</span>
-                                    </div>
-                                    <input 
-                                        type="file" 
-                                        id="ttd_file" 
-                                        name="ttd_file" 
-                                        accept="image/png, image/jpeg, image/jpg" 
-                                        class="hidden" 
-                                        onchange="previewTTD(event)"
-                                        required>
-                                </label>
-
-                                {{-- Preview Gambar --}}
-                                <div id="previewContainer" class="hidden h-16 w-32 rounded-lg border border-slate-200 bg-white p-1">
-                                    <img id="imagePreview" src="#" alt="Preview TTD" class="h-full w-full object-contain" />
-                                </div>
-                            </div>
-
-                            @error('ttd_file')
-                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                            @enderror
-                            <p class="mt-1.5 text-[11px] text-[#94a3b8]">Format yang didukung: PNG, JPG, JPEG (Maks. 2MB).</p>
-                        </div>
-                    </div>
 
                     {{-- BUTTON ACTIONS --}}
                     <div class="form-actions flex justify-end gap-3 pt-6">
@@ -460,7 +361,7 @@
 @push('scripts')
 
 {{-- Script Preview File --}}
-<script>
+{{-- <script>
     function previewTTD(event) {
         const input = event.target;
         const label = document.getElementById('fileNameLabel');
@@ -479,7 +380,7 @@
             reader.readAsDataURL(file);
         }
     }
-</script>
+</script> --}}
     {{-- @vite('resources/js/sppd.js') --}}
 
 {{-- Script JS untuk Handle Canvas TTD --}}

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Sppd;
+use App\Models\Ilpd;
 use App\Models\SppdApproval;
+use App\Models\IlpdApproval;
 use App\Models\Dinas;
 use App\Models\Kota;
 use App\Models\Keperluan;
@@ -22,6 +24,18 @@ class SppdController extends Controller
     {
         $user = Auth::user();
 
+        // Daftar status yang dianggap masih berjalan/aktif
+        $activeStatuses = ['Menunggu Approval', 'Sedang Diproses', 'Disetujui'];
+
+        // Cek apakah user ini punya Form 1 yang statusnya masih aktif
+        $hasActiveForm = Sppd::where('user_id', $user->id) // Sesuaikan 'user_id' dengan nama kolom pembuat di tabel kamu
+            ->whereIn('status', $activeStatuses)
+            ->exists();
+
+        if ($hasActiveForm) {
+            return redirect()->route('dashboard')->with('error', 'Anda masih memiliki pengajuan yang sedang aktif/berproses.');
+        }
+
         return view('sppd/create', ['user' => $user,
             'masterKota' => Kota::all(),
             'masterKeperluan'=> Keperluan::all(),
@@ -37,6 +51,10 @@ class SppdController extends Controller
         $request->validate([
                 'kota_id'       => ['required', 'exists:kota,id'],
                 'durasi'        => ['required', 'integer', 'min:1', 'max:14'],
+                // 'keperluan_id'   => ['required', 'array', 'min:1'],
+                // 'keperluan_id.*' => ['exists:keperluan,id'],
+                // 'transport_id'   => ['required', 'array', 'min:1'],
+                // 'transport_id.*' => ['exists:transport,id'],
                 'keperluan_id'  => ['required', 'exists:keperluan,id'],
                 'transport_id'  => ['required', 'exists:transport,id'],
                 'tugas'         => ['required', 'string'],
@@ -50,7 +68,9 @@ class SppdController extends Controller
             $noDinas = 'DINAS-' . date('Y') . '-' . str_pad($nextDinasId, 5, '0', STR_PAD_LEFT);
 
             $dinas = Dinas::create([
+                'user_id' => $user->id,
                 'no_dinas' => $noDinas,
+                'status' => 'Draft',
             ]);
 
             // Return objek $sppd agar bisa ditangkap oleh variabel $sppd di luar
@@ -59,11 +79,13 @@ class SppdController extends Controller
                 'no_sppd'       => 'XXXX-HRD/RF/03-X',
                 'user_id'       => $user->id,
                 'kota_id'       => $request->kota_id,
+                // 'keperluan_id'  => implode(',', $request->keperluan_id),
+                // 'transport_id'  => implode(',', $request->transport_id),
                 'keperluan_id'  => $request->keperluan_id,
                 'transport_id'  => $request->transport_id,
                 'durasi'        => $request->durasi,
                 'tugas'         => $request->tugas,
-                'status'        => 'Menunggu Approval',
+                'status'        => 'Draft',
             ]);
         });
 
@@ -178,36 +200,89 @@ class SppdController extends Controller
     /**
      * Proses Menyetujui SPPD.
      */
-    public function approve(Request $request, $id)
+    // public function approve(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'ttd_file' => 'required|image|mimes:png,jpg,jpeg|max:2048',
+    //     ]);
+
+    //     $sppd = Sppd::findOrFail($id);
+    //     $user = Auth::user();
+
+    //     $ttdPath = $user->signature;
+    //     if ($request->hasFile('ttd_file')) {
+    //         $ttdPath = $request->file('ttd_file')->store('ttd', 'public');
+    //     }
+
+    //     if (!$ttdPath) {
+    //         return back()->with('error', 'Anda belum memiliki TTD di profil dan tidak mengunggah TTD.');
+    //     }
+
+    //     DB::transaction(function () use ($sppd, $request, $ttdPath) {
+    //         // 1. Update status di tabel sppds
+    //         $sppd->update([
+    //             'status' => 'Disetujui',
+    //         ]);
+
+    //         // 2. Simpan jejak approval di tabel sppd_approvals
+    //         SppdApproval::create([
+    //             'sppd_id'     => $sppd->id,
+    //             'approver_id' => Auth::id(), // Ambil ID user yang sedang login
+    //             'status'      => 'Disetujui',
+    //             'signature'   => $ttdPath,
+    //             'approved_at' => now(),
+    //         ]);
+    //     });
+
+    //     return redirect()->route('dashboard')->with('success', 'Dokumen SPPD berhasil disetujui.');
+    // }
+
+    public function approve(Request $request, $sppdId)
     {
-        $request->validate([
-            'ttd_file' => 'required|image|mimes:png,jpg,jpeg|max:2048',
-        ]);
+        $user = Auth::user();
 
-        $sppd = Sppd::findOrFail($id);
-
-        $ttdPath = null;
-        if ($request->hasFile('ttd_file')) {
-            // Simpan file ke folder storage/app/public/ttd
-            $ttdPath = $request->file('ttd_file')->store('ttd', 'public');
+        // 1. Validasi: Pastikan Manager sudah punya TTD di profilnya
+        if (!$user->signature) {
+            return back()->with('error', 'Anda belum mengatur TTD di Profil. Silakan unggah TTD di menu Profil terlebih dahulu.');
         }
 
-        DB::transaction(function () use ($sppd, $request, $ttdPath) {
-            // 1. Update status di tabel sppds
+        // 2. Ambil data SPPD beserta ILPD terkait
+        $sppd = Sppd::with('ilpd')->findOrFail($sppdId);
+
+        DB::transaction(function () use ($sppd, $user) {
+            // --- A. PROSES SPPD ---
+            // Update status di tabel sppds
             $sppd->update([
                 'status' => 'Disetujui',
             ]);
 
-            // 2. Simpan jejak approval di tabel sppd_approvals
+            // Simpan snapshot ke tabel sppd_approvals
             SppdApproval::create([
                 'sppd_id'     => $sppd->id,
-                'approver_id' => Auth::id(), // Ambil ID user yang sedang login
+                'approver_id' => $user->id,
                 'status'      => 'Disetujui',
-                'signature'   => $ttdPath,
+                'signature'   => $user->signature, // Langsung ambil dari kolom signature tabel users
                 'approved_at' => now(),
             ]);
+
+            // --- B. PROSES ILPD (Jika SPPD memiliki relasi ke ILPD) ---
+            if ($sppd->ilpd) {
+                // Update status di tabel ilpds
+                $sppd->ilpd->update([
+                    'status' => 'Sedang Diproses',
+                ]);
+
+                // Simpan snapshot ke tabel ilpd_approvals
+                IlpdApproval::create([
+                    'ilpd_id'     => $sppd->ilpd->id,
+                    'approver_id' => $user->id,
+                    'status'      => 'Disetujui Manager',
+                    'signature'   => $user->signature, // Gunakan TTD dari profil user yang sama
+                    'approved_at' => now(),
+                ]);
+            }
         });
 
-        return redirect()->route('dashboard')->with('success', 'Dokumen SPPD berhasil disetujui.');
+        return redirect()->route('dashboard')->with('success', 'Dokumen SPPD dan ILPD berhasil disetujui.');
     }
 }

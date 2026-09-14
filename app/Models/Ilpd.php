@@ -40,15 +40,15 @@ class Ilpd extends Model
         return $this->hasOne(DetailIlpd::class);
     }
 
-    public function ticket(): HasMany
-    {
-        return $this->hasMany(Ticket::class);
-    }
-
-    // public function tiket(): HasMany
+    // public function ticket(): HasMany
     // {
-    //     return $this->hasMany(Tiket::class);
+    //     return $this->hasMany(Ticket::class);
     // }
+
+    public function tiket(): HasMany
+    {
+        return $this->hasMany(Tiket::class);
+    }
 
     public function ilpd_approval(): HasMany
     {

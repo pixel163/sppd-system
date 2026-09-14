@@ -97,7 +97,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Meeting'],
             ['name' => 'Training'],
             ['name' => 'Customer Call'],
-            ['name' => 'Intasllation/Maintenance'],
+            ['name' => 'Installation/Maintenance'],
         ]);
 
         // =========================

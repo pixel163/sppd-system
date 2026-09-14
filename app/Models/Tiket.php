@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Ticket extends Model
-// class Tiket extends Model
+// class Ticket extends Model
+class Tiket extends Model
 {
-    protected $table = 'ticket';
+    protected $table = 'tiket';
 
     protected $fillable = [
         'ilpd_id',

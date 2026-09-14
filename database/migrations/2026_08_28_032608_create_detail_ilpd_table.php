@@ -26,7 +26,7 @@ return new class extends Migration
             $table->decimal('dinas', 15, 2)->default(0);
             $table->decimal('hotel', 15, 2)->default(0);
 
-            $table->text('laundry')->default('Actual');
+            $table->text('laundry');
             $table->decimal('bbm', 15, 2)->nullable();
             $table->decimal('transport_lokal', 15, 2)->nullable();
             $table->decimal('visa', 15, 2)->nullable();

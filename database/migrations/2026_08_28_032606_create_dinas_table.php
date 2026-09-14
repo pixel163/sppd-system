@@ -17,7 +17,7 @@ return new class extends Migration
                     ->constrained('users')
                     ->restrictOnDelete();
             $table->string('no_dinas')->unique();
-            $table->string('status')->default('Menunggu Approval');
+            $table->string('status')->default('Draft');
 
             $table->timestamps();
         });

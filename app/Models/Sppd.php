@@ -23,6 +23,11 @@ class Sppd extends Model
         'status',
     ];
 
+    // protected $casts = [
+    //     'keperluan_id' => 'array',
+    //     'transport_id' => 'array',
+    // ];
+
     public function Dinas(): BelongsTo
     {
         return $this->belongsTo(Dinas::class);

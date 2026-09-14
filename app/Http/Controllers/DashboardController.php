@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Sppd;
 use App\Models\Ilpd;
+use App\Models\Dinas;
+use App\Models\Kota;
+use App\Models\Keperluan;
+use App\Models\Transport;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -14,7 +19,7 @@ class DashboardController extends Controller
         $user = auth()->user();
         
         // ambil data berdasarkan user
-        $pengajuanSaya = Sppd::with(['dinas','user','kota','ilpd'])
+        $pengajuanSaya = Sppd::with(['dinas','user','kota','keperluan','transport','ilpd','ilpd.tiket'])
         ->where('user_id', $user->id)
         ->latest()
         ->take(5)
@@ -30,10 +35,24 @@ class DashboardController extends Controller
             ->get();
         
         // General Affair
-        $pengajuanGa = Ilpd::where('status', 'Menunggu Approval')
-            ->latest()
-            ->get();
+        // $pengajuanGa = Ilpd::where('status', 'Sedang Diproses')
+        //     ->latest()
+        //     ->get();
+        // $pengajuanGa = Ilpd::with(['dinas','sppd.user','kota','sppd','tiket'])
+        $pengajuanGa = Sppd::with(['dinas','user','kota','ilpd','ilpd.tiket'])
+        ->latest()
+        ->take(5)
+        ->get();
 
-        return view('dashboard', compact('pengajuanSaya' ,'approvalManager', 'pengajuanGa'));
-    }
+        $draft = Dinas::where('status', 'Draft')->count();
+
+        $Disetujui = Dinas::where('status', 'Disetujui')->count();
+
+        $menungguApproval = Dinas::where('status', 'Menunggu Approval')->count();
+
+        $sedangDiproses = Dinas::where('status', 'Sedang Diproses')->count();
+
+        $selesai = Dinas::where('status', 'Selesai')->count();
+
+        return view('dashboard', compact('pengajuanSaya' ,'approvalManager', 'pengajuanGa', 'pengajuanGa','draft', 'Disetujui', 'menungguApproval', 'sedangDiproses', 'selesai'));}
 }

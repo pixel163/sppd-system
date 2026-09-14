@@ -330,7 +330,6 @@
 
                     </div>
 
-                    {{-- Keperluan Dinas (Dropdown Custom) --}}
                     <div class="form-row flex gap-6 py-3">
                         <label for="keperluan" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
                             Keperluan Dinas
@@ -391,6 +390,84 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Keperluan Dinas (Dropdown Custom) --}}
+                    {{-- <div class="form-row flex gap-6 py-3">
+                        <label class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                            Keperluan Dinas
+                        </label>
+
+                        <div class="flex-1">
+                            <!-- Container Dropdown Custom -->
+                            <div class="relative">
+                                
+                                <!-- Tombol Utama Dropdown -->
+                                <button type="button" 
+                                        onclick="toggleDropdown(this)"
+                                        class="flex w-full items-center justify-between rounded-lg border border-[#e2e8f0] bg-white px-4 py-2.5 text-left text-[14px] text-slate-800 outline-none transition-all duration-200 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20">
+                                    <span class="selected-text truncate text-slate-400" data-placeholder="Pilih Keperluan Dinas">Pilih Keperluan Dinas</span>
+                                    <svg class="dropdown-arrow h-4 w-4 shrink-0 fill-current text-slate-400 transition-transform duration-200" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+
+                                <!-- Menu Pilihan Checkbox (Hidden by Default) -->
+                                <div class="dropdown-menu absolute z-50 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-lg border border-[#e2e8f0] bg-white p-2 shadow-lg">
+                                    @foreach($masterKeperluan as $keperluan)
+                                        <label class="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] text-slate-700 hover:bg-slate-100 transition-colors">
+                                            <input type="checkbox" 
+                                                name="keperluan_id[]" 
+                                                value="{{ $keperluan->id }}" 
+                                                onchange="updateDropdownText(this, 'Pilih Keperluan Dinas')"
+                                                class="dropdown-checkbox h-4 w-4 rounded border-slate-300 text-[#2563eb] focus:ring-[#2563eb]"
+                                                {{ is_array(old('keperluan_id')) && in_array($keperluan->id, old('keperluan_id')) ? 'checked' : '' }}>
+                                            <span class="select-none">{{ $keperluan->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+
+                            </div>
+                        </div>
+                    </div> --}}
+
+                    {{-- Transportasi (Dropdown Custom) --}}
+                    {{-- <div class="form-row flex gap-6 py-3">
+                        <label class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                            Transportasi
+                        </label>
+
+                        <div class="flex-1">
+                            <!-- Container Dropdown Custom -->
+                            <div class="relative">
+                                
+                                <!-- Tombol Utama Dropdown -->
+                                <button type="button" 
+                                        onclick="toggleDropdown(this)"
+                                        class="flex w-full items-center justify-between rounded-lg border border-[#e2e8f0] bg-white px-4 py-2.5 text-left text-[14px] text-slate-800 outline-none transition-all duration-200 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20">
+                                    <span class="selected-text truncate text-slate-400" data-placeholder="Pilih Transportasi">Pilih Transportasi</span>
+                                    <svg class="dropdown-arrow h-4 w-4 shrink-0 fill-current text-slate-400 transition-transform duration-200" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+
+                                <!-- Menu Pilihan Checkbox (Hidden by Default) -->
+                                <div class="dropdown-menu absolute z-50 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-lg border border-[#e2e8f0] bg-white p-2 shadow-lg">
+                                    @foreach($masterTransport as $transport)
+                                        <label class="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] text-slate-700 hover:bg-slate-100 transition-colors">
+                                            <input type="checkbox" 
+                                                name="transport_id[]" 
+                                                value="{{ $transport->id }}" 
+                                                onchange="updateDropdownText(this, 'Pilih Transportasi')"
+                                                class="dropdown-checkbox h-4 w-4 rounded border-slate-300 text-[#2563eb] focus:ring-[#2563eb]"
+                                                {{ is_array(old('transportasi_id')) && in_array($transport->id, old('transportasi_id')) ? 'checked' : '' }}>
+                                            <span class="select-none">{{ $transport->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+
+                            </div>
+                        </div>
+                    </div> --}}
 
                     {{-- Tugas --}}
                     <div class="form-row flex gap-6 py-3">
@@ -476,6 +553,65 @@ function validasiWaktu(input) {
         }
     }
 }
+
+// 1. Fungsi Toggle Buka/Tutup Menu
+function toggleDropdown(buttonEl) {
+    const container = buttonEl.closest('.relative');
+    const menu = container.querySelector('.dropdown-menu');
+    const arrow = buttonEl.querySelector('.dropdown-arrow');
+
+    // Tutup dropdown lain yang sedang terbuka
+    document.querySelectorAll('.dropdown-menu').forEach(m => {
+        if (m !== menu) m.classList.add('hidden');
+    });
+    document.querySelectorAll('.dropdown-arrow').forEach(a => {
+        if (a !== arrow) a.classList.remove('rotate-180');
+    });
+
+    // Toggle dropdown yang diklik
+    menu.classList.toggle('hidden');
+    if (arrow) arrow.classList.toggle('rotate-180');
+}
+
+// 2. Fungsi Update Teks Pilihan
+function updateDropdownText(checkboxEl, placeholderDefault) {
+    const container = checkboxEl.closest('.relative');
+    const textSpan = container.querySelector('.selected-text');
+    const checkboxes = container.querySelectorAll('.dropdown-checkbox:checked');
+
+    if (checkboxes.length === 0) {
+        textSpan.innerText = placeholderDefault;
+        textSpan.classList.add('text-slate-400');
+        textSpan.classList.remove('text-slate-800');
+    } else if (checkboxes.length === 1) {
+        const labelText = checkboxes[0].nextElementSibling.innerText.trim();
+        textSpan.innerText = labelText;
+        textSpan.classList.remove('text-slate-400');
+        textSpan.classList.add('text-slate-800');
+    } else {
+        textSpan.innerText = `${checkboxes.length} Pilihan Dipilih`;
+        textSpan.classList.remove('text-slate-400');
+        textSpan.classList.add('text-slate-800');
+    }
+}
+
+// 3. Event Listener Klik Luar Area (Auto Close)
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.relative')) {
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
+        document.querySelectorAll('.dropdown-arrow').forEach(a => a.classList.remove('rotate-180'));
+    }
+});
+
+// 4. Jalankan saat Pertama Kali Dimuat (Initial State)
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.dropdown-checkbox').forEach(cb => {
+        // Trigger update text untuk masing-masing container
+        const container = cb.closest('.relative');
+        const defaultText = container.querySelector('.selected-text')?.dataset.placeholder || 'Pilih Data';
+        updateDropdownText(cb, defaultText);
+    });
+});
 
 new TomSelect("#kota", {
     create: false,

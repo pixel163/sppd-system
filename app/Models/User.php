@@ -29,8 +29,10 @@ class User extends Authenticatable
         'department_id',
         'jabatan_id',
         'golongan_id',
+        'signature',
     ];
 
+    protected $with = ['jabatan', 'department'];
     /**
      * The attributes that should be hidden for serialization.
      *
