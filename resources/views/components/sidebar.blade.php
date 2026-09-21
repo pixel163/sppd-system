@@ -66,7 +66,6 @@
 
         {{-- Perizinan --}}
         <a
-            {{-- href="/ilpd" --}}
             href="/ilpd/create"
             class="flex items-center gap-3 rounded-xl px-4 py-3 transition
                 {{ request()->routeIs('ilpd.*')
@@ -111,6 +110,90 @@
     </nav>
 
     <div class="my-4 h-px w-full bg-[#e2e8f0]"></div>
+
+    <nav class="flex flex-col gap-1">
+
+        {{-- KONDISI 1: Hanya muncul jika user yang login memiliki role / departemen HRGA --}}
+        {{-- @if(auth()->check() && (auth()->user()->jabatan()->name === 'HRGA' || auth()->user()->jabatan()->name === 'HRGA')) --}}
+        @if(optional(auth()->user()->jabatan)->name === 'HRGA')
+        
+            {{-- Pembungkus Menu Master Data dengan Alpine.js --}}
+            <div x-data="{ open: false }" class="flex flex-col">
+                
+                {{-- Tombol Utama / Induk (Master Data) --}}
+                <button @click="open = !open" 
+                        type="button" 
+                        class="flex items-center justify-between w-full rounded-xl px-4 py-3 text-[#64748b] hover:bg-slate-100 transition-colors">
+                    
+                    <div class="flex items-center gap-3">
+                        {{-- Lucide Icon: Database --}}
+                        <i data-lucide="database" class="w-5 h-5 text-[#64748b]"></i>
+                        <span class="text-[14px] font-medium">Master Data</span>
+                    </div>
+
+                    {{-- Lucide Icon: Panah Chevron (Berputar otomatis saat diklik) --}}
+                    <i data-lucide="chevron-down" 
+                    class="w-4 h-4 text-[#64748b] transition-transform duration-200"
+                    :class="open ? 'rotate-180' : ''"></i>
+                </button>
+
+                {{-- Sub-Menu (Golongan, Kota, Role, dll.) --}}
+                <div x-show="open" 
+                    x-collapse
+                    x-cloak
+                    class="flex flex-col gap-1 pl-9 mt-1">
+
+                    <a href="{{ route('master.department.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="building-2" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Departemen</span>
+                    </a>
+
+                    <a href="{{ route('master.golongan.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="layers" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Golongan</span>
+                    </a>
+
+                    <a href="{{ route('master.jabatan.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="briefcase" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Jabatan</span>
+                    </a>
+
+                    <a href="{{ route('master.keperluan.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="file-text" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Keperluan</span>
+                    </a>
+
+                    <a href="{{ route('master.kota.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="map-pin" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Kota</span>
+                    </a>
+
+                    <a href="{{ route('master.kotakategori.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="tags" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Kota Kategori</span>
+                    </a>
+
+                    <a href="{{ route('master.role.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="user-check" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Role</span>
+                    </a>
+
+                    <a href="{{ route('master.tarif.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="receipt" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Tarif</span>
+                    </a>
+
+                    <a href="{{ route('master.transport.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="bus" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Transportasi</span>
+                    </a>
+
+                </div>
+            </div>
+
+        @endif
+
+    </nav>
 
     <div class="flex-1"></div>
 

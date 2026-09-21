@@ -14,6 +14,8 @@ class Tarif extends Model
         'makan',
         'dinas',
         'hotel',
+        'created_by',
+        'is_active',
     ];
 
     protected $casts = [

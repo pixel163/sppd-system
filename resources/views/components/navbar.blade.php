@@ -106,13 +106,6 @@
 
                 </div>
 
-                {{-- <a
-                    href="#"
-                    class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-[#475569] hover:bg-[#f8fafc]"
-                >
-                    <i data-lucide="user" class="size-4"></i>
-                    Profile
-                </a> --}}
                 <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-[#475569] hover:bg-[#f8fafc]">
                     <i data-lucide="user" class="size-4"></i>
                     Profile

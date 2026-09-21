@@ -11,6 +11,8 @@ class Kota extends Model
     protected $fillable = [
         'kota_kategori_id',
         'name',
+        'created_by',
+        'is_active',
     ];
 
     protected $table = 'kota';

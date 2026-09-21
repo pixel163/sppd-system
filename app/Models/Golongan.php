@@ -9,7 +9,11 @@ class Golongan extends Model
 {
     protected $fillable = [
         'name',
+        'created_by',
+        'is_active',
     ];
+
+    protected $table = 'golongan';
 
     public function users(): HasMany
     {

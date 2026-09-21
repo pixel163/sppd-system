@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('transport', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

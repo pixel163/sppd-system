@@ -282,7 +282,9 @@
                                 id="kota" 
                                 name="kota_id" 
                                 class="form-select flex-1 w-full rounded-lg border border-[#e2e8f0] px-4 py-2.5 focus:border-[#2563eb]" 
-                                required>
+                                required
+                                oninvalid="this.setCustomValidity('Silahkan pilih kota tujuan')"
+                                oninput="this.setCustomValidity('')">
                                 <option value="">Pilih atau cari kota tujuan...</option>
                                 @foreach($masterKota as $kota)
                                     <option value="{{ $kota->id }}" {{ old('kota_id') == $kota->id ? 'selected' : '' }}>
@@ -313,8 +315,10 @@
                                     placeholder="Masukkan waktu"
                                     class="form-input pr-20"
                                     required
+                                    oninvalid="this.setCustomValidity('Silahkan masukan waktu dinas')"
                                     onkeydown="cekkunci(event)"
-                                    oninput="validasiWaktu(this)">
+                                    oninput="this.setCustomValidity(''); validasiWaktu(this)">
+                                    {{-- oninput="validasiWaktu(this)"> --}}
 
                                 <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[13px] text-[#94a3b8]">
                                     hari
@@ -330,7 +334,115 @@
 
                     </div>
 
-                    <div class="form-row flex gap-6 py-3">
+                    {{-- Keperluan Dinas --}}
+                    <div class="form-row flex gap-6 py-3" 
+                        x-data="{ 
+                            open: false, 
+                            selected: [], 
+                            selectedNames: [],
+                            hasLainnya: false,
+                            lainnyaText: '',
+                            
+                            toggleOption(id, name) {
+                                let index = this.selected.indexOf(id);
+                                if (index > -1) {
+                                    this.selected.splice(index, 1);
+                                    this.selectedNames.splice(index, 1);
+                                } else {
+                                    this.selected.push(id);
+                                    this.selectedNames.push(name);
+                                }
+                            }
+                        }">
+                        
+                        <label class="form-label w-[180px] pt-2.5 text-[14px] font-bold text-slate-800">
+                            Keperluan Dinas
+                        </label>
+
+                        <div class="flex-1 space-y-2">
+                            <!-- Custom Dropdown Container -->
+                            <div class="relative" @click.outside="open = false">
+                                
+                                <!-- Hidden Inputs untuk dikirim ke Controller Laravel -->
+                                <template x-for="id in selected" :key="id">
+                                    <input type="hidden" name="keperluan_id[]" :value="id">
+                                </template>
+
+                                <!-- Display Box (Mirip Input Dropdown) -->
+                                <div @click="open = !open" 
+                                    class="min-h-[42px] w-full cursor-pointer rounded-lg border border-[#e2e8f0] bg-white px-3 py-2 pr-10 text-[14px] text-slate-800 transition-all duration-200 focus-within:border-[#2563eb] focus-within:ring-2 focus-within:ring-[#2563eb]/20 flex flex-wrap gap-1.5 items-center">
+                                    
+                                    <!-- Placeholder jika belum ada yang dipilih -->
+                                    <span x-show="selected.length === 0 && !hasLainnya" class="text-slate-400">
+                                        Pilih Keperluan Dinas...
+                                    </span>
+
+                                    <!-- Badge Keperluan Terpilih -->
+                                    <template x-for="(name, index) in selectedNames" :key="index">
+                                        <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                            <span x-text="name"></span>
+                                            <button type="button" @click.stop="toggleOption(selected[index], name)" class="text-blue-600 hover:text-blue-800">
+                                                &times;
+                                            </button>
+                                        </span>
+                                    </template>
+
+                                    <!-- Badge jika "Lainnya" dicentang -->
+                                    <span x-show="hasLainnya" class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                                        <span x-text="lainnyaText ? 'Lainnya: ' + lainnyaText : 'Lainnya...'"></span>
+                                    </span>
+
+                                    <!-- Panah Dropdown -->
+                                    <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                                        <svg class="h-4 w-4 fill-current transition-transform duration-200" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Menu Dropdown dengan Checkbox -->
+                                <div x-show="open" 
+                                    x-transition
+                                    class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg ring-1 ring-black/5"
+                                    style="display: none;">
+                                    
+                                    <!-- Loop Master Keperluan -->
+                                    @foreach($masterKeperluan as $keperluan)
+                                        <label class="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] text-slate-700 hover:bg-slate-50 transition-colors">
+                                            <input type="checkbox" 
+                                                value="{{ $keperluan->id }}"
+                                                :checked="selected.includes({{ $keperluan->id }})"
+                                                @change="toggleOption({{ $keperluan->id }}, '{{ $keperluan->name }}')"
+                                                class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                            <span>{{ $keperluan->name }}</span>
+                                        </label>
+                                    @endforeach
+
+                                    <div class="my-1 border-t border-slate-100"></div>
+
+                                    <!-- Opsi Checkbox "Lainnya" -->
+                                    <label class="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium text-amber-700 hover:bg-amber-50 transition-colors">
+                                        <input type="checkbox" 
+                                            x-model="hasLainnya"
+                                            @change="if(hasLainnya) { open = false; $nextTick(() => $refs.inputLainnya.focus()); }"
+                                            class="h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500">
+                                        <span>Lainnya (Input Manual)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Input Text tambahan yang muncul saat "Lainnya" dicentang -->
+                            <div x-show="hasLainnya" x-transition class="pt-1">
+                                <input type="text" 
+                                    x-ref="inputLainnya"
+                                    name="keperluan_lainnya" 
+                                    x-model="lainnyaText"
+                                    placeholder="Ketik keperluan dinas lainnya di sini..."
+                                    class="w-full rounded-lg border border-amber-300 bg-amber-50/30 px-4 py-2 text-[14px] text-slate-800 outline-none transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20">
+                            </div>
+                        </div>
+                    </div>
+                    {{-- <div class="form-row flex gap-6 py-3">
                         <label for="keperluan" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
                             Keperluan Dinas
                         </label>
@@ -341,7 +453,9 @@
                                     id="keperluan" 
                                     name="keperluan_id" 
                                     class="form-select w-full appearance-none rounded-lg border border-[#e2e8f0] bg-white px-4 py-2.5 pr-10 text-[14px] text-slate-800 outline-none transition-all duration-200 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20"
-                                    required>
+                                    required
+                                    oninvalid="this.setCustomValidity('Silahkan pilih keperluan dinas')"
+                                    oninput="this.setCustomValidity('')">
                                     <option value="" disabled {{ old('keperluan_id') ? '' : 'selected' }}>Pilih Keperluan Dinas</option>
                                     @foreach($masterKeperluan as $keperluan)
                                         <option value="{{ $keperluan->id }}" {{ old('keperluan_id') == $keperluan->id ? 'selected' : '' }}>
@@ -358,10 +472,117 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     {{-- Transportasi (Dropdown Custom) --}}
-                    <div class="form-row flex gap-6 py-3">
+                    <div class="form-row flex gap-6 py-3" 
+                        x-data="{ 
+                            open: false, 
+                            selected: [], 
+                            selectedNames: [],
+                            hasLainnya: false,
+                            lainnyaText: '',
+                            
+                            toggleOption(id, name) {
+                                let index = this.selected.indexOf(id);
+                                if (index > -1) {
+                                    this.selected.splice(index, 1);
+                                    this.selectedNames.splice(index, 1);
+                                } else {
+                                    this.selected.push(id);
+                                    this.selectedNames.push(name);
+                                }
+                            }
+                        }">
+                        
+                        <label class="form-label w-[180px] pt-2.5 text-[14px] font-bold text-slate-800">
+                            Transportasi
+                        </label>
+
+                        <div class="flex-1 space-y-2">
+                            <!-- Custom Dropdown Container -->
+                            <div class="relative" @click.outside="open = false">
+                                
+                                <!-- Hidden Inputs untuk dikirim ke Controller Laravel -->
+                                <template x-for="id in selected" :key="id">
+                                    <input type="hidden" name="transport_id[]" :value="id">
+                                </template>
+
+                                <!-- Display Box (Mirip Input Dropdown) -->
+                                <div @click="open = !open" 
+                                    class="min-h-[42px] w-full cursor-pointer rounded-lg border border-[#e2e8f0] bg-white px-3 py-2 pr-10 text-[14px] text-slate-800 transition-all duration-200 focus-within:border-[#2563eb] focus-within:ring-2 focus-within:ring-[#2563eb]/20 flex flex-wrap gap-1.5 items-center">
+                                    
+                                    <!-- Placeholder jika belum ada yang dipilih -->
+                                    <span x-show="selected.length === 0 && !hasLainnya" class="text-slate-400">
+                                        Pilih Transportasi...
+                                    </span>
+
+                                    <!-- Badge Keperluan Terpilih -->
+                                    <template x-for="(name, index) in selectedNames" :key="index">
+                                        <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                            <span x-text="name"></span>
+                                            <button type="button" @click.stop="toggleOption(selected[index], name)" class="text-blue-600 hover:text-blue-800">
+                                                &times;
+                                            </button>
+                                        </span>
+                                    </template>
+
+                                    <!-- Badge jika "Lainnya" dicentang -->
+                                    <span x-show="hasLainnya" class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                                        <span x-text="lainnyaText ? 'Lainnya: ' + lainnyaText : 'Lainnya...'"></span>
+                                    </span>
+
+                                    <!-- Panah Dropdown -->
+                                    <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                                        <svg class="h-4 w-4 fill-current transition-transform duration-200" :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Menu Dropdown dengan Checkbox -->
+                                <div x-show="open" 
+                                    x-transition
+                                    class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg ring-1 ring-black/5"
+                                    style="display: none;">
+                                    
+                                    <!-- Loop Master Keperluan -->
+                                    @foreach($masterTransport as $transport)
+                                        <label class="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] text-slate-700 hover:bg-slate-50 transition-colors">
+                                            <input type="checkbox" 
+                                                value="{{ $transport->id }}"
+                                                :checked="selected.includes({{ $transport->id }})"
+                                                @change="toggleOption({{ $transport->id }}, '{{ $transport->name }}')"
+                                                class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                            <span>{{ $transport->name }}</span>
+                                        </label>
+                                    @endforeach
+
+                                    <div class="my-1 border-t border-slate-100"></div>
+
+                                    <!-- Opsi Checkbox "Lainnya" -->
+                                    <label class="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium text-amber-700 hover:bg-amber-50 transition-colors">
+                                        <input type="checkbox" 
+                                            x-model="hasLainnya"
+                                            @change="if(hasLainnya) { open = false; $nextTick(() => $refs.inputLainnya.focus()); }"
+                                            class="h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500">
+                                        <span>Lainnya (Input Manual)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Input Text tambahan yang muncul saat "Lainnya" dicentang -->
+                            <div x-show="hasLainnya" x-transition class="pt-1">
+                                <input type="text" 
+                                    x-ref="inputLainnya"
+                                    name="transport_lainnya" 
+                                    x-model="lainnyaText"
+                                    placeholder="Ketik transportasi lainnya di sini..."
+                                    class="w-full rounded-lg border border-amber-300 bg-amber-50/30 px-4 py-2 text-[14px] text-slate-800 outline-none transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20">
+                            </div>
+                        </div>
+                    </div>
+                    {{-- <div class="form-row flex gap-6 py-3">
                         <label for="transport" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
                             Transportasi
                         </label>
@@ -372,7 +593,9 @@
                                     id="transport" 
                                     name="transport_id" 
                                     class="form-select w-full appearance-none rounded-lg border border-[#e2e8f0] bg-white px-4 py-2.5 pr-10 text-[14px] text-slate-800 outline-none transition-all duration-200 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20"
-                                    required>
+                                    required
+                                    oninvalid="this.setCustomValidity('Silahkan pilih transportasi')"
+                                    oninput="this.setCustomValidity('')">
                                     <option value="" disabled {{ old('transport_id') ? '' : 'selected' }}>Pilih Jenis Transportasi</option>
                                     @foreach($masterTransport as $transport)
                                         <option value="{{ $transport->id }}" {{ old('transport_id') == $transport->id ? 'selected' : '' }}>
@@ -387,84 +610,6 @@
                                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                     </svg>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Keperluan Dinas (Dropdown Custom) --}}
-                    {{-- <div class="form-row flex gap-6 py-3">
-                        <label class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
-                            Keperluan Dinas
-                        </label>
-
-                        <div class="flex-1">
-                            <!-- Container Dropdown Custom -->
-                            <div class="relative">
-                                
-                                <!-- Tombol Utama Dropdown -->
-                                <button type="button" 
-                                        onclick="toggleDropdown(this)"
-                                        class="flex w-full items-center justify-between rounded-lg border border-[#e2e8f0] bg-white px-4 py-2.5 text-left text-[14px] text-slate-800 outline-none transition-all duration-200 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20">
-                                    <span class="selected-text truncate text-slate-400" data-placeholder="Pilih Keperluan Dinas">Pilih Keperluan Dinas</span>
-                                    <svg class="dropdown-arrow h-4 w-4 shrink-0 fill-current text-slate-400 transition-transform duration-200" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-
-                                <!-- Menu Pilihan Checkbox (Hidden by Default) -->
-                                <div class="dropdown-menu absolute z-50 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-lg border border-[#e2e8f0] bg-white p-2 shadow-lg">
-                                    @foreach($masterKeperluan as $keperluan)
-                                        <label class="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] text-slate-700 hover:bg-slate-100 transition-colors">
-                                            <input type="checkbox" 
-                                                name="keperluan_id[]" 
-                                                value="{{ $keperluan->id }}" 
-                                                onchange="updateDropdownText(this, 'Pilih Keperluan Dinas')"
-                                                class="dropdown-checkbox h-4 w-4 rounded border-slate-300 text-[#2563eb] focus:ring-[#2563eb]"
-                                                {{ is_array(old('keperluan_id')) && in_array($keperluan->id, old('keperluan_id')) ? 'checked' : '' }}>
-                                            <span class="select-none">{{ $keperluan->name }}</span>
-                                        </label>
-                                    @endforeach
-                                </div>
-
-                            </div>
-                        </div>
-                    </div> --}}
-
-                    {{-- Transportasi (Dropdown Custom) --}}
-                    {{-- <div class="form-row flex gap-6 py-3">
-                        <label class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
-                            Transportasi
-                        </label>
-
-                        <div class="flex-1">
-                            <!-- Container Dropdown Custom -->
-                            <div class="relative">
-                                
-                                <!-- Tombol Utama Dropdown -->
-                                <button type="button" 
-                                        onclick="toggleDropdown(this)"
-                                        class="flex w-full items-center justify-between rounded-lg border border-[#e2e8f0] bg-white px-4 py-2.5 text-left text-[14px] text-slate-800 outline-none transition-all duration-200 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20">
-                                    <span class="selected-text truncate text-slate-400" data-placeholder="Pilih Transportasi">Pilih Transportasi</span>
-                                    <svg class="dropdown-arrow h-4 w-4 shrink-0 fill-current text-slate-400 transition-transform duration-200" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-
-                                <!-- Menu Pilihan Checkbox (Hidden by Default) -->
-                                <div class="dropdown-menu absolute z-50 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-lg border border-[#e2e8f0] bg-white p-2 shadow-lg">
-                                    @foreach($masterTransport as $transport)
-                                        <label class="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] text-slate-700 hover:bg-slate-100 transition-colors">
-                                            <input type="checkbox" 
-                                                name="transport_id[]" 
-                                                value="{{ $transport->id }}" 
-                                                onchange="updateDropdownText(this, 'Pilih Transportasi')"
-                                                class="dropdown-checkbox h-4 w-4 rounded border-slate-300 text-[#2563eb] focus:ring-[#2563eb]"
-                                                {{ is_array(old('transportasi_id')) && in_array($transport->id, old('transportasi_id')) ? 'checked' : '' }}>
-                                            <span class="select-none">{{ $transport->name }}</span>
-                                        </label>
-                                    @endforeach
-                                </div>
-
                             </div>
                         </div>
                     </div> --}}
@@ -484,7 +629,9 @@
                                 name="tugas"
                                 class="form-textarea mt-1 flex-1"
                                 placeholder="1.&#10;2.&#10;3.&#10;4."
-                                required></textarea>
+                                required
+                                oninvalid="this.setCustomValidity('Silahkan masukan tugas')"
+                                oninput="this.setCustomValidity('')"></textarea>
 
                         </div>
 

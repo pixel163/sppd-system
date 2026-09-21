@@ -7,6 +7,16 @@ use App\Http\Controllers\IlpdController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\DokumenController;
+use App\Http\Controllers\ExcelController;
+use App\Http\Controllers\Master\KeperluanController;
+use App\Http\Controllers\Master\TransportController;
+use App\Http\Controllers\Master\GolonganController;
+use App\Http\Controllers\Master\DepartmentController;
+use App\Http\Controllers\Master\JabatanController;
+use App\Http\Controllers\Master\RoleController;
+use App\Http\Controllers\Master\KotaKategoriController;
+use App\Http\Controllers\Master\KotaController;
+use App\Http\Controllers\Master\TarifController;
 
 Route::get('/', function () {return view('login');})->name('login');
 Route::post('/', [AuthController::class, 'login'])->name('login');
@@ -16,15 +26,16 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/test', function () {return view('test');})->name('test');
 Route::get('/test1', function () {return view('test1');})->name('test1');
+Route::get('/tes-excel', [ExcelController::class, 'test']);
 
 Route::middleware('auth')->group(function () {
 
+    // all
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [AuthController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/signature', [AuthController::class, 'update'])->name('profile.update');
-    
-    // all
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
+    // Route::get('/riwayat/{id}', [RiwayatController::class, 'show'])->name('show');
     Route::get('/dokumen', [DokumenController::class, 'index'])->name('dokumen');
 
     // staff sppd
@@ -48,6 +59,20 @@ Route::middleware('auth')->group(function () {
     // ga
     Route::get('/ilpd/{id}', [IlpdController::class, 'show'])->name('approve.show');
     Route::post('/ilpd/{id}/approve', [IlpdController::class, 'approve'])->name('ilpd.approve');
+
+});
+
+    // Route::middleware(['auth', 'jabatan:HRGA'])->prefix('master')->name('master.')->group(function () {
+    Route::middleware(['auth'])->prefix('master')->name('master.')->group(function () {
+        Route::resource('keperluan', KeperluanController::class);
+        Route::resource('transport', TransportController::class);
+        Route::resource('golongan', GolonganController::class);
+        Route::resource('department', DepartmentController::class);
+        Route::resource('jabatan', JabatanController::class);
+        Route::resource('role', RoleController::class);
+        Route::resource('kotakategori', KotaKategoriController::class);
+        Route::resource('kota', KotaController::class);
+        Route::resource('tarif', TarifController::class);
 });
 
 

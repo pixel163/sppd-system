@@ -18,15 +18,17 @@ class Sppd extends Model
         'kota_id',
         'keperluan_id',
         'transport_id',
+        'keperluan_lainnya',
+        'transport_lainnya',
         'durasi',
         'tugas',
         'status',
     ];
 
-    // protected $casts = [
-    //     'keperluan_id' => 'array',
-    //     'transport_id' => 'array',
-    // ];
+    protected $casts = [
+        'keperluan_id' => 'array',
+        'transport_id' => 'array',
+    ];
 
     public function Dinas(): BelongsTo
     {
@@ -61,5 +63,28 @@ class Sppd extends Model
     public function sppd_approval(): HasMany
     {
         return $this->hasMany(SppdApproval::class);
+    }
+
+    public function approval()
+    {
+        return $this->hasOne(SppdApproval::class, 'sppd_id')->latestOfMany();
+    }
+
+    public function getKeperluanListAttribute()
+    {
+        $names = \App\Models\Keperluan::whereIn('id', $this->keperluan_id ?? [])->pluck('name')->toArray();
+        if ($this->keperluan_lainnya) {
+            $names[] = $this->keperluan_lainnya;
+        }
+        return implode(', ', $names);
+    }
+
+    public function getTransportListAttribute()
+    {
+        $names = \App\Models\Transport::whereIn('id', $this->transport_id ?? [])->pluck('name')->toArray();
+        if ($this->transport_lainnya) {
+            $names[] = $this->transport_lainnya;
+        }
+        return implode(', ', $names);
     }
 }

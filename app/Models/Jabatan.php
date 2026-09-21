@@ -9,6 +9,8 @@ class Jabatan extends Model
 {
     protected $fillable = [
         'name',
+        'created_by',
+        'is_active',
     ];
 
     protected $table = 'jabatan';

@@ -9,7 +9,11 @@ class KotaKategori extends Model
 {
     protected $fillable = [
         'name',
+        'created_by',
+        'is_active',
     ];
+
+    protected $table = 'kota_kategori';
 
     public function kota(): HasMany
     {

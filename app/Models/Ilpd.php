@@ -35,15 +35,10 @@ class Ilpd extends Model
         return $this->belongsTo(Sppd::class);
     }
 
-    public function detailIlpd(): HasOne
+    public function detail_ilpd(): HasOne
     {
         return $this->hasOne(DetailIlpd::class);
     }
-
-    // public function ticket(): HasMany
-    // {
-    //     return $this->hasMany(Ticket::class);
-    // }
 
     public function tiket(): HasMany
     {
@@ -53,5 +48,11 @@ class Ilpd extends Model
     public function ilpd_approval(): HasMany
     {
         return $this->hasMany(IlpdApproval::class);
+    }
+
+    public function approval()
+    {
+        // Gunakan hasOne dan latestOfMany() agar mengambil 1 record terakhir
+        return $this->hasOne(IlpdApproval::class, 'ilpd_id')->latestOfMany();
     }
 }

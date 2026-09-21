@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Sppd;
+use App\Models\SppdApproval;
 use App\Models\Ilpd;
+use App\Models\IlpdApproval;
 use App\Models\Dinas;
 use App\Models\Kota;
 use App\Models\Keperluan;
@@ -19,11 +21,16 @@ class DashboardController extends Controller
         $user = auth()->user();
         
         // ambil data berdasarkan user
-        $pengajuanSaya = Sppd::with(['dinas','user','kota','keperluan','transport','ilpd','ilpd.tiket'])
-        ->where('user_id', $user->id)
-        ->latest()
-        ->take(5)
-        ->get();
+        $pengajuanSaya = Sppd::with(['dinas', 'user', 'kota', 'ilpd.detail_ilpd', 'ilpd.tiket'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->take(5)
+            ->get();
+        // $pengajuanSaya = Sppd::with(['dinas','user','kota','keperluan','transport','ilpd.detail_ilpd','ilpd.tiket'])
+        // ->where('user_id', $user->id)
+        // ->latest()
+        // ->take(5)
+        // ->get();
         
         // Manager
         $approvalManager = Sppd::with(['dinas','user','kota','ilpd'])
@@ -35,11 +42,8 @@ class DashboardController extends Controller
             ->get();
         
         // General Affair
-        // $pengajuanGa = Ilpd::where('status', 'Sedang Diproses')
-        //     ->latest()
-        //     ->get();
-        // $pengajuanGa = Ilpd::with(['dinas','sppd.user','kota','sppd','tiket'])
-        $pengajuanGa = Sppd::with(['dinas','user','kota','ilpd','ilpd.tiket'])
+        // $pengajuanGa = Sppd::with(['dinas','user','keperluan','transport','kota','ilpd.detail_ilpd','ilpd.tiket','approval'])
+        $pengajuanGa = Sppd::with(['dinas','user','kota','ilpd.detail_ilpd','ilpd.tiket','approval'])
         ->latest()
         ->take(5)
         ->get();
@@ -54,5 +58,7 @@ class DashboardController extends Controller
 
         $selesai = Dinas::where('status', 'Selesai')->count();
 
-        return view('dashboard', compact('pengajuanSaya' ,'approvalManager', 'pengajuanGa', 'pengajuanGa','draft', 'Disetujui', 'menungguApproval', 'sedangDiproses', 'selesai'));}
+        $dinasList = Dinas::with(['sppd.sppd_approval', 'ilpd.ilpd_approval'])->get();
+
+        return view('dashboard', compact('pengajuanSaya' ,'approvalManager', 'pengajuanGa', 'pengajuanGa','draft', 'Disetujui', 'menungguApproval', 'sedangDiproses', 'selesai', 'dinasList'));}
 }

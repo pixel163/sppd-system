@@ -26,6 +26,9 @@ return new class extends Migration
             $table->decimal('dinas', 15, 2);
             $table->decimal('hotel', 15, 2);
 
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->boolean('is_active')->default(true);
+
             $table->timestamps();
 
             $table->unique([

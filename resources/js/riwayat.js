@@ -1,83 +1,3 @@
-const historyData = [
-    {
-        no: 'SPPD-2026-00124',
-        tujuan: 'Bandung',
-        tanggal: '20 - 22 Agustus 2026',
-        status: 'Sedang Diproses',
-        type: 'manager',
-        date: '11 Agustus 2026',
-        user: 'Eko Saputra',
-        owner: 'staff',
-        manager: 'Andi Wijaya'
-    },
-    {
-        no: 'SPPD-2026-00123',
-        tujuan: 'Yogyakarta',
-        tanggal: '15 - 17 Agustus 2026',
-        status: 'Sedang Diproses',
-        type: 'ga',
-        date: '8 Agustus 2026',
-        user: 'Eko Saputra',
-        owner: 'staff',
-        manager: 'Budi Santoso'
-    },
-    {
-        no: 'SPPD-2026-00122',
-        tujuan: 'Surabaya',
-        tanggal: '05 - 06 Agustus 2026',
-        status: 'Menunggu Approval',
-        type: 'gm',
-        date: '5 Agustus 2026',
-        user: 'Eko Saputra',
-        owner: 'staff',
-        manager: 'Andi Wijaya'
-    },
-    {
-        no: 'SPPD-2026-00121',
-        tujuan: 'Jakarta',
-        tanggal: '28 Juli 2026',
-        status: 'Selesai',
-        type: 'done',
-        date: '20 Juli 2026',
-        user: 'Eko Saputra',
-        owner: 'staff',
-        manager: 'Andi Wijaya'
-    },
-    {
-        no: 'SPPD-2026-00120',
-        tujuan: 'Semarang',
-        tanggal: '18 - 19 Juli 2026',
-        status: 'Selesai',
-        type: 'done',
-        date: '11 Juli 2026',
-        user: 'Eko Saputra',
-        owner: 'staff',
-        manager: 'Budi Santoso'
-    },
-    {
-        no: 'SPPD-2026-00118',
-        tujuan: 'Bandung',
-        tanggal: '10 - 11 Juli 2026',
-        status: 'Selesai',
-        type: 'done',
-        date: '1 Juli 2026',
-        user: 'Eko Saputra',
-        owner: 'staff',
-        manager: 'Budi Santoso'
-    },
-    {
-        no: 'SPPD-2026-00117',
-        tujuan: 'Surabaya',
-        tanggal: '1 - 3 Juli 2026',
-        status: 'Selesai',
-        type: 'done',
-        date: '25 Juni 2026',
-        user: 'Eko Saputra',
-        owner: 'staff',
-        manager: 'Budi Santoso'
-    }
-];
-
 // Deklarasikan variabel global untuk menyimpan detail item yang sedang aktif
 let currentDetail = null;
 
@@ -250,29 +170,210 @@ function hideEmpty() {
 /* ============================================================
    DETAIL
 ============================================================ */
-function openDetail(no) {
-    const item = historyData.find(data => data.no === no);
-    if (!item) return;
+function openDetail(dinas) {
+    if (!dinas) return;
 
-    currentDetail = item;
+    // Ambil child Form 1 (SPPD) dari objek dinas
+    const sppd = dinas.sppd || {};
+    const ilpd = dinas.ilpd || {};
 
-    document.getElementById('modalNo').textContent = item.no;
-    document.getElementById('modalUser').textContent = item.user;
-    document.getElementById('modalTujuan').textContent = item.tujuan;
-    document.getElementById('modalTanggal').textContent = item.tanggal;
-    document.getElementById('modalDate').textContent = item.date;
-    document.getElementById('modalStatus').innerHTML = statusBadge(item);
+    document.getElementById('modalNo').textContent = dinas.no_dinas || '-';
+    document.getElementById('modalUser').textContent = dinas.sppd?.user?.name || '-';
+    
+    document.getElementById('modalTanggal').textContent = formatRangeTanggal(
+        dinas.ilpd?.tanggal_awal, 
+        dinas.ilpd?.tanggal_akhir
+    );
+    document.getElementById('modalTujuan').textContent = dinas.sppd?.kota?.name || '-';
+    document.getElementById('modalDate').textContent = formatTanggalLengkap(dinas.created_at);
+
+    // Status bisa ambil dari Dinas (global) atau ILPD
+    document.getElementById('modalStatus').innerHTML = statusBadge(dinas);
+
+    // Render Alur Pengajuan secara Dinamis
+    renderAlurPengajuan(dinas);
 
     const modal = document.getElementById('detailModal');
     if (modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
     }
-    document.body.classList.add('overflow-hidden');
 }
 
 // Tambahkan baris ini tepat di luar/setelah deklarasi fungsi openDetail
 window.openDetail = openDetail;
+
+// Fungsi Khusus Render Alur Pengajuan
+function renderAlurPengajuan(dinas) {
+    // Ambil status langsung dari tabel dinas
+    const status = dinas ? dinas.status : 'Draft';
+
+    let currentStep = 1;
+
+    // Tentukan currentStep berdasarkan status dinas
+    switch (status) {
+        case 'Draft':
+            currentStep = 2; // Step 1 selesai (ceklis), Step 2 aktif
+            break;
+        case 'Menunggu Approval':
+            currentStep = 3; // Step 2 selesai (ceklis), Step 3 aktif
+            break;
+        case 'Sedang Diproses':
+            currentStep = 4; // Step 3 selesai (ceklis), Step 4 aktif
+            break;
+        case 'Disetujui':
+            currentStep = 6; // Step 4 & 5 selesai (ceklis semua)
+            break;
+        default:
+            currentStep = 1; // Default jika status tidak cocok
+    }
+
+    // Master list step
+    const steps = [
+        { number: 1, role: 'Pembuatan SPPD', desc: 'Pembuatan draft pengajuan' },
+        { number: 2, role: 'Pengajuan ILPD', desc: 'Pengisian form rincian biaya' },
+        { number: 3, role: 'Approval Manager', desc: 'Pemeriksaan pengajuan' },
+        { number: 4, role: 'Approval General Affair', desc: 'Pemeriksaan budget dan tiket' },
+        { number: 5, role: 'Disetujui', desc: 'Persetujuan akhir' }
+    ];
+
+    // Generate HTML
+    let html = '';
+
+    steps.forEach(step => {
+        // Step dianggap lulus/selesai jika nomor step < currentStep (akan dapat centang)
+        const isPassed = step.number < currentStep;
+        // Step dianggap aktif berjalan jika nomor step == currentStep
+        const isActive = step.number === currentStep;
+
+        // Styling Warna
+        let circleStyle = 'bg-gray-100 text-gray-400';
+        let titleStyle = 'text-gray-400';
+        let descStyle = 'text-gray-300';
+
+        if (isPassed) {
+            // Sudah selesai (Centang)
+            circleStyle = 'bg-[#eff6ff] text-[#0d6efd]';
+            titleStyle = 'text-gray-900';
+            descStyle = 'text-[#94a3b8]';
+        } else if (isActive) {
+            // Sedang aktif (Angka disorot)
+            circleStyle = 'bg-[#0d6efd] text-white';
+            titleStyle = 'text-gray-900 font-bold';
+            descStyle = 'text-gray-500';
+        }
+
+        // Icon Centang jika step sudah terlampaui (isPassed)
+        const badgeContent = isPassed
+            ? `<svg class="w-4 h-4 text-[#0d6efd]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+               </svg>`
+            : step.number;
+
+        html += `
+            <div class="flex items-center gap-3">
+                <div class="flex size-8 items-center justify-center rounded-full text-xs font-bold ${circleStyle}">
+                    ${badgeContent}
+                </div>
+                <div>
+                    <p class="text-[12px] font-semibold ${titleStyle}">
+                        ${step.role}
+                    </p>
+                    <p class="text-[11px] ${descStyle}">
+                        ${step.desc}
+                    </p>
+                </div>
+            </div>
+        `;
+    });
+
+    const container = document.getElementById('modalAlurPengajuan');
+    if (container) {
+        container.innerHTML = html;
+    }
+}
+// function renderAlurPengajuan(dinas) {
+//     const sppd = dinas.sppd || {};
+//     const ilpd = dinas.ilpd || {};
+
+//     // Ambil approval paling baru dari sppd dan ilpd
+//     const sppdApprovals = sppd.approvals || [];
+//     const ilpdApprovals = ilpd.approvals || [];
+
+//     const latestSppdApproval = sppdApprovals.length > 0 ? sppdApprovals[sppdApprovals.length - 1] : null;
+//     const latestIlpdApproval = ilpdApprovals.length > 0 ? ilpdApprovals[ilpdApprovals.length - 1] : null;
+
+//     // Hitung currentStep (1 - 5)
+//     let currentStep = 1; // Default Step 1: Draft SPPD
+
+//     if (dinas.ilpd) {
+//         currentStep = 2; // ILPD sudah terbuat
+//     }
+//     if (latestSppdApproval && latestSppdApproval.status === 'Menunggu Approval') {
+//         currentStep = 3; // Menunggu Manager
+//     }
+//     if (latestIlpdApproval && latestIlpdApproval.status === 'Sedang Diproses') {
+//         currentStep = 4; // Menunggu GA / Finance
+//     }
+//     if (latestIlpdApproval && latestIlpdApproval.status === 'Disetujui') {
+//         currentStep = 5; // Selesai / Disetujui Semua
+//     }
+
+//     // Master list step
+//     const steps = [
+//         { number: 1, role: 'Pembuatan SPPD', desc: 'Pembuatan draft pengajuan' },
+//         { number: 2, role: 'Pengajuan ILPD', desc: 'Pengisian form rincian biaya' },
+//         { number: 3, role: 'Approval Manager', desc: 'Pemeriksaan pengajuan' },
+//         { number: 4, role: 'Approval General Affair', desc: 'Pemeriksaan budget dan tiket' },
+//         { number: 5, role: 'Disetujui', desc: 'Persetujuan akhir' }
+//     ];
+
+//     // Generate HTML
+//     let html = '';
+
+//     steps.forEach(step => {
+//         const isPassed = step.number <= currentStep;
+//         const isCompletedStep = isPassed && step.number < currentStep;
+
+//         // Styling Warna
+//         const circleStyle = isPassed 
+//             ? 'bg-[#eff6ff] text-[#0d6efd]' 
+//             : 'bg-gray-100 text-gray-400';
+            
+//         const titleStyle = isPassed ? 'text-gray-900' : 'text-gray-400';
+//         const descStyle = isPassed ? 'text-[#94a3b8]' : 'text-gray-300';
+
+//         // Icon Centang jika step sudah terlampaui
+//         const badgeContent = isCompletedStep
+//             ? `<svg class="w-4 h-4 text-[#0d6efd]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+//                </svg>`
+//             : step.number;
+
+//         html += `
+//             <div class="flex items-center gap-3">
+//                 <div class="flex size-8 items-center justify-center rounded-full text-xs font-bold ${circleStyle}">
+//                     ${badgeContent}
+//                 </div>
+//                 <div>
+//                     <p class="text-[12px] font-semibold ${titleStyle}">
+//                         ${step.role}
+//                     </p>
+//                     <p class="text-[11px] ${descStyle}">
+//                         ${step.desc}
+//                     </p>
+//                 </div>
+//             </div>
+//         `;
+//     });
+
+//     const container = document.getElementById('modalAlurPengajuan');
+//     if (container) {
+//         container.innerHTML = html;
+//     }
+// }
+
+window.renderAlurPengajuan = renderAlurPengajuan;
 
 function closeDetail() {
     const modal = document.getElementById('detailModal');
@@ -284,6 +385,37 @@ function closeDetail() {
 }
 
 window.closeDetail = closeDetail;
+
+// Format 1: Rentang Tanggal (cth: "14 - 18 September 2026")
+function formatRangeTanggal(tglAwal, tglAkhir) {
+    if (!tglAwal || !tglAkhir) return '-';
+
+    const dAwal = new Date(tglAwal);
+    const dAkhir = new Date(tglAkhir);
+
+    const dayAwal = dAwal.getDate(); // Cuma ambil angka hari (cth: 14)
+    
+    // Format tanggal akhir lengkap (cth: "18 September 2026")
+    const optionAkhir = { day: 'numeric', month: 'long', year: 'numeric' };
+    const stringAkhir = dAkhir.toLocaleDateString('id-ID', optionAkhir);
+
+    return `${dayAwal} - ${stringAkhir}`;
+}
+
+// Format 2: Tanggal Lengkap dengan Hari (cth: "Senin, 14 September 2026")
+function formatTanggalLengkap(dateString) {
+    if (!dateString) return '-';
+
+    const date = new Date(dateString);
+    const options = { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+    };
+
+    return date.toLocaleDateString('id-ID', options);
+}
 
 /* ============================================================
    PRINT

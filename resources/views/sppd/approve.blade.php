@@ -169,6 +169,47 @@
     {{-- MAIN CONTENT --}}
     <main class="min-h-screen w-full">
 
+    {{-- ALERT PESAN SUKSES --}}
+    @if (session('success'))
+        <div class="mb-5 flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800 shadow-sm">
+            <div class="flex items-center gap-3">
+                <i data-lucide="check-circle-2" class="size-5 text-emerald-600"></i>
+                <span class="text-[13px] font-semibold">{{ session('success') }}</span>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">
+                <i data-lucide="x" class="size-4"></i>
+            </button>
+        </div>
+    @endif
+
+    {{-- ALERT PESAN ERROR (TRANSACTION ROLLBACK / EXCEPTION) --}}
+    @if (session('error'))
+        <div class="mb-5 flex items-center justify-between rounded-xl border border-rose-200 bg-rose-50 p-4 text-rose-800 shadow-sm">
+            <div class="flex items-center gap-3">
+                <i data-lucide="alert-circle" class="size-5 text-rose-600"></i>
+                <span class="text-[13px] font-semibold">{{ session('error') }}</span>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700">
+                <i data-lucide="x" class="size-4"></i>
+            </button>
+        </div>
+    @endif
+
+    {{-- ALERT ERROR VALIDASI INPUT (Misal File Kegedean / Kosong) --}}
+    @if ($errors->any())
+        <div class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900 shadow-sm">
+            <div class="mb-1 flex items-center gap-2 font-bold text-[13px] text-amber-800">
+                <i data-lucide="alert-triangle" class="size-4 text-amber-600"></i>
+                <span>Gagal Memproses Data:</span>
+            </div>
+            <ul class="ml-6 list-disc text-[12px] text-amber-700 space-y-0.5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
         {{-- =====================================================
              CONTENT
         ====================================================== --}}
@@ -296,7 +337,7 @@
                     <div class="flex-1">
                         <input 
                             type="text" 
-                            value="{{ $sppd->keperluan->name ?? '-' }}" 
+                            value="{{ $sppd->keperluan_list ?? '-' }}"
                             class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 text-[14px] text-slate-600" 
                             disabled>
                     </div>
@@ -310,7 +351,7 @@
                     <div class="flex-1">
                         <input 
                             type="text" 
-                            value="{{ $sppd->transport->name ?? '-' }}" 
+                            value="{{ $sppd->transport_list ?? '-' }}" 
                             class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 text-[14px] text-slate-600" 
                             disabled>
                     </div>
@@ -361,100 +402,5 @@
 @push('scripts')
 
 {{-- Script Preview File --}}
-{{-- <script>
-    function previewTTD(event) {
-        const input = event.target;
-        const label = document.getElementById('fileNameLabel');
-        const previewContainer = document.getElementById('previewContainer');
-        const imagePreview = document.getElementById('imagePreview');
 
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            label.textContent = file.name;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imagePreview.src = e.target.result;
-                previewContainer.classList.remove('hidden');
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-</script> --}}
-    {{-- @vite('resources/js/sppd.js') --}}
-
-{{-- Script JS untuk Handle Canvas TTD --}}
-{{-- <script>
-    const canvas = document.getElementById('signatureCanvas');
-    const ctx = canvas.getContext('2d');
-    let isDrawing = false;
-    let hasSignature = false;
-
-    // Set ukuran canvas internal sesuai element
-    function resizeCanvas() {
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-        ctx.lineWidth = 2.5;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = '#0f172a';
-    }
-    window.addEventListener('resize', resizeCanvas);
-    setTimeout(resizeCanvas, 100);
-
-    // Event Mouse / Touch
-    function startDrawing(e) {
-        isDrawing = true;
-        hasSignature = true;
-        ctx.beginPath();
-        const pos = getPos(e);
-        ctx.moveTo(pos.x, pos.y);
-    }
-
-    function draw(e) {
-        if (!isDrawing) return;
-        const pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-    }
-
-    function stopDrawing() {
-        isDrawing = false;
-    }
-
-    function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return {
-            x: clientX - rect.left,
-            y: clientY - rect.top
-        };
-    }
-
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseleave', stopDrawing);
-
-    canvas.addEventListener('touchstart', startDrawing);
-    canvas.addEventListener('touchmove', draw);
-    canvas.addEventListener('touchend', stopDrawing);
-
-    function clearSignature() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        document.getElementById('ttdInput').value = '';
-        hasSignature = false;
-    }
-
-    function submitApproval(url) {
-        const form = document.getElementById('approvalForm');
-        form.action = url;
-        
-        // Simpan gambar TTD ke input hidden sebagai string Base64
-        if (hasSignature) {
-            document.getElementById('ttdInput').value = canvas.toDataURL('image/png');
-        }
-    }
-</script> --}}
 @endpush

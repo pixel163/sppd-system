@@ -14,6 +14,7 @@ class IlpdApproval extends Model
         'approver_id',
         'status',
         'signature',
+        'sla_due_at',
         'approved_at',
     ];
 

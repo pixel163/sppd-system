@@ -75,22 +75,6 @@
                     // Ambil role user login
                     $userRole = auth()->user()->jabatan->name ?? '-';
                 @endphp
-                {{-- @php
-                    // $dinas = $detailData['dinas'] ?? null;
-                    $dinas = $detailData['dinas'] ?? collect();
-                    $sppd = $detailData['sppd'] ?? collect();
-                    $ilpd = $detailData['ilpd'] ?? collect();
-                    $tiket = $detailData['tiket'] ?? collect();
-
-                    // Hitung total dokumen
-                    $countSppd = is_countable($sppd) ? count($sppd) : 0;
-                    $countIlpd = is_countable($ilpd) ? count($ilpd) : 0;
-                    $countTiket = is_countable($tiket) ? count($tiket) : 0;
-                    $totalDokumen = $countSppd + $countIlpd + $countTiket;
-
-                    // Mengambil role user login (fallback ke '-')
-                    $userRole = auth()->user()->jabatan->name ?? '-';
-                @endphp --}}
 
                 {{-- =================================================
                     LEFT : LIST SPPD
@@ -254,11 +238,6 @@
                                 class="self-start px-0 py-1.5 text-[12px] font-semibold text-[#0d6efd] sm:self-auto">
                                 Lihat Detail Pengajuan
                             </button>
-                            {{-- @if(isset($dinas->id))
-                                <a href="{{ route('dokumen.show', $dinas->id) }}" id="detailButton" class="self-start px-0 py-1.5 text-[12px] font-semibold text-[#0d6efd] hover:underline sm:self-auto">
-                                    Lihat Detail Pengajuan
-                                </a>
-                            @endif --}}
                         </div>
 
                         <!-- BOTTOM CONTENT: TUJUAN, TANGGAL, PEMOHON -->
@@ -278,9 +257,6 @@
                                 <div class="flex items-center gap-2">
                                     <i data-lucide="calendar-days" class="size-4 shrink-0 text-[#94a3b8]"></i>
                                     <span id="detailTanggal" class="text-[13px] font-medium text-[#64748b]">
-                                        {{-- {{ $dinas->ilpd?->tanggal_awal?->format('d') ?? '-' }}
-                                        -
-                                        {{ $dinas->ilpd?->tanggal_akhir?->format('d M Y') ?? '-' }} --}}
                                         {{ $dinas?->ilpd?->tanggal_awal?->format('d') ?? '-' }}
                                         -
                                         {{ $dinas?->ilpd?->tanggal_akhir?->format('d M Y') ?? '-' }}
@@ -300,7 +276,6 @@
                                 <div class="flex flex-wrap items-center gap-2">
                                     <span class="text-[#94a3b8]">Tanggal Pengajuan:</span>
                                     <span id="detailTanggalPengajuan" class="font-semibold text-[#0f172a]">
-                                        {{-- {{ isset($dinas->tgl_pengajuan) ? \Carbon\Carbon::parse($dinas->tgl_pengajuan)->format('d M Y') : '-' }} --}}
                                         {{ $dinas?->created_at?->format('d M Y') ?? '-' }}
                                     </span>
                                 </div>
@@ -357,11 +332,6 @@
                                                         class="flex shrink-0 items-center gap-1 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] px-3 py-1.5 text-[12px] font-medium text-[#0f172a] transition-colors hover:bg-[#f1f5f9]">
                                                     <i data-lucide="printer" class="size-3.5"></i> Cetak
                                                 </button>
-                                                {{-- <button type="button" 
-                                                        onclick="printItem('form_sppd', @json($doc))" 
-                                                        class="flex shrink-0 items-center gap-1 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] px-3 py-1.5 text-[12px] font-medium text-[#0f172a] transition-colors hover:bg-[#f1f5f9]">
-                                                    <i data-lucide="printer" class="size-3.5"></i> Cetak
-                                                </button> --}}
 
                                                 <!-- 2. Tombol Unduh -->
                                                 @if(!empty($doc->file_path))
@@ -404,16 +374,12 @@
                                             <div class="flex items-center gap-2">
                                                 <!-- 1. Tombol Cetak -->
                                                 <button type="button" 
-                                                        data-item="{{ json_encode($doc) }}"
+                                                        {{-- data-item="{{ json_encode($doc) }}" --}}
+                                                        data-item='@json($doc)'
                                                         onclick="printItem('form_ilpd', JSON.parse(this.dataset.item))" 
                                                         class="flex shrink-0 items-center gap-1 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] px-3 py-1.5 text-[12px] font-medium text-[#0f172a] transition-colors hover:bg-[#f1f5f9]">
                                                     <i data-lucide="printer" class="size-3.5"></i> Cetak
                                                 </button>
-                                                {{-- <button type="button" 
-                                                        onclick="printItem('form_ilpd', @json($doc))" 
-                                                        class="flex shrink-0 items-center gap-1 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] px-3 py-1.5 text-[12px] font-medium text-[#0f172a] transition-colors hover:bg-[#f1f5f9]">
-                                                    <i data-lucide="printer" class="size-3.5"></i> Cetak
-                                                </button> --}}
 
                                                 <!-- 2. Tombol Unduh -->
                                                 @if(!empty($doc->file_path))
@@ -425,11 +391,6 @@
                                                     </a>
                                                 @endif
                                             </div>
-                                            {{-- @if(!empty($doc->file_path))
-                                                <a href="{{ asset($doc->file_path) }}" target="_blank" class="shrink-0 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] px-3 py-1.5 text-[12px] font-medium text-[#0f172a] transition-colors hover:bg-[#f1f5f9]">
-                                                    Unduh
-                                                </a>
-                                            @endif --}}
                                         </div>
                                     @endforeach
                                 </div>
@@ -588,11 +549,7 @@
     }
 </script>
 
-    @vite('resources/js/dashboard.js')
-{{-- <script>
-    // Mengubah variabel $detailData dari Laravel PHP menjadi objek JavaScript
-    window.detailData = @json($detailData ?? []);
-</script> --}}
-    {{-- @vite('resources/js/dokumen.js') --}}
+    {{-- @vite('resources/js/dashboard.js') --}}
+    @vite('resources/js/dokumen.js')
 
 @endpush

@@ -18,6 +18,8 @@ return new class extends Migration
                 ->restrictOnDelete();
 
             $table->string('name')->unique();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

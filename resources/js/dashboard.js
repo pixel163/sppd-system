@@ -52,6 +52,8 @@ function showDetail(item) {
         dokumenList.push('form_sppd');
     }
 
+    console.log("Dokumen yang berhasil dideteksi:", item.ilpd.id);
+
     // B. Jika ada relasi ilpd (seperti di console log kamu), masukkan 'form_ilpd'
     if (item.ilpd) {
         dokumenList.push('form_ilpd');
@@ -66,9 +68,6 @@ function showDetail(item) {
     if (hasTiket) {
         dokumenList.push('tiket');
     }
-    // if (item.tiket || item.tiket_id) {
-    //     dokumenList.push('tiket');
-    // }
 
     // 2. DEBUGGING
     console.log("Dokumen yang berhasil dideteksi:", dokumenList);
@@ -88,13 +87,12 @@ function showDetail(item) {
             let documentButtons = '';
 
             // Tentukan Key Unik (ID/No) & Tanggal berdasarkan jenis dokumen
-            let itemId = item.id;
+            // let itemId = item.id;
+            let itemId = item.ilpd.id;
             let rawDate = item.created_at;
             let editUrl = `/sppd/${itemId}/edit`;
-            // let itemId = `/sppd/${item.id}/edit`;
 
             if (type === 'form_ilpd' && item.ilpd) {
-                // itemId = item.ilpd.no_ilpd || item.ilpd.id || item.id;
                 
                 rawDate = item.ilpd.created_at || item.created_at;
                 // Ganti Judul dengan Nomor ILPD (misal: ILPD/2026/09/0001)
@@ -137,7 +135,6 @@ function showDetail(item) {
             const docDate = typeof formatTanggalIndo === 'function' ? formatTanggalIndo(rawDate) : (rawDate || '-');
 
             // Kondisi Tombol Action
-            // const status = item.status;
             const status = type === 'form_ilpd'
                 ? item.ilpd?.status
                 : item.sppd?.status ?? item.status;
@@ -146,7 +143,13 @@ function showDetail(item) {
             const isMyDocument = (Number(docUserId) === Number(window.currentUserId));
             const isHRGA = window.currentUserRole === 'HRGA';
 
-            if (status === 'Menunggu Approval' || status === 'Menunggu Approval') {
+            if (status === 'Draft' || status === 'Draft') {
+                documentButtons = `
+                    <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
+                        <span>👁</span> Lihat
+                    </button>
+                `;
+            } else if (status === 'Menunggu Approval' || status === 'Menunggu Approval') {
                 documentButtons = `
                     <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
                         <span>👁</span> Lihat
@@ -196,13 +199,6 @@ function showDetail(item) {
             container.appendChild(wrapper);
         });
     }
-
-    // 4. FOOTER ACTIONS (Disederhanakan untuk tombol Tutup)
-    // document.getElementById('modalActions').innerHTML = `
-    //     <button type="button" onclick="closeModal()" class="rounded-lg border border-[#e2e8f0] px-4 py-2 text-xs font-semibold text-[#64748b] hover:bg-slate-50">
-    //         Tutup
-    //     </button>
-    // `;
 
     // 5. BUKA MODAL
     document.getElementById('detailModal').classList.remove('hidden');
@@ -328,7 +324,7 @@ function extractPrintData(type, item) {
         tujuan: item.tujuan || item.kota_tujuan || item.kota || '-',
         waktu: item.tanggal_perjalanan || item.waktu || '-',
         keperluan: item.keperluan || item.keterangan || '-',
-        transportasi: item.transportasi || item.jenis_transportasi || '-',
+        transport: item.transport || item.jenis_transport || '-',
         tugas: item.tugas || item.uraian_tugas || '-',
 
         // Data Form 2 (ILPD)
@@ -348,10 +344,6 @@ function printItem(type, item) {
         return;
     }
 
-    // const ilpd = item.ilpd || {};
-    // const tiketList = ilpd.tikets || ilpd.tiket || [];
-    // const tiket = Array.isArray(tiketList) ? (tiketList[0] || {}) : tiketList;
-
     let htmlContent = '';
 
     // 1. Pilih Layout berdasarkan Tipe Dokumen
@@ -365,16 +357,6 @@ function printItem(type, item) {
         alert('Tipe dokumen tidak valid!');
         return;
     }
-    // let htmlContent = '';
-
-    // // 1. Pilih Layout berdasarkan Tipe Dokumen
-    // if (type === 'form_sppd') {
-    //     htmlContent = generateSppdLayout(item);
-    // } else if (type === 'form_ilpd') {
-    //     htmlContent = generateIlpdLayout(item);
-    // } else if (type === 'tiket') {
-    //     htmlContent = generateTiketLayout(item);
-    // }
 
     // 2. Buka jendela cetak
     const printWindow = window.open('', '_blank', 'width=900,height=700');
@@ -406,9 +388,6 @@ function generateSppdLayout(item) {
     const sppd = item.sppd || {};
     const user = item.user || {};
     const kota = item.kota || {};
-    // Ambil data tiket jika ada
-    // const tiketList = ilpd.tikets || ilpd.tiket || [];
-    // const tiket = Array.isArray(tiketList) ? (tiketList[0] || {}) : tiketList;
 
     // Masukkan kode HTML ILPD kamu di dalam template string backtick (`)
     return `
@@ -776,7 +755,7 @@ function generateIlpdLayout(item) {
     const ilpd = item.ilpd || {};
     const user = item.user || {};
     const kota = item.kota || {};
-    const perkiraan = ilpd.perkiraan_biaya || {};
+    const perkiraan = ilpd.detail_ilpd || {};
     const realisasi = ilpd.realisasi_biaya || {};
     // Ambil data tiket jika ada
     const tiketList = ilpd.tikets || ilpd.tiket || [];
@@ -818,7 +797,7 @@ function generateIlpdLayout(item) {
             <!-- 1. HEADER SURAT & TTD ATAS -->
             <table class="table-doc">
                 <tr>
-                    <td colspan="8" class="title-header">${ilpd.nama_surat || 'IZIN LOKASI PERJALANAN DINAS (ILPD)'}</td>
+                    <td colspan="8" class="title-header">${ilpd.nama_surat || 'IZIN DAN LAPORAN PERJALANAN DINAS (ILPD)'}</td>
                 </tr>
                 <tr>
                     <td colspan="4" class="company-name">${ilpd.nama_perusahaan || 'PT. NAMA PERUSAHAAN'}</td>
@@ -851,15 +830,15 @@ function generateIlpdLayout(item) {
                 </tr>
                 <tr>
                     <td><strong>Lama Perjalanan</strong></td>
-                    <td colspan="3">: ${item.tgl_mulai || '-'} s/d ${item.tgl_akhir || '-'} (${item.durasi || '-'} Hari)</td>
+                    <td colspan="3">: ${item.durasi || '-'} Hari)</td>
                 </tr>
                 <tr>
                     <td><strong>Transportasi</strong></td>
-                    <td colspan="3">: ${item.transport || item.transport_id || '-'}</td>
+                    <td colspan="3">: ${item.transport?.name || item.transport_id || '-'}</td>
                 </tr>
                 <tr>
                     <td><strong>Keperluan</strong></td>
-                    <td colspan="3">: ${item.keperluan || item.keperluan_id || '-'}</td>
+                    <td colspan="3">: ${item.keperluan?.name || item.keperluan_id || '-'}</td>
                 </tr>
                 <tr>
                     <td><strong>Tugas</strong></td>
@@ -882,8 +861,8 @@ function generateIlpdLayout(item) {
                     <td>
                         <table style="width:100%;">
                             <tr><td>BBM</td><td class="text-right">Rp ${perkiraan.bbm || '0'}</td></tr>
-                            <tr><td>Uang Harian (Dinas)</td><td class="text-right">Rp ${perkiraan.uang_dinas || '0'}</td></tr>
-                            <tr><td>Uang Makan</td><td class="text-right">Rp ${perkiraan.uang_makan || '0'}</td></tr>
+                            <tr><td>Uang Harian (Dinas)</td><td class="text-right">Rp ${perkiraan.dinas || '0'}</td></tr>
+                            <tr><td>Uang Makan</td><td class="text-right">Rp ${perkiraan.makan || '0'}</td></tr>
                             <tr><td>Hotel</td><td class="text-right">Rp ${perkiraan.hotel || '0'}</td></tr>
                             <tr><td>Transport Lokal</td><td class="text-right">Rp ${perkiraan.transport_lokal || '0'}</td></tr>
                             <tr><td>Visa / Fiskal</td><td class="text-right">Rp ${perkiraan.visa_fiskal || '0'}</td></tr>
@@ -919,7 +898,7 @@ function generateIlpdLayout(item) {
                         ${ilpd.yang_dikunjungi || '-'}
                     </td>
                     <td width="25%"><strong>Uang Muka</strong></td>
-                    <td width="25%" class="text-right">Rp ${ilpd.uang_muka || '0'}</td>
+                    <td width="25%" class="text-right">Rp ${perkiraan.uang_muka || '0'}</td>
                 </tr>
                 <tr>
                     <td><strong>Selisih (Lebih / Kurang)</strong></td>

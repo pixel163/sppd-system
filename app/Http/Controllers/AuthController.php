@@ -27,6 +27,7 @@ class AuthController extends Controller
             };
         }
 
+        // return back()->with('warning', 'Email atau password salah.')->withInput($request->only('email'));
         return back()->withErrors(['email' => 'Email atau password salah.',])->onlyInput('email');
     }
 

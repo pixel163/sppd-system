@@ -528,6 +528,8 @@
                                 required
                                 class="absolute inset-0 z-10 cursor-pointer opacity-0" 
                                 onchange="updateFileName(this)"
+                                oninvalid="this.setCustomValidity('Silahkan upload tiket')"
+                                onkeydown="cekkunci(event)"
                             />
 
                             {{-- IKON CLOUD UPLOAD --}}
@@ -567,6 +569,7 @@
 
                             <input
                                 id="bbm"
+                                name="bbm"
                                 type="text"
                                 inputmode="numeric"
                                 placeholder="Masukkan jumlah biaya BBM"
@@ -578,13 +581,47 @@
                     </div>
 
                     {{-- UANG HARIAN --}}
-                    <div class="mb-6">
+                    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm mb-6">
+                        {{-- Header Section --}}
+                        <div class="mb-4 flex items-center justify-between">
+                            <div>
+                                <h4 class="text-[14px] font-bold text-slate-800">Rincian Uang Harian & Penginapan</h4>
+                                <p class="mt-0.5 text-[11px] text-[#64748b]">
+                                    Nilai di bawah dihitung otomatis dari Master Data berdasarkan Golongan Staff dan kota tujuan.
+                                </p>
+                            </div>
 
-                        <label class="mb-3 block text-[13px] font-semibold">
-                            Uang Harian (sesuai golongan & destinasi)
-                            <span class="text-red-500">*</span>
-                        </label>
+                            {{-- Switch / Tombol untuk Mengaktifkan Mode Edit Khusus GA --}}
+                            <button type="button" id="btnToggleEdit" onclick="toggleAdjustTarif()" 
+                                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-slate-50 px-3 py-1.5 text-[12px] font-semibold text-slate-700 hover:bg-slate-100 transition">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                                <span>Sesuaikan Tarif</span>
+                            </button>
+                        </div>
 
+                        {{-- Dropdown Opsional (Awalnya Tersembunyi) --}}
+                        <div id="wrapperDropdownGolongan" class="mb-4 hidden rounded-lg bg-amber-50 p-3 border border-amber-200">
+                            <label class="mb-1 block text-[12px] font-semibold text-amber-900">
+                                Pilih Tarif Golongan Pengganti (Override):
+                            </label>
+                            <select id="selectGolonganOverride" onchange="applyTarifOverride(this)" 
+                                    class="w-full rounded-md border border-amber-300 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="">-- Pilih Golongan Penyesuaian --</option>
+                                @foreach($tarifs as $tarif)
+                                    <option value="{{ $tarif->id }}" 
+                                            data-dinas="{{ $tarif->dinas }}" 
+                                            data-makan="{{ $tarif->makan }}" 
+                                            data-hotel="{{ $tarif->hotel }}"
+                                            {{ (isset($golonganId) && $tarif->golongan_id == $golonganId) ? 'selected' : '' }}>
+                                        {{ $tarif->golongan->nama ?? 'Golongan '.$tarif->golongan_id }} — Tarif: Rp {{ number_format($tarif->dinas) }} - {{ number_format($tarif->makan) }} - {{ number_format($tarif->hotel) }} / hari
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Form Input 4 Kolom --}}
                         <div class="grid grid-cols-4 gap-3">
 
                             {{-- DINAS --}}
@@ -595,11 +632,11 @@
                                 <div class="currency-wrapper">
                                     <span class="currency-prefix">Rp</span>
                                     <input
-                                        id="dinas"
+                                        id="inputDinas"
                                         name="uang_dinas"
                                         type="text"
-                                        class="currency-input"
-                                        value="{{ number_format($ilpd->detailIlpd->dinas ?? 0, 0, ',', '.') }}"
+                                        class="currency-input input-biaya"
+                                        value="{{ number_format($ilpd->detail_ilpd->dinas ?? 0, 0, ',', '.') }}"
                                         readonly>
                                 </div>
                             </div>
@@ -612,11 +649,11 @@
                                 <div class="currency-wrapper">
                                     <span class="currency-prefix">Rp</span>
                                     <input
-                                        id="makan"
+                                        id="inputMakan"
                                         name="uang_makan"
                                         type="text"
-                                        class="currency-input"
-                                        value="{{ number_format($ilpd->detailIlpd->makan ?? 0, 0, ',', '.') }}"
+                                        class="currency-input input-biaya"
+                                        value="{{ number_format($ilpd->detail_ilpd->makan ?? 0, 0, ',', '.') }}"
                                         readonly>
                                 </div>
                             </div>
@@ -629,11 +666,11 @@
                                 <div class="currency-wrapper">
                                     <span class="currency-prefix">Rp</span>
                                     <input
-                                        id="hotel"
+                                        id="inputHotel"
                                         name="uang_hotel"
                                         type="text"
-                                        class="currency-input"
-                                        value="{{ number_format($ilpd->detailIlpd->hotel ?? 0, 0, ',', '.') }}"
+                                        class="currency-input input-biaya"
+                                        value="{{ number_format($ilpd->detail_ilpd->hotel ?? 0, 0, ',', '.') }}"
                                         readonly>
                                 </div>
                             </div>
@@ -651,102 +688,10 @@
                                         value="Actual"
                                         readonly>
                                 </div>
-
                             </div>
 
                         </div>
-
-                        <p class="mt-2 text-[11px] text-[#64748b]">
-                            Tarif Dinas, Makan, dan Hotel disesuaikan dengan golongan pegawai dan kota tujuan.
-                        </p>
-
                     </div>
-                    {{-- <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"> --}}
-                        {{-- Header Section --}}
-                        {{-- <div class="mb-4 flex items-center justify-between">
-                            <div>
-                                <h4 class="text-[14px] font-bold text-slate-800">Rincian Uang Harian & Penginapan</h4>
-                                <p class="text-[12px] text-slate-500">Nilai di bawah dihitung otomatis dari Master Data berdasarkan Golongan Staff.</p>
-                            </div> --}}
-
-                            {{-- Switch / Tombol untuk Mengaktifkan Mode Edit Khusus GA --}}
-                            {{-- <button type="button" id="btnToggleEdit" onclick="toggleAdjustTarif()" 
-                                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-slate-50 px-3 py-1.5 text-[12px] font-semibold text-slate-700 hover:bg-slate-100 transition">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                                <span>Sesuaikan Tarif</span>
-                            </button>
-                        </div> --}}
-
-                        {{-- Dropdown Opsional (Awalnya Tersembunyi) --}}
-                        {{-- <div id="wrapperDropdownGolongan" class="mb-4 hidden rounded-lg bg-amber-50 p-3 border border-amber-200">
-                            <label class="mb-1 block text-[12px] font-semibold text-amber-900">
-                                Pilih Tarif Golongan Pengganti (Override):
-                            </label>
-                            <select id="selectGolonganOverride" onchange="applyTarifOverride(this)">
-                                <option value="">-- Pilih Golongan Penyesuaian --</option>
-                                @foreach($tarifMasterList as $tarif)
-                                    <option value="{{ $tarif->id }}" 
-                                            data-dinas="{{ $tarif->dinas }}" 
-                                            data-makan="{{ $tarif->makan }}" 
-                                            data-hotel="{{ $tarif->hotel }}" --}}
-                                            {{-- Automatis Select Golongan Pemohon Saat Ini --}}
-                                            {{-- {{ $tarif->golongan_id == $golonganId ? 'selected' : '' }}>
-                                        Golongan {{ $tarif->golongan->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <select id="selectGolonganOverride" onchange="applyTarifOverride(this)" 
-                                    class="w-full rounded-md border border-amber-300 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                                <option value="">-- Pilih Golongan Penyesuaian --</option>
-                                @foreach($tarifMasterList as $tarif)
-                                    <option value="{{ $tarif->id }}" 
-                                            data-dinas="{{ $tarif->uang_dinas }}" 
-                                            data-makan="{{ $tarif->uang_makan }}" 
-                                            data-hotel="{{ $tarif->uang_hotel }}">
-                                        {{ $tarif->golongan->nama }} — Total: Rp {{ number_format($tarif->total) }} / hari
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div> --}}
-
-                        {{-- Form Input 4 Kolom (Default Readonly) --}}
-                        {{-- <div class="grid grid-cols-4 gap-3">
-                            <div>
-                                <label class="mb-1 block text-[12px] font-semibold text-slate-600">Dinas / Hari</label>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2.5 text-[12px] text-slate-400">Rp</span>
-                                    <input id="inputDinas" name="uang_dinas" type="text" readonly 
-                                        class="w-full rounded-lg border border-slate-200 bg-slate-50 pl-8 pr-3 py-2 text-[13px] font-semibold text-slate-700 readonly:cursor-not-allowed" 
-                                        value="{{ number_format($ilpd->detailIlpd->dinas ?? 0, 0, ',', '.') }}">
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="mb-1 block text-[12px] font-semibold text-slate-600">Makan / Hari</label>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2.5 text-[12px] text-slate-400">Rp</span>
-                                    <input id="inputMakan" name="uang_makan" type="text" readonly 
-                                        class="w-full rounded-lg border border-slate-200 bg-slate-50 pl-8 pr-3 py-2 text-[13px] font-semibold text-slate-700 readonly:cursor-not-allowed" 
-                                        value="{{ number_format($ilpd->detailIlpd->makan ?? 0, 0, ',', '.') }}">
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="mb-1 block text-[12px] font-semibold text-slate-600">Hotel / Malam</label>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2.5 text-[12px] text-slate-400">Rp</span>
-                                    <input id="inputHotel" name="uang_hotel" type="text" readonly 
-                                        class="w-full rounded-lg border border-slate-200 bg-slate-50 pl-8 pr-3 py-2 text-[13px] font-semibold text-slate-700 readonly:cursor-not-allowed" 
-                                        value="{{ number_format($ilpd->detailIlpd->hotel ?? 0, 0, ',', '.') }}">
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="mb-1 block text-[12px] font-semibold text-slate-600">Laundry</label>
-                                <input type="text" readonly class="w-full rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-[13px] font-semibold text-slate-500 cursor-not-allowed" value="Actual">
-                            </div>
-                        </div>
-                    </div> --}}
 
                     {{-- BIAYA LAINNYA --}}
                     <div>
@@ -769,8 +714,9 @@
                                 </span>
 
                                 <input
-                                    type="text"
                                     id="transportLokal"
+                                    name="transport_lokal"
+                                    type="text"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
                                     oninput="formatRupiah(this); hitungTotal()">
@@ -793,8 +739,9 @@
                                 </span>
 
                                 <input
-                                    type="text"
                                     id="visa"
+                                    name="visa"
+                                    type="text"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
                                     oninput="formatRupiah(this); hitungTotal()">
@@ -817,8 +764,9 @@
                                 </span>
 
                                 <input
-                                    type="text"
                                     id="fiskal"
+                                    name="fiskal"
+                                    type="text"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
                                     oninput="formatRupiah(this); hitungTotal()">
@@ -841,8 +789,9 @@
                                 </span>
 
                                 <input
-                                    type="text"
                                     id="airportTax"
+                                    name="airport_tax"
+                                    type="text"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
                                     oninput="formatRupiah(this); hitungTotal()">
@@ -865,8 +814,9 @@
                                 </span>
 
                                 <input
-                                    type="text"
                                     id="parkirToll"
+                                    name="parkir&toll"
+                                    type="text"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
                                     oninput="formatRupiah(this); hitungTotal()">
@@ -903,7 +853,8 @@
                         <div class="expense-row mb-3 flex items-center justify-between">
 
                             <input
-                                id="namaLainnya"
+                                id="dll"
+                                name="dll"
                                 type="text"
                                 placeholder="Dll..."
                                 class="w-[120px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[13px] outline-none">
@@ -967,7 +918,7 @@
                                     id="uangMuka"
                                     name="uang_muka"
                                     type="text"
-                                    value="{{ number_format($ilpd->detailIlpd->total ?? 0, 0, ',', '.') }}"
+                                    value="{{ number_format($ilpd->detail_ilpd->total ?? 0, 0, ',', '.') }}"
                                     class="currency-input readonly-input font-semibold"
                                     readonly>
                             </div>
@@ -1007,6 +958,354 @@
 @push('scripts')
 
 <script>
+    // ============================================================
+    // 1. UPDATE NAMA FILE TIKET
+    // ============================================================
+    function updateFileName(input) {
+        input.setCustomValidity('');
+
+        const label = document.getElementById('file-label');
+
+        if (input.files && input.files[0]) {
+            label.innerText = 'File Terpilih: ' + input.files[0].name;
+            label.classList.add('text-[#2563eb]');
+        } else {
+            label.innerText = 'Upload tiket perjalanan';
+            label.classList.remove('text-[#2563eb]');
+        }
+    }
+
+
+    // ============================================================
+    // 2. PARSE RUPIAH
+    // ============================================================
+    function parseRupiah(val) {
+        if (!val) return 0;
+
+        return parseInt(
+            val.toString().replace(/[^0-9]/g, '')
+        ) || 0;
+    }
+
+
+    // ============================================================
+    // 3. FORMAT RUPIAH
+    // ============================================================
+    function formatRupiah(angka) {
+        if (isNaN(angka) || angka === null || angka === 0) {
+            return '';
+        }
+
+        return new Intl.NumberFormat('id-ID').format(angka);
+    }
+
+
+    // ============================================================
+    // 4. TOGGLE PENYESUAIAN TARIF
+    // ============================================================
+    function toggleAdjustTarif() {
+        const wrapper = document.getElementById('wrapperDropdownGolongan');
+
+        if (wrapper) {
+            wrapper.classList.toggle('hidden');
+        }
+    }
+
+
+    // ============================================================
+    // 5. HITUNG TOTAL
+    // ============================================================
+    function hitungTotal() {
+
+        // --------------------------------------------------------
+        // DURASI PERJALANAN
+        // --------------------------------------------------------
+        const durasiPerjalanan = {{ $ilpd->sppd->durasi ?? 1 }};
+        const durasi = Number(durasiPerjalanan) || 1;
+
+
+        // --------------------------------------------------------
+        // A. TARIF HARIAN
+        //
+        // Dinas, Makan, Hotel = tarif per hari/malam
+        // sehingga dikalikan dengan durasi
+        // --------------------------------------------------------
+
+        const inputDinas = document.getElementById('inputDinas');
+        const inputMakan = document.getElementById('inputMakan');
+        const inputHotel = document.getElementById('inputHotel');
+
+        const dinasPerHari = inputDinas
+            ? parseRupiah(inputDinas.value)
+            : 0;
+
+        const makanPerHari = inputMakan
+            ? parseRupiah(inputMakan.value)
+            : 0;
+
+        const hotelPerMalam = inputHotel
+            ? parseRupiah(inputHotel.value)
+            : 0;
+
+
+        const totalDinas = dinasPerHari * durasi;
+        const totalMakan = makanPerHari * durasi;
+        const totalHotel = hotelPerMalam * durasi;
+
+
+        // --------------------------------------------------------
+        // B. BIAYA OPSIONAL
+        //
+        // Kosong = 0
+        // Tidak wajib diisi
+        // --------------------------------------------------------
+
+        const biayaOpsionalIds = [
+            'bbm',
+            'transportLokal',
+            'visa',
+            'fiskal',
+            'airportTax',
+            'parkirToll',
+            'entertainment',
+            'biayaLainnya'
+        ];
+
+        let totalOpsional = 0;
+
+        biayaOpsionalIds.forEach(id => {
+            const input = document.getElementById(id);
+
+            if (input) {
+                totalOpsional += parseRupiah(input.value);
+            }
+        });
+
+
+        // --------------------------------------------------------
+        // C. GRAND TOTAL
+        // --------------------------------------------------------
+
+        const grandTotal =
+            totalDinas +
+            totalMakan +
+            totalHotel +
+            totalOpsional;
+
+
+        // --------------------------------------------------------
+        // D. UPDATE TOTAL
+        // --------------------------------------------------------
+
+        const elementTotal =
+            document.getElementById('total') ||
+            document.getElementById('inputTotal') ||
+            document.getElementById('totalDisplay');
+
+        if (elementTotal) {
+
+            if (elementTotal.tagName === 'INPUT') {
+                elementTotal.value = formatRupiah(grandTotal);
+            } else {
+                elementTotal.innerText = 'Rp ' + formatRupiah(grandTotal);
+            }
+        }
+
+
+        // --------------------------------------------------------
+        // E. UPDATE UANG MUKA
+        //
+        // Uang muka mengikuti total
+        // --------------------------------------------------------
+
+        const elementUangMuka =
+            document.getElementById('uangMuka');
+
+        if (elementUangMuka) {
+            elementUangMuka.value = formatRupiah(grandTotal);
+        }
+    }
+
+
+    // ============================================================
+    // 6. APPLY TARIF OVERRIDE
+    // ============================================================
+    function applyTarifOverride(select) {
+
+        const selectedOption =
+            select.options[select.selectedIndex];
+
+        if (!selectedOption.value) return;
+
+
+        const dinas =
+            selectedOption.getAttribute('data-dinas');
+
+        const makan =
+            selectedOption.getAttribute('data-makan');
+
+        const hotel =
+            selectedOption.getAttribute('data-hotel');
+
+
+        const inputDinas =
+            document.getElementById('inputDinas');
+
+        const inputMakan =
+            document.getElementById('inputMakan');
+
+        const inputHotel =
+            document.getElementById('inputHotel');
+
+        if (inputDinas && dinas !== null) {
+            inputDinas.value = formatRupiah(dinas);
+        }
+
+        if (inputMakan && makan !== null) {
+            inputMakan.value = formatRupiah(makan);
+        }
+
+        if (inputHotel && hotel !== null) {
+            inputHotel.value = formatRupiah(hotel);
+        }
+        
+        // if (inputDinas && dinas !== null) {
+        //     inputDinas.value = formatRupiah(
+        //         parseRupiah(dinas)
+        //     );
+        // }
+
+        // if (inputMakan && makan !== null) {
+        //     inputMakan.value = formatRupiah(
+        //         parseRupiah(makan)
+        //     );
+        // }
+
+        // if (inputHotel && hotel !== null) {
+        //     inputHotel.value = formatRupiah(
+        //         parseRupiah(hotel)
+        //     );
+        // }
+
+
+        // Langsung hitung ulang
+        hitungTotal();
+    }
+
+
+    // ============================================================
+    // 7. FORMAT INPUT + REALTIME CALCULATOR
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const inputIds = [
+            'bbm',
+            'inputDinas',
+            'inputMakan',
+            'inputHotel',
+            'transportLokal',
+            'visa',
+            'fiskal',
+            'airportTax',
+            'parkirToll',
+            'entertainment',
+            'biayaLainnya'
+        ];
+
+
+        // --------------------------------------------------------
+        // FORMAT NILAI AWAL
+        // --------------------------------------------------------
+
+        inputIds.forEach(id => {
+
+            const input = document.getElementById(id);
+
+            if (input && input.value) {
+                input.value = formatRupiah(
+                    parseRupiah(input.value)
+                );
+            }
+        });
+
+
+        // --------------------------------------------------------
+        // REALTIME INPUT
+        // --------------------------------------------------------
+
+        inputIds.forEach(id => {
+
+            const input = document.getElementById(id);
+
+            if (!input) return;
+
+
+            input.addEventListener('input', function () {
+
+                const value = parseRupiah(this.value);
+
+                this.value = value
+                    ? formatRupiah(value)
+                    : '';
+
+
+                // LANGSUNG HITUNG
+                hitungTotal();
+            });
+        });
+
+
+        // --------------------------------------------------------
+        // HITUNG SAAT HALAMAN PERTAMA DIBUKA
+        // --------------------------------------------------------
+
+        hitungTotal();
+
+
+        // --------------------------------------------------------
+        // BERSIHKAN FORMAT RUPIAH SEBELUM SUBMIT
+        // --------------------------------------------------------
+
+        const formApprove =
+            document.querySelector('form');
+
+        if (formApprove) {
+
+            formApprove.addEventListener('submit', function () {
+
+                inputIds.forEach(id => {
+
+                    const input =
+                        document.getElementById(id);
+
+                    if (input) {
+                        input.value =
+                            parseRupiah(input.value);
+                    }
+                });
+
+
+                const total =
+                    document.getElementById('total');
+
+                if (total) {
+                    total.value =
+                        parseRupiah(total.value);
+                }
+
+
+                const uangMuka =
+                    document.getElementById('uangMuka');
+
+                if (uangMuka) {
+                    uangMuka.value =
+                        parseRupiah(uangMuka.value);
+                }
+            });
+        }
+    });
+</script>
+{{-- <script>
     function updateFileName(input) {
         const label = document.getElementById('file-label');
         if (input.files && input.files[0]) {
@@ -1053,7 +1352,7 @@
         return new Intl.NumberFormat('id-ID').format(angka);
     }
 
-</script>
+</script> --}}
 
     {{-- @vite('resources/js/ilpd.js') --}}
 

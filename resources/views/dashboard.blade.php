@@ -354,8 +354,12 @@
                         </p>
                     </div>
 
-                </div>
+                    <a href="/riwayat"
+                        class="text-[12px] font-semibold text-[#0d6efd] hover:underline">
+                        Lihat Semua
+                    </a>
 
+                </div>
 
                 <div class="overflow-x-auto">
 
@@ -365,7 +369,7 @@
                             <tr class="border-b border-[#eef2f7] text-[#64748b]">
 
                                 <th class="whitespace-nowrap px-4 py-3 font-semibold">
-                                    No. SPPD
+                                    No. Dinas
                                 </th>
 
                                 <th class="whitespace-nowrap px-4 py-3 font-semibold">
@@ -382,6 +386,10 @@
 
                                 <th class="whitespace-nowrap px-4 py-3 font-semibold">
                                     Status
+                                </th>
+
+                                <th class="whitespace-nowrap px-4 py-3 font-semibold">
+                                    SLA
                                 </th>
 
                                 <th class="whitespace-nowrap px-4 py-3 text-right font-semibold">
@@ -437,6 +445,59 @@
 
                                     </td>
 
+                                    <td class="whitespace-nowrap px-4 py-3">
+
+                                        @php
+                                            // 1. Style Warna untuk Status Pengajuan
+                                            // $statusClass = match(strtolower($item->dinas->status ?? '')) {
+                                            //     'approved', 'disetujui' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                            //     'rejected', 'ditolak'   => 'bg-rose-50 text-rose-600 border-rose-100',
+                                            //     default                 => 'bg-amber-50 text-amber-600 border-amber-100',
+                                            // };
+
+                                            // 2. Ambil Informasi SLA dari Model Dinas
+                                            $sla = $item->dinas->sla_info;
+                                        @endphp
+
+                                        <div class="flex items-center gap-1.5">
+                                            {{-- Badge Status Pengajuan Utama --}}
+                                            {{-- <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
+                                                {{ str_replace('_', ' ', $item->dinas->status) }}
+                                            </span> --}}
+
+                                            {{-- Badge Timer SLA (Hanya Tampil Jika Masih Proses / Ada SLA) --}}
+                                            @if($sla['status'] !== 'none')
+                                                <span class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold {{ $sla['class'] }}" title="Batas Waktu SLA">
+                                                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    {{ $sla['label'] }}
+                                                </span>
+                                            @endif
+                                        </div>
+
+                                    </td>
+                                    {{-- <td class="whitespace-nowrap px-4 py-3">
+
+                                        @php
+                                            $statusClass = match($item->dinas->status) {
+                                                'approved', 'disetujui'
+                                                    => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+
+                                                'rejected', 'ditolak'
+                                                    => 'bg-rose-50 text-rose-600 border-rose-100',
+
+                                                default
+                                                    => 'bg-amber-50 text-amber-600 border-amber-100',
+                                            };
+                                        @endphp
+
+                                        <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
+                                            {{ str_replace('_', ' ', $item->dinas->status) }}
+                                        </span>
+
+                                    </td> --}}
+
                                     <td class="whitespace-nowrap px-4 py-3 text-right">
 
                                         {{-- <a href="{{ route('approve.show', $item->id) }}"
@@ -477,222 +538,6 @@
     @endif
 
 </section>
-{{-- <section class="px-5 pb-8 pt-5 sm:px-7"> --}}
-
-    {{-- STAFF --}}
-    {{-- <div id="staffSection">
-        <div class="rounded-2xl border border-[#f1f5f9] bg-white p-4 shadow-[0px_4px_6px_rgba(15,23,42,0.02)] sm:p-6">
-            
-            <div class="mb-5 flex items-center justify-between">
-                <div>
-                    <h2 class="text-[16px] font-bold text-[#0f172a]">
-                        Pengajuan Terbaru
-                    </h2>
-                    <p class="mt-1 text-[11px] text-[#64748b]">
-                        Pengajuan perjalanan dinas Anda
-                    </p>
-                </div>
-
-                <a href="/riwayat" class="text-[12px] font-semibold text-[#0d6efd] hover:underline">
-                    Lihat Semua
-                </a>
-            </div>
-
-            <div id="staffList" class="space-y-3">
-                @forelse($pengajuanSaya as $item)
-                    <div class="rounded-xl border border-[#eef2f7] p-4 transition hover:border-[#dbeafe] hover:shadow-sm">
-                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
-                            <div class="min-w-0">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <span class="text-[13px] font-bold text-[#0f172a]">
-                                        {{ $item->dinas->no_dinas ?? '-' }}
-                                    </span>
-
-                                    @php
-                                        $statusClass = match($item->status) {
-                                            'approved', 'disetujui' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                                            'rejected', 'ditolak'   => 'bg-rose-50 text-rose-600 border-rose-100',
-                                            default                => 'bg-amber-50 text-amber-600 border-amber-100',
-                                        };
-                                    @endphp
-                                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
-                                        {{ str_replace('_', ' ', $item->dinas->status) }}
-                                    </span>
-                                </div>
-
-                                <div class="mt-2 grid gap-1 text-[11px] text-[#64748b] sm:grid-cols-2 sm:gap-x-6">
-                                    <span>Pemohon: <b class="text-[#1e293b]">{{ $item->user->name ?? '-' }}</b></span>
-                                    <span>Tujuan: <b class="text-[#1e293b]">{{ $item->kota->name ?? '-' }}</b></span>
-                                    <span>Waktu Dinas: 
-                                        <b class="text-[#1e293b]">
-                                            {{ $item->ilpd ? $item->ilpd->tanggal_awal->format('d') . ' - ' . $item->ilpd->tanggal_akhir->format('d M Y') : '-' }}
-                                        </b>
-                                    </span>
-                                    <span>Diajukan: <b class="text-[#1e293b]">{{ $item->created_at ? $item->created_at->format('d M Y') : '-' }}</b></span>
-                                </div>
-                            </div>
-
-                            <div class="flex shrink-0 gap-2">
-                                <button 
-                                    type="button" 
-                                    onclick='showDetail(@json($item))'
-                                    class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]">
-                                    Detail 
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                @empty
-                    <div class="rounded-xl border border-dashed border-[#e2e8f0] py-8 text-center">
-                        <p class="text-xs font-medium text-[#64748b]">Belum ada pengajuan SPPD.</p>
-                    </div>
-                @endforelse
-            </div>
-
-        </div>
-    </div> --}}
-
-    {{-- MANAGER --}}
-    {{-- @if(optional(auth()->user()->jabatan)->name === 'Manager')
-        <div id="managerSection" class="mt-6">
-            <div class="rounded-2xl border border-[#f1f5f9] bg-white p-4 shadow-sm sm:p-6">
-
-                <div class="mb-5">
-                    <h2 class="text-[16px] font-bold text-[#0f172a]">
-                        Perlu Persetujuan Saya
-                    </h2>
-                    <p class="mt-1 text-[11px] text-[#64748b]">
-                        Pengajuan staff yang membutuhkan pemeriksaan Anda.
-                    </p>
-                </div>
-
-                <div id="managerList" class="space-y-3">
-                    @forelse($approvalManager as $item)
-                        <div class="rounded-xl border border-[#eef2f7] p-4 transition hover:border-[#dbeafe] hover:shadow-sm">
-                            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
-                                <div class="min-w-0">
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        <span class="text-[13px] font-bold text-[#0f172a]">
-                                            {{ $item->dinas->no_dinas ?? '-' }}
-                                        </span>
-
-                                        @php
-                                            $statusClass = match($item->status) {
-                                                'approved', 'disetujui' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                                                'rejected', 'ditolak'   => 'bg-rose-50 text-rose-600 border-rose-100',
-                                                 default                => 'bg-amber-50 text-amber-600 border-amber-100',
-                                            };
-                                        @endphp
-                                        <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
-                                            {{ str_replace('_', ' ', $item->status) }}
-                                        </span>
-                                    </div>
-
-                                    <div class="mt-2 grid gap-1 text-[11px] text-[#64748b] sm:grid-cols-2 sm:gap-x-6">
-                                        <span>Pemohon: <b class="text-[#1e293b]">{{ $item->user->name ?? '-' }}</b></span>
-                                        <span>Tujuan: <b class="text-[#1e293b]">{{ $item->kota->name ?? '-' }}</b></span>
-                                        <span>Waktu Dinas: 
-                                            <b class="text-[#1e293b]">
-                                                {{ $item->ilpd ? $item->ilpd->tanggal_awal->format('d') . ' - ' . $item->ilpd->tanggal_akhir->format('d M Y') : '-' }}
-                                            </b>
-                                        </span>
-                                        <span>Diajukan: <b class="text-[#1e293b]">{{ $item->created_at ? $item->created_at->format('d M Y') : '-' }}</b></span>
-                                    </div>
-                                </div>
-
-                                <div class="flex shrink-0 gap-2">
-                                    <a href="{{ route('approval.show', $item->id) }}"
-                                    class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]">
-                                        Proses
-                                    </a>
-                                </div>
-
-                            </div>
-                        </div>
-                    @empty
-                        <div class="rounded-xl border border-dashed border-[#e2e8f0] py-8 text-center">
-                            <p class="text-xs font-medium text-[#64748b]">Belum ada pengajuan yang membutuhkan persetujuan.</p>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-    @endif --}}
-
-    {{-- GA --}}
-    {{-- @if(optional(auth()->user()->jabatan)->name === 'HRGA')
-        <div id="gaSection" class="mt-6">
-            <div class="rounded-2xl border border-[#f1f5f9] bg-white p-4 shadow-sm sm:p-6">
-
-                <div class="mb-5">
-                    <h2 class="text-[16px] font-bold text-[#0f172a]">
-                        Perlu Pemeriksaan Saya
-                    </h2>
-                    <p class="mt-1 text-[11px] text-[#64748b]">
-                        Perizinan staff yang membutuhkan pemeriksaan Anda.
-                    </p>
-                </div>
-
-                <div id="gaList" class="space-y-3">
-                    @forelse($pengajuanGa as $item)
-                        <div class="rounded-xl border border-[#eef2f7] p-4 transition hover:border-[#dbeafe] hover:shadow-sm">
-                            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
-                                <div class="min-w-0">
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        <span class="text-[13px] font-bold text-[#0f172a]">
-                                            {{ $item->no_ilpd ?? '-' }}
-                                        </span>
-
-                                        @php
-                                            $statusClass = match($item->status) {
-                                                'approved', 'disetujui' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                                                'rejected', 'ditolak'   => 'bg-rose-50 text-rose-600 border-rose-100',
-                                                 default                => 'bg-amber-50 text-amber-600 border-amber-100',
-                                            };
-                                        @endphp
-                                        <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
-                                            {{ str_replace('_', ' ', $item->status) }}
-                                        </span>
-                                    </div>
-
-                                    <div class="mt-2 grid gap-1 text-[11px] text-[#64748b] sm:grid-cols-2 sm:gap-x-6">
-                                        <span>Pemohon: <b class="text-[#1e293b]">{{ $item->sppd->user->name ?? '-' }}</b></span>
-                                        <span>Tujuan: <b class="text-[#1e293b]">{{ $item->sppd->kota->name ?? '-' }}</b></span>
-                                        <span>Waktu Dinas: 
-                                            <b class="text-[#1e293b]">
-                                                {{ $item->tanggal_awal && $item->tanggal_akhir 
-                                                    ? $item->tanggal_awal->format('d') . ' - ' . $item->tanggal_akhir->format('d M Y') 
-                                                    : '-' }}
-                                            </b>
-                                        </span>
-                                        <span>Diajukan: <b class="text-[#1e293b]">{{ $item->created_at ? $item->created_at->format('d M Y') : '-' }}</b></span>
-                                    </div>
-                                </div>
-
-                                <div class="flex shrink-0 gap-2">
-                                    <a href="{{ route('approve.show', $item->id) }}"
-                                    class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]">
-                                        Proses
-                                    </a>
-                                </div>
-
-                            </div>
-                        </div>
-                    @empty
-                        <div class="rounded-xl border border-dashed border-[#e2e8f0] py-8 text-center">
-                            <p class="text-xs font-medium text-[#64748b]">Belum ada pengajuan yang membutuhkan persetujuan.</p>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-    @endif --}}
-
-{{-- </section> --}}
 
 {{-- MODAL DETAIL --}}
 <!-- Backdrop & Modal Container -->
