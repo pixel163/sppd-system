@@ -222,7 +222,10 @@ function renderAlurPengajuan(dinas) {
             currentStep = 4; // Step 3 selesai (ceklis), Step 4 aktif
             break;
         case 'Disetujui':
-            currentStep = 6; // Step 4 & 5 selesai (ceklis semua)
+            currentStep = 6; // Step 4 selesai (ceklis), step 5 aktif
+            break;
+        case 'Selesai':
+            currentStep = 7; // Step 5 selesai (ceklis semua)
             break;
         default:
             currentStep = 1; // Default jika status tidak cocok
@@ -234,7 +237,8 @@ function renderAlurPengajuan(dinas) {
         { number: 2, role: 'Pengajuan ILPD', desc: 'Pengisian form rincian biaya' },
         { number: 3, role: 'Approval Manager', desc: 'Pemeriksaan pengajuan' },
         { number: 4, role: 'Approval General Affair', desc: 'Pemeriksaan budget dan tiket' },
-        { number: 5, role: 'Disetujui', desc: 'Persetujuan akhir' }
+        { number: 5, role: 'Disetujui', desc: 'Persetujuan akhir' },
+        { number: 6, role: 'Selesai', desc: 'Dinas Selesai' }
     ];
 
     // Generate HTML

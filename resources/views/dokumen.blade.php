@@ -128,13 +128,25 @@
                         class="block w-full rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#64748b] hover:bg-[#f8fafc] {{ !request('status') ? 'bg-[#f1f5f9] font-semibold text-[#0f172a]' : '' }}">
                             Semua Status
                         </a>
-                        <a href="{{ route('dokumen', array_merge(request()->except(['page']), ['status' => 'Selesai'])) }}" 
-                        class="block w-full rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#64748b] hover:bg-[#f8fafc] {{ request('status') == 'Selesai' ? 'bg-[#f1f5f9] font-semibold text-[#0f172a]' : '' }}">
-                            Selesai
+                        <a href="{{ route('dokumen', array_merge(request()->except(['page']), ['status' => 'Draft'])) }}" 
+                        class="block w-full rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#64748b] hover:bg-[#f8fafc] {{ request('status') == 'Draft' ? 'bg-[#f1f5f9] font-semibold text-[#0f172a]' : '' }}">
+                            Draft
+                        </a>
+                        <a href="{{ route('dokumen', array_merge(request()->except(['page']), ['status' => 'Menunggu Approval'])) }}" 
+                        class="block w-full rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#64748b] hover:bg-[#f8fafc] {{ request('status') == 'Menunggu Approval' ? 'bg-[#f1f5f9] font-semibold text-[#0f172a]' : '' }}">
+                            Menunggu Approval
+                        </a>
+                        <a href="{{ route('dokumen', array_merge(request()->except(['page']), ['status' => 'Sedang Diproses'])) }}" 
+                        class="block w-full rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#64748b] hover:bg-[#f8fafc] {{ request('status') == 'Sedang Diproses' ? 'bg-[#f1f5f9] font-semibold text-[#0f172a]' : '' }}">
+                            Sedang Diproses
                         </a>
                         <a href="{{ route('dokumen', array_merge(request()->except(['page']), ['status' => 'Disetujui'])) }}" 
                         class="block w-full rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#64748b] hover:bg-[#f8fafc] {{ request('status') == 'Disetujui' ? 'bg-[#f1f5f9] font-semibold text-[#0f172a]' : '' }}">
                             Disetujui
+                        </a>
+                        <a href="{{ route('dokumen', array_merge(request()->except(['page']), ['status' => 'Selesai'])) }}" 
+                        class="block w-full rounded-lg px-3 py-1.5 text-left text-[12px] font-medium text-[#64748b] hover:bg-[#f8fafc] {{ request('status') == 'Selesai' ? 'bg-[#f1f5f9] font-semibold text-[#0f172a]' : '' }}">
+                            Selesai
                         </a>
                     </div>
 
@@ -374,7 +386,6 @@
                                             <div class="flex items-center gap-2">
                                                 <!-- 1. Tombol Cetak -->
                                                 <button type="button" 
-                                                        {{-- data-item="{{ json_encode($doc) }}" --}}
                                                         data-item='@json($doc)'
                                                         onclick="printItem('form_ilpd', JSON.parse(this.dataset.item))" 
                                                         class="flex shrink-0 items-center gap-1 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] px-3 py-1.5 text-[12px] font-medium text-[#0f172a] transition-colors hover:bg-[#f1f5f9]">

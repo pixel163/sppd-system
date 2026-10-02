@@ -21,29 +21,26 @@ class DashboardController extends Controller
         $user = auth()->user();
         
         // ambil data berdasarkan user
-        $pengajuanSaya = Sppd::with(['dinas', 'user', 'kota', 'ilpd.detail_ilpd', 'ilpd.tiket'])
+        $pengajuanSaya = Sppd::with(['dinas', 'approval', 'sppd_approval.sppd_approver', 'user', 'kota', 'ilpd.detail_ilpd', 'ilpd.laporan', 'ilpd.tiket', 'ilpd.approval'])
+        // $pengajuanSaya = Sppd::with(['dinas', 'approval', 'user', 'kota', 'ilpd.detail_ilpd', 'ilpd.tiket','ilpd.approval'])
             ->where('user_id', $user->id)
             ->latest()
             ->take(5)
             ->get();
-        // $pengajuanSaya = Sppd::with(['dinas','user','kota','keperluan','transport','ilpd.detail_ilpd','ilpd.tiket'])
-        // ->where('user_id', $user->id)
-        // ->latest()
-        // ->take(5)
-        // ->get();
         
         // Manager
         $approvalManager = Sppd::with(['dinas','user','kota','ilpd'])
             ->where('status', 'Menunggu Approval')
+            ->where('user_id', '!=', $user->id)
             ->whereHas('user', function ($query) use ($user) {
-                $query->where('department_id', $user->department->id);
+                $query->where('department_id', $user->department_id);
+                // $query->where('department_id', $user->department->id);
             })
             ->latest()
             ->get();
         
         // General Affair
-        // $pengajuanGa = Sppd::with(['dinas','user','keperluan','transport','kota','ilpd.detail_ilpd','ilpd.tiket','approval'])
-        $pengajuanGa = Sppd::with(['dinas','user','kota','ilpd.detail_ilpd','ilpd.tiket','approval'])
+        $pengajuanGa = Sppd::with(['dinas','user','kota','ilpd.detail_ilpd','ilpd.tiket','approval', 'sppd_approval.sppd_approver', 'user.jabatan','ilpd.ilpd_approval','ilpd.approval'])
         ->latest()
         ->take(5)
         ->get();
@@ -60,5 +57,8 @@ class DashboardController extends Controller
 
         $dinasList = Dinas::with(['sppd.sppd_approval', 'ilpd.ilpd_approval'])->get();
 
-        return view('dashboard', compact('pengajuanSaya' ,'approvalManager', 'pengajuanGa', 'pengajuanGa','draft', 'Disetujui', 'menungguApproval', 'sedangDiproses', 'selesai', 'dinasList'));}
+        $keperluans = Keperluan::all();
+        $transports = Transport::all();
+
+        return view('dashboard', compact('pengajuanSaya' ,'approvalManager', 'pengajuanGa', 'pengajuanGa','draft', 'Disetujui', 'menungguApproval', 'sedangDiproses', 'selesai', 'dinasList', 'keperluans', 'transports'));}
 }

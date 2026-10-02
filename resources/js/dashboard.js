@@ -52,13 +52,13 @@ function showDetail(item) {
         dokumenList.push('form_sppd');
     }
 
-    console.log("Dokumen yang berhasil dideteksi:", item.ilpd.id);
-
     // B. Jika ada relasi ilpd (seperti di console log kamu), masukkan 'form_ilpd'
     if (item.ilpd) {
         dokumenList.push('form_ilpd');
     }
 
+    console.log("Dokumen yang berhasil dideteksi:", item.ilpd.id);
+    
     // C. Ambil data tiket dari dalam objek ILPD (Mendukung relasi 'tikets' array atau 'tiket' object)
     const listTiket = item.ilpd ? (item.ilpd.tikets || item.ilpd.tiket) : null;
 
@@ -84,33 +84,50 @@ function showDetail(item) {
         // 4. RENDER DOKUMEN
         dokumenList.forEach(type => {
             const doc = getDocumentData(type);
-            let documentButtons = '';
+            // let documentButtons = '';
+            // let documentButtons = `
+            //     <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
+            //         <span>👁</span> Lihat
+            //     </button>
+            // `;
+
+            // console.log("=== DEBUG dokumen type ===", doc);
 
             // Tentukan Key Unik (ID/No) & Tanggal berdasarkan jenis dokumen
             // let itemId = item.id;
-            let itemId = item.ilpd.id;
+            // let itemId = item.ilpd.id;
+            let itemId = null;
             let rawDate = item.created_at;
-            let editUrl = `/sppd/${itemId}/edit`;
+            // let editUrl = `/sppd/${itemId}/edit`;
 
-            if (type === 'form_ilpd' && item.ilpd) {
-                
-                rawDate = item.ilpd.created_at || item.created_at;
-                // Ganti Judul dengan Nomor ILPD (misal: ILPD/2026/09/0001)
-                doc.title = item.ilpd.no_ilpd || "Form ILPD";
-
-                // Route khusus ILPD
-                editUrl = `/ilpd/${itemId}/edit`;
-
-            } else if (type === 'form_sppd') {
-                // PERBAIKAN: Gunakan ID database untuk URL
-                itemId = item.id; 
+            if (type === 'form_sppd') {
+                itemId = item.id; // Ambil ID SPPD
                 rawDate = item.created_at;
-                
-                // Judul untuk Tampilan UI
                 doc.title = item.no_sppd || item.no || "Form SPPD";
+
+            } else if (type === 'form_ilpd' && item.ilpd) {
+                itemId = item.ilpd.id; // Ambil ID ILPD
+                rawDate = item.ilpd.created_at || item.created_at;
+                doc.title = item.ilpd.no_ilpd || "Form ILPD";
+            // if (type === 'form_ilpd' && item.ilpd) {
+                
+            //     rawDate = item.ilpd.created_at || item.created_at;
+            //     // Ganti Judul dengan Nomor ILPD (misal: ILPD/2026/09/0001)
+            //     doc.title = item.ilpd.no_ilpd || "Form ILPD";
+
+            //     // Route khusus ILPD
+            //     // editUrl = `/ilpd/${itemId}/edit`;
+
+            // } else if (type === 'form_sppd') {
+            //     // PERBAIKAN: Gunakan ID database untuk URL
+            //     itemId = item.id; 
+            //     rawDate = item.created_at;
+                
+            //     // Judul untuk Tampilan UI
+            //     doc.title = item.no_sppd || item.no || "Form SPPD";
                 
                 // Route khusus SPPD
-                editUrl = `/sppd/${itemId}/edit`;
+                // editUrl = `/sppd/${itemId}/edit`;
                 
             } else if (type === 'tiket') {
                 // Ambil tiket (jika array ambil elemen pertama)
@@ -124,59 +141,159 @@ function showDetail(item) {
 
                 // Tampilan disamakan seperti form 1 & 2 (Mengarahkan ke route/URL file atau edit)
                 // Jika tiket berupa file upload yang ingin langsung dibuka/diklik:
-                if (tiketData.file) {
-                    editUrl = `/storage/${tiketData.file}`; // Atau route preview tiket kamu
-                } else {
-                    editUrl = `/tiket/${tiketData.id}/edit`;
-                }
+                // if (tiketData.file) {
+                //     editUrl = `/storage/${tiketData.file}`; // Atau route preview tiket kamu
+                // } else {
+                //     editUrl = `/tiket/${tiketData.id}/edit`;
+                // }
             }
 
             // Format tanggal menjadi "1 September 2026"
             const docDate = typeof formatTanggalIndo === 'function' ? formatTanggalIndo(rawDate) : (rawDate || '-');
 
             // Kondisi Tombol Action
-            const status = type === 'form_ilpd'
-                ? item.ilpd?.status
-                : item.sppd?.status ?? item.status;
+            // const mainStatus = item.dinas.status || item.sppd?.status; // Status utama dinas
+            const mainStatus = item.dinas?.status // Status utama dinas
             const docUserId = item.user_id || item.sppd?.user_id || item.dinas?.sppd?.user_id;
-            // Cek kepemilikan & Role
+
+            // 2. Cek Hak Akses
             const isMyDocument = (Number(docUserId) === Number(window.currentUserId));
             const isHRGA = window.currentUserRole === 'HRGA';
 
-            if (status === 'Draft' || status === 'Draft') {
-                documentButtons = `
-                    <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
-                        <span>👁</span> Lihat
-                    </button>
-                `;
-            } else if (status === 'Menunggu Approval' || status === 'Menunggu Approval') {
-                documentButtons = `
-                    <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
-                        <span>👁</span> Lihat
-                    </button>
-                `;
-            } else if (status === 'Sedang Diproses' || status === 'Sedang Diproses') {
-                const showProcessBtn = (type === 'form_ilpd') && isHRGA && !isMyDocument;;
-                documentButtons = `
-                    <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
-                        <span>👁</span> Lihat
-                    </button>
-                    ${showProcessBtn ? `
-                        <a href="/ilpd/${itemId}" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
-                            Proses
-                        </a>
-                    ` : ''}
-                `;
-            } else if (['Disetujui', 'Approved', 'Approval'].includes(status)) {
-                documentButtons = `
-                    <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
-                        <span>👁</span> Lihat
-                    </button>
-                    <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                        <span>🖨</span> Cetak
-                    </button>
-                `;
+            // 3. Cek Jabatan Pembuat Dokumen
+            const docUser = item.user || item.sppd?.user;
+            // const docUser = item.user || item.sppd?.ilpd;
+            // const isSubmitterManager = docUser?.jabatan?.name?.toLowerCase().includes('manager') 
+            const isSubmitterManager = docUser?.jabatan?.name?.toLowerCase().includes('Manager') 
+                || docUser?.jabatan_id === 2; // Sesuaikan ID/Nama jabatan Manager di DB Anda
+
+            const safeItemJson = encodeURIComponent(JSON.stringify(item));
+
+            // console.log("=== DEBUG Docuser ===", docUser);
+
+            // Tombol Default (Selalu ada tombol Lihat)
+            let documentButtons = `
+                <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
+                    <span>👁</span> Lihat
+                </button>
+            `;
+
+            // Hanya HRGA (dan bukan dokumen milik sendiri) yang mendapat aksi tambahan
+            if (isHRGA && !isMyDocument) {
+
+                // const ilpd = item.ilpd?.status || item.id
+
+                // === KONDISI 1: STATUS 'Menunggu Approval' ===
+                if (['Menunggu Approval', 'menunggu_approval', 'Pending'].includes(mainStatus)) {
+                    if ((type === 'form_sppd' || type === 'sppd') && isSubmitterManager) {
+                        documentButtons += `
+                            <a href="/sppd/${itemId}/approves" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
+                                Proses
+                            </a>
+                        `;
+                    }
+                }
+
+                // === KONDISI 2: STATUS 'Sedang Diproses' ===
+                else if (['Sedang Diproses', 'sedang_diproses'].includes(mainStatus)) {
+                    if (type === 'form_sppd' || type === 'sppd') {
+                        documentButtons += `
+                            <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                                <span>🖨</span> Cetak
+                            </button>
+                        `;
+                    } else if (['form_ilpd', 'ilpd'].includes(type)) {
+                        documentButtons += `
+                            <a href="/ilpd/${itemId}" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
+                                Proses
+                            </a>
+                        `;
+                    }
+                }
+
+                // === KONDISI 3: STATUS 'Disetujui' ===
+                else if (['Disetujui', 'Approved'].includes(mainStatus)) {
+                    documentButtons += `
+                        <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                            <span>🖨</span> Cetak
+                        </button>
+                    `;
+                }
             }
+
+            else {
+
+                if (['Menunggu Approval', 'menunggu_approval', 'Pending'].includes(mainStatus)) {
+
+                }
+
+                else if (['Sedang Diproses', 'sedang_diproses'].includes(mainStatus)) {
+                    if (['form_sppd', 'sppd'].includes(type)) {
+                        documentButtons += `
+                            <button type="button" 
+                                    data-item="${safeItemJson}"
+                                    onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
+                                    class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
+                                <span>🖨</span> Cetak
+                            </button>
+                        `;
+                    }
+                }
+
+                else if (['Disetujui', 'Approved'].includes(mainStatus)) {
+                    documentButtons += `
+                        <button type="button" 
+                                data-item="${safeItemJson}"
+                                onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
+                                class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
+                            <span>🖨</span> Cetak
+                        </button>
+                    `;
+                }
+
+            }
+            // const status = type === 'form_ilpd'
+            //     ? item.ilpd?.status
+            //     : item.sppd?.status ?? item.status;
+            // const docUserId = item.user_id || item.sppd?.user_id || item.dinas?.sppd?.user_id;
+            // // Cek kepemilikan & Role
+            // const isMyDocument = (Number(docUserId) === Number(window.currentUserId));
+            // const isHRGA = window.currentUserRole === 'HRGA';
+
+            // if (status === 'Draft' || status === 'Draft') {
+            //     documentButtons = `
+            //         <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
+            //             <span>👁</span> Lihat
+            //         </button>
+            //     `;
+            // } else if (status === 'Menunggu Approval' || status === 'Menunggu Approval') {
+            //     documentButtons = `
+            //         <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
+            //             <span>👁</span> Lihat
+            //         </button>
+            //     `;
+            // } else if (status === 'Sedang Diproses' || status === 'Sedang Diproses') {
+            //     const showProcessBtn = (type === 'form_ilpd') && isHRGA && !isMyDocument;;
+            //     documentButtons = `
+            //         <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
+            //             <span>👁</span> Lihat
+            //         </button>
+            //         ${showProcessBtn ? `
+            //             <a href="/ilpd/${itemId}" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
+            //                 Proses
+            //             </a>
+            //         ` : ''}
+            //     `;
+            // } else if (['Disetujui', 'Approved', 'Approval'].includes(status)) {
+            //     documentButtons = `
+            //         <button type="button" class="flex items-center gap-1.5 rounded-lg border border-[#f1f5f9] px-4 py-2 text-[13px] font-medium text-[#64748b] hover:bg-slate-50" onclick="openDocumentModal('${type}', '${itemId}')">
+            //             <span>👁</span> Lihat
+            //         </button>
+            //         <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+            //             <span>🖨</span> Cetak
+            //         </button>
+            //     `;
+            // }
 
             // Render HTML
             const wrapper = document.createElement('div');
@@ -388,6 +505,48 @@ function generateSppdLayout(item) {
     const sppd = item.sppd || {};
     const user = item.user || {};
     const kota = item.kota || {};
+
+    const today = new Date();
+    const formattedDate = new Intl.DateTimeFormat('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    }).format(today);
+
+    // 1. Ambil array approval
+    const approvals = item.sppd_approval || item.approval || [];
+    const approval = item.ilpd?.ilpd_approval || item.ilpd?.approval || [];
+
+    // console.log("=== DEBUG DATA SPPD UTAMA ===", item);
+    // console.log("=== DEBUG APPROVALS ===", item.sppd_approval || item.approval);
+
+    // 2. Cari data approval yang sudah 'Disetujui' dan punya signature/approver
+    const managerApp = Array.isArray(approvals) 
+        ? approvals.find(app => app.status === 'Disetujui' && app.signature) || {}
+        : (approvals || {});
+
+    // 3. Ambil TTD Manager
+    const managerSignature = managerApp.signature ? `/storage/${managerApp.signature}` : null;
+
+    // 4. Ambil Nama Manager (panggil relasi 'sppd_approver' yang baru kamu buat)
+    const managerName = managerApp.sppd_approver?.name || '........................';
+    // const managerName = managerApp.sppd_approver?.name || '........................';
+
+    // const hrgaApp = Array.isArray(approval) 
+    //     ? approval.find(app => app.status === 'Disetujui' && app.signature) || {}
+    //     : (approval || {});
+
+    // // 3. Ambil TTD Manager
+    // const hrgaSignature = hrgaApp.signature ? `/storage/${hrgaApp.signature}` : null;
+
+    // // 4. Ambil Nama Manager (panggil relasi 'sppd_approver' yang baru kamu buat)
+    // const hrgaName = hrgaApp.ilpd?.ilpd_approval?.name || '........................';
+    // console.log("=== DEBUG DATA nama ===", hrgaName);
+
+    // 3. TTD Pemohon (User pembuat SPPD)
+    const pemohonUser = item.user || {};
+    const pemohonSignature = pemohonUser.signature ? `/storage/${pemohonUser.signature}` : null;
+    const pemohonName = pemohonUser.name || '........................';
 
     // Masukkan kode HTML ILPD kamu di dalam template string backtick (`)
     return `
@@ -687,12 +846,12 @@ function generateSppdLayout(item) {
                     <tr>
                         <td class="label-col">Keperluan</td>
                         <td class="colon-col">:</td>
-                        <td><div class="value-box">${item.keperluan?.name || item.name || '-'}</div></td>
+                        <td><div class="value-box">${item.keperluan_list || item.keperluan_lainnya || '-'}</div></td>
                     </tr>
                     <tr>
                         <td class="label-col">Jenis Transportasi</td>
                         <td class="colon-col">:</td>
-                        <td><div class="value-box">${item.transport?.name || item.name || '-'}</div></td>
+                        <td><div class="value-box">${item.transport_list || item.transport_lainnya || '-'}</div></td>
                     </tr>
                     <tr>
                         <td class="label-col">Tugas</td>
@@ -708,29 +867,39 @@ function generateSppdLayout(item) {
                 <!-- 5. TANGGAL & MASA TANDA TANGAN (5 KOLOM) -->
                 <div class="ttd-section">
                     <div class="tanggal-surat">
-                        Jakarta, ......................... 20....
+                        Jakarta, ${formattedDate}
                     </div>
 
                     <table class="ttd-table">
                         <tr>
                             <th>Pemohon</th>
                             <th>Atasan Langsung</th>
-                            <th>HRD / GA</th>
+                            <th>HR / GA</th>
                             <th>Finance</th>
                             <th>Direksi</th>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="nama-ttd">( ........................ )</div>
-                                <div>Staf</div>
+                            <td style="vertical-align: bottom; text-align: center;">
+                                <div style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                                    ${pemohonSignature 
+                                        ? `<img src="${pemohonSignature}" style="max-height: 55px; max-width: 120px; object-fit: contain;" />` 
+                                        : ''}
+                                </div>
+                                <div class="nama-ttd">( ${pemohonName} )</div>
+                                <div>Staff</div>
                             </td>
-                            <td>
-                                <div class="nama-ttd">( ........................ )</div>
+                            <td style="vertical-align: bottom; text-align: center;">
+                                <div style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                                    ${managerSignature 
+                                        ? `<img src="${managerSignature}" style="max-height: 55px; max-width: 120px; object-fit: contain;" />` 
+                                        : ''}
+                                </div>
+                                <div class="nama-ttd">( ${managerName} )</div>
                                 <div>Manager / Team Lead</div>
                             </td>
                             <td>
                                 <div class="nama-ttd">( ........................ )</div>
-                                <div>HR Manager</div>
+                                <div>HRGA Manager</div>
                             </td>
                             <td>
                                 <div class="nama-ttd">( ........................ )</div>
@@ -750,16 +919,89 @@ function generateSppdLayout(item) {
     `;
 }
 
+const formatRupiah = (val) => {
+    if (!val || isNaN(val)) return '0';
+    return new Intl.NumberFormat('id-ID').format(val);
+};
+
 // Fungsi khusus untuk me-render HTML ILPD
 function generateIlpdLayout(item) {
     const ilpd = item.ilpd || {};
     const user = item.user || {};
     const kota = item.kota || {};
     const perkiraan = ilpd.detail_ilpd || {};
-    const realisasi = ilpd.realisasi_biaya || {};
     // Ambil data tiket jika ada
     const tiketList = ilpd.tikets || ilpd.tiket || [];
     const tiket = Array.isArray(tiketList) ? (tiketList[0] || {}) : tiketList;
+    
+    const today = new Date();
+    const formattedDate = new Intl.DateTimeFormat('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    }).format(today);
+    
+    const laporan = ilpd.laporan || {};
+
+    let realisasi = {};
+        if (typeof laporan.realisasi === 'string') {
+            try {
+                realisasi = JSON.parse(laporan.realisasi);
+            } catch (e) {
+                realisasi = {};
+            }
+        } else if (laporan.realisasi) {
+            realisasi = laporan.realisasi;
+        }
+
+        
+    // console.log("=== DEBUG DATA Realisasi ===", ilpd.laporan);
+    // console.log("=== DEBUG DATA ILPD UTAMA ===", item);
+    // console.log("=== DEBUG APPROVALS ===", item.ilpd_approval || item.approval);
+    
+    // const approvals = item.ilpd_approval || item.approval || [];
+
+    // Ambil array ilpd_approval yang berada di dalam objek ilpd
+    const approvals = Array.isArray(item.ilpd?.ilpd_approval)
+        ? item.ilpd.ilpd_approval
+        : (Array.isArray(item.sppd_approval) ? item.sppd_approval : []);
+
+    console.log("=== DEBUG APPROVALS ===", approvals);
+
+    // 2. Cari data approval yang sudah 'Disetujui' dan punya signature/approver
+    const managerApp = approvals.find(app => app.status === 'Sedang Diproses' && app.signature) || {};
+
+    const managerSignature = managerApp.signature ? `/storage/${managerApp.signature}` : null;
+    // const managerName = managerApp.ilpd_approver?.name || managerApp.sppd_approver?.name || managerApp.approver?.name || '........................';
+    
+    // Ambil nama dari relasi approver (sppd_approver atau ilpd_approver/approver)
+    // const managerApp = Array.isArray(approvals) 
+    //     ? approvals.find(app => app.status === 'Sedang Diproses' && app.signature) || {}
+    //     : (approvals || {});
+
+    // // 3. Ambil TTD Manager
+    // const managerSignature = managerApp.signature ? `/storage/${managerApp.signature}` : null;
+
+    // const hrgaApp = approvals.find(app => app.status === 'Disetujui' && app.signature) || {};
+
+    // const hrgaSignature = hrgaApp.signature ? `/storage/${hrgaApp.signature}` : null;
+    // const hrgaName = hrgaApp.ilpd_approver?.name || hrgaApp.sppd_approver?.name || hrgaApp.approver?.name || '........................';
+    
+    // Ambil nama dari relasi approver (sppd_approver atau ilpd_approver/approver)
+    // const hrgaApp = Array.isArray(approvals) 
+    //     ? approvals.find(app => app.status === 'Disetujui' && app.signature) || {}
+    //     : (approvals || {});
+
+    // // 3. Ambil TTD Manager
+    // const hrgaSignature = hrgaApp.signature ? `/storage/${hrgaApp.signature}` : null;
+
+    // 4. Ambil Nama Manager (panggil relasi 'sppd_approver' yang baru kamu buat)
+    // const managerName = managerApp.ilpd_approver?.name || '........................';
+
+    // 3. TTD Pemohon (User pembuat SPPD)
+    const pemohonUser = item.user || {};
+    const pemohonSignature = pemohonUser.signature ? `/storage/${pemohonUser.signature}` : null;
+    // const pemohonName = pemohonUser.name || '........................';
 
     // Masukkan kode HTML ILPD kamu di dalam template string backtick (`)
     return `
@@ -804,20 +1046,44 @@ function generateIlpdLayout(item) {
                     <td colspan="4" class="text-right"><strong>No:</strong> ${item.no_sppd || '-'}</td>
                 </tr>
                 <!-- Nama Penandatangan Atas -->
-                <tr class="text-center bg-gray font-bold">
-                    <td>${ilpd.ttd_1_nama || 'Pemohon'}</td>
-                    <td>${ilpd.ttd_2_nama || 'Atasan Direct'}</td>
-                    <td>${ilpd.ttd_3_nama || 'Head Dept'}</td>
-                    <td>${ilpd.ttd_4_nama || 'HRD'}</td>
-                    <td>${ilpd.ttd_5_nama || 'Finance'}</td>
-                    <td>${ilpd.ttd_6_nama || 'GA'}</td>
-                    <td>${ilpd.ttd_7_nama || 'Director'}</td>
-                    <td>Tanggal</td>
+                <!-- Baris 1: Judul Jabatan / Header TTD -->
+                <tr class="text-center font-bold bg-gray-100">
+                    <td style="padding: 6px;">Direktur Utama</td>
+                    <td style="padding: 6px;">Direktur</td>
+                    <td style="padding: 6px;">Direktur Finance</td>
+                    <td style="padding: 6px;">Finance</td>
+                    <td style="padding: 6px;">HRGA</td>
+                    <td style="padding: 6px;">Pemohon</td>
+                    <td style="padding: 6px;">Atasan / Manager</td>
+                    <td style="padding: 6px;">Tanggal Cetak</td>
                 </tr>
-                <!-- Area TTD Atas -->
-                <tr class="ttd-box">
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    <td class="text-center">${ilpd.tanggal || '-'}</td>
+
+                <!-- Baris 2: Area Gambar TTD (ttd-box) -->
+                <tr class="ttd-box text-center" style="height: 65px;">
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_3 ? `<img src="/storage/${ilpd.ttd_3}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_4 ? `<img src="/storage/${ilpd.ttd_4}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_5 ? `<img src="/storage/${ilpd.ttd_5}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_6 ? `<img src="/storage/${ilpd.ttd_6}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_7 ? `<img src="/storage/${ilpd.ttd_7}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${pemohonSignature ? `<img src="${pemohonSignature}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${managerSignature ? `<img src="${managerSignature}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle; font-size: 11px;">
+                        ${formattedDate || '-'}
+                    </td>
                 </tr>
             </table>
 
@@ -830,15 +1096,15 @@ function generateIlpdLayout(item) {
                 </tr>
                 <tr>
                     <td><strong>Lama Perjalanan</strong></td>
-                    <td colspan="3">: ${item.durasi || '-'} Hari)</td>
+                    <td colspan="3">: ${item.durasi || '-'} Hari</td>
                 </tr>
                 <tr>
                     <td><strong>Transportasi</strong></td>
-                    <td colspan="3">: ${item.transport?.name || item.transport_id || '-'}</td>
+                    <td colspan="3">: ${item.transport_list || item.transport_lainnya || '-'}</td>
                 </tr>
                 <tr>
                     <td><strong>Keperluan</strong></td>
-                    <td colspan="3">: ${item.keperluan?.name || item.keperluan_id || '-'}</td>
+                    <td colspan="3">: ${item.keperluan_list || item.keperluan_lainnya || '-'}</td>
                 </tr>
                 <tr>
                     <td><strong>Tugas</strong></td>
@@ -860,33 +1126,39 @@ function generateIlpdLayout(item) {
                     <!-- Kolom Perkiraan -->
                     <td>
                         <table style="width:100%;">
-                            <tr><td>BBM</td><td class="text-right">Rp ${perkiraan.bbm || '0'}</td></tr>
-                            <tr><td>Uang Harian (Dinas)</td><td class="text-right">Rp ${perkiraan.dinas || '0'}</td></tr>
-                            <tr><td>Uang Makan</td><td class="text-right">Rp ${perkiraan.makan || '0'}</td></tr>
-                            <tr><td>Hotel</td><td class="text-right">Rp ${perkiraan.hotel || '0'}</td></tr>
-                            <tr><td>Transport Lokal</td><td class="text-right">Rp ${perkiraan.transport_lokal || '0'}</td></tr>
-                            <tr><td>Visa / Fiskal</td><td class="text-right">Rp ${perkiraan.visa_fiskal || '0'}</td></tr>
-                            <tr><td>Tax Airport / Parkir / Tol</td><td class="text-right">Rp ${perkiraan.tax_parkir_tol || '0'}</td></tr>
-                            <tr><td>Laundry / Lainnya</td><td class="text-right">Rp ${perkiraan.laundry_dll || '0'}</td></tr>
+                            <tr><td>BBM</td><td class="text-right">Rp ${formatRupiah(perkiraan.bbm)}</td></tr>
+                            <tr><td>Uang Harian (Dinas)</td><td class="text-right">Rp ${formatRupiah(perkiraan.dinas)}</td></tr>
+                            <tr><td>Uang Makan</td><td class="text-right">Rp ${formatRupiah(perkiraan.makan)}</td></tr>
+                            <tr><td>Hotel</td><td class="text-right">Rp ${formatRupiah(perkiraan.hotel)}</td></tr>
+                            <tr><td>Transport Lokal</td><td class="text-right">Rp ${formatRupiah(perkiraan.transport_lokal)}</td></tr>
+                            <tr><td>Visa</td><td class="text-right">Rp ${formatRupiah(perkiraan.visa)}</td></tr>
+                            <tr><td>Fiskal</td><td class="text-right">Rp ${formatRupiah(perkiraan.fiskal)}</td></tr>
+                            <tr><td>Tax Airport</td><td class="text-right">Rp ${formatRupiah(perkiraan.airport_tax)}</td></tr>
+                            <tr><td>Parkir & Tol</td><td class="text-right">Rp ${formatRupiah(perkiraan.parkirtoll)}</td></tr>
+                            <tr><td>Entertaiment</td><td class="text-right">Rp ${formatRupiah(perkiraan.entertaiment)}</td></tr>
+                            <tr><td>Lainnya</td><td class="text-right">Rp ${formatRupiah(perkiraan.dll)}</td></tr>
                         </table>
                     </td>
                     <!-- Kolom Realisasi -->
                     <td>
                         <table style="width:100%;">
-                            <tr><td>BBM</td><td class="text-right">Rp ${realisasi.bbm || '0'}</td></tr>
-                            <tr><td>Uang Harian (Dinas)</td><td class="text-right">Rp ${realisasi.uang_dinas || '0'}</td></tr>
-                            <tr><td>Uang Makan</td><td class="text-right">Rp ${realisasi.uang_makan || '0'}</td></tr>
-                            <tr><td>Hotel</td><td class="text-right">Rp ${realisasi.hotel || '0'}</td></tr>
-                            <tr><td>Transport Lokal</td><td class="text-right">Rp ${realisasi.transport_lokal || '0'}</td></tr>
-                            <tr><td>Visa / Fiskal</td><td class="text-right">Rp ${realisasi.visa_fiskal || '0'}</td></tr>
-                            <tr><td>Tax Airport / Parkir / Tol</td><td class="text-right">Rp ${realisasi.tax_parkir_tol || '0'}</td></tr>
-                            <tr><td>Laundry / Lainnya</td><td class="text-right">Rp ${realisasi.laundry_dll || '0'}</td></tr>
+                            <tr><td>BBM</td><td class="text-right">Rp ${formatRupiah(realisasi.bbm)}</td></tr>
+                            <tr><td>Uang Harian (Dinas)</td><td class="text-right">Rp ${formatRupiah(realisasi.dinas)}</td></tr>
+                            <tr><td>Uang Makan</td><td class="text-right">Rp ${formatRupiah(realisasi.makan)}</td></tr>
+                            <tr><td>Hotel</td><td class="text-right">Rp ${formatRupiah(realisasi.hotel)}</td></tr>
+                            <tr><td>Transport Lokal</td><td class="text-right">Rp ${formatRupiah(realisasi.transport_lokal)}</td></tr>
+                            <tr><td>Visa</td><td class="text-right">Rp ${formatRupiah(realisasi.visa)}</td></tr>
+                            <tr><td>Fiskal</td><td class="text-right">Rp ${formatRupiah(realisasi.fiskal)}</td></tr>
+                            <tr><td>Tax Airport</td><td class="text-right">Rp ${formatRupiah(realisasi.airport_tax)}</td></tr>
+                            <tr><td>Parkir & Tol</td><td class="text-right">Rp ${formatRupiah(realisasi.parkirtoll)}</td></tr>
+                            <tr><td>Entertaiment</td><td class="text-right">Rp ${formatRupiah(realisasi.entertaiment)}</td></tr>
+                            <tr><td>Lainnya</td><td class="text-right">Rp ${formatRupiah(realisasi.dll)}</td></tr>
                         </table>
                     </td>
                 </tr>
                 <tr class="font-bold bg-gray">
-                    <td>TOTAL PERKIRAAN: <span style="float:right;">Rp ${perkiraan.total || '0'}</span></td>
-                    <td>TOTAL REALISASI: <span style="float:right;">Rp ${realisasi.total || '0'}</span></td>
+                    <td>TOTAL PERKIRAAN: <span style="float:right;">Rp ${formatRupiah(perkiraan.total)}</span></td>
+                    <td>TOTAL REALISASI: <span style="float:right;">Rp ${formatRupiah(laporan.total_realisasi)}</span></td>
                 </tr>
             </table>
 
@@ -895,18 +1167,18 @@ function generateIlpdLayout(item) {
                 <tr>
                     <td width="50%" rowspan="3">
                         <strong>Yang Dikunjungi / Judul:</strong><br>
-                        ${ilpd.yang_dikunjungi || '-'}
+                        ${laporan.laporan_1 || '-'}
                     </td>
                     <td width="25%"><strong>Uang Muka</strong></td>
-                    <td width="25%" class="text-right">Rp ${perkiraan.uang_muka || '0'}</td>
+                    <td width="25%" class="text-right">Rp ${formatRupiah(perkiraan.uang_muka)}</td>
                 </tr>
                 <tr>
                     <td><strong>Selisih (Lebih / Kurang)</strong></td>
-                    <td class="text-right">Rp ${ilpd.selisih || '0'}</td>
+                    <td class="text-right">Rp ${formatRupiah(laporan.selisih)}</td>
                 </tr>
                 <tr>
                     <td><strong>Keterangan Selisih</strong></td>
-                    <td>${ilpd.keterangan_selisih || '-'}</td>
+                    <td>${laporan.keterangan || '-'}</td>
                 </tr>
             </table>
 
@@ -914,23 +1186,44 @@ function generateIlpdLayout(item) {
             <div class="section-title">LAPORAN HASIL PERJALANAN DINAS</div>
             <table class="table-doc">
                 <tr>
-                    <td style="height: 60px;">${ilpd.laporan_hasil || '-'}</td>
+                    <td style="height: 60px;">${laporan.laporan_2 || '-'}</td>
                 </tr>
             </table>
 
             <!-- 6. TTD BAWAH (APPROVAL AKHIR) -->
             <table class="table-doc">
-                <tr class="text-center bg-gray font-bold">
-                    <td>${ilpd.ttd_bwh_1 || 'Dibuat Oleh'}</td>
-                    <td>${ilpd.ttd_bwh_2 || 'Diperiksa'}</td>
-                    <td>${ilpd.ttd_bwh_3 || 'Disetujui'}</td>
-                    <td>${ilpd.ttd_bwh_4 || 'Finance'}</td>
-                    <td>${ilpd.ttd_bwh_5 || 'Kasir'}</td>
-                    <td>${ilpd.ttd_bwh_6 || 'Penerima'}</td>
-                    <td>${ilpd.ttd_bwh_7 || 'Mengetahui'}</td>
+                <tr class="text-center font-bold bg-gray-100">
+                    <td style="padding: 6px;">Direktur Utama</td>
+                    <td style="padding: 6px;">Direktur</td>
+                    <td style="padding: 6px;">Direktur Finance</td>
+                    <td style="padding: 6px;">Finance</td>
+                    <td style="padding: 6px;">HRGA</td>
+                    <td style="padding: 6px;">Pemohon</td>
+                    <td style="padding: 6px;">Manager</td>
                 </tr>
-                <tr class="ttd-box">
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+
+                <tr class="ttd-box text-center" style="height: 65px;">
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_3 ? `<img src="/storage/${ilpd.ttd_3}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_4 ? `<img src="/storage/${ilpd.ttd_4}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_5 ? `<img src="/storage/${ilpd.ttd_5}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_6 ? `<img src="/storage/${ilpd.ttd_6}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_7 ? `<img src="/storage/${ilpd.ttd_7}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${pemohonSignature ? `<img src="${pemohonSignature}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${managerSignature ? `<img src="${managerSignature}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
                 </tr>
             </table>
 

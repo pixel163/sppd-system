@@ -17,6 +17,10 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="min-h-screen bg-[#f8fafc] font-['Inter',sans-serif] text-[#1e293b]">
@@ -47,11 +51,47 @@
 
     </div>
 
-    @stack('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Toast / Pop-up Notifikasi Berhasil (Success)
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 2500,
+                    timerProgressBar: true
+                });
+            @endif
 
-<script>
-    lucide.createIcons();
-</script>
+            // Toast / Pop-up Notifikasi Gagal (Error)
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: '#ef4444',
+                });
+            @endif
+
+            // Toast / Pop-up Notifikasi Peringatan (Warning)
+            @if(session('warning'))
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan!',
+                    text: "{{ session('warning') }}",
+                    confirmButtonColor: '#f59e0b',
+                });
+            @endif
+        });
+    </script>
+
+    <script>
+        lucide.createIcons();
+    </script>
+    
+    @stack('scripts')
 
 </body>
 </html>

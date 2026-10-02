@@ -114,7 +114,6 @@
     <nav class="flex flex-col gap-1">
 
         {{-- KONDISI 1: Hanya muncul jika user yang login memiliki role / departemen HRGA --}}
-        {{-- @if(auth()->check() && (auth()->user()->jabatan()->name === 'HRGA' || auth()->user()->jabatan()->name === 'HRGA')) --}}
         @if(optional(auth()->user()->jabatan)->name === 'HRGA')
         
             {{-- Pembungkus Menu Master Data dengan Alpine.js --}}

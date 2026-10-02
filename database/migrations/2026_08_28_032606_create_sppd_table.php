@@ -28,14 +28,6 @@ return new class extends Migration
                     ->constrained('kota')
                     ->restrictOnDelete();
 
-                // $table->foreignId('keperluan_id')
-                //     ->constrained('keperluan')
-                //     ->restrictOnDelete();
-
-                // $table->foreignId('transport_id')
-                //     ->constrained('transport')
-                //     ->restrictOnDelete();
-
                 $table->json('keperluan_id')->nullable();
                 $table->json('transport_id')->nullable();
 

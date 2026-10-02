@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Department;
+use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
 
@@ -20,15 +24,16 @@ class AuthController extends Controller
             $user = Auth::user();
 
             return match ($user->jabatan->name) {
-                'staff' => redirect()->route('dashboard'),
+                'staff'   => redirect()->route('dashboard'),
                 'manager' => redirect()->route('dashboard'),
-                'hrga' => redirect()->route('dashboard'),
-                default => redirect('/dashboard'),
+                'hrga'    => redirect()->route('dashboard'),
+                default   => redirect('/dashboard'),
             };
         }
 
+        return back()->with('error', 'Email atau password salah.')->withInput($request->only('email'));
         // return back()->with('warning', 'Email atau password salah.')->withInput($request->only('email'));
-        return back()->withErrors(['email' => 'Email atau password salah.',])->onlyInput('email');
+        // return back()->withErrors(['email' => 'Email atau password salah.',])->onlyInput('email');
     }
 
     public function logout(Request $request)
@@ -91,5 +96,60 @@ class AuthController extends Controller
         }
 
         return back()->with('error', 'Silakan unggah file TTD atau buat tanda tangan di area canvas.');
+    }
+
+    public function registerForm()
+    {
+        // Mengambil data master departemen dan jabatan untuk dropdown
+        $departments = Department::all();
+        $jabatans = Jabatan::all();
+
+        // dd($departments, $jabatans);
+
+        return view('register', compact('departments', 'jabatans'));
+    }
+
+    // Memproses data pendaftaran akun baru
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|string|email|max:255|unique:users,email',
+            'nik'           => 'required|numeric|digits_between:5,16|unique:users,nik',
+            'department_id' => 'required|exists:department,id',
+            'jabatan_id'    => 'required|exists:jabatan,id',
+            'password'      => 'required|string|min:8|confirmed',
+        ], [
+            'nik.unique'        => 'NIK sudah terdaftar di sistem.',
+            'email.unique'      => 'Email sudah terdaftar.',
+            'password.confirmed'=> 'Konfirmasi password tidak cocok.',
+        ]);
+
+        // 2. Cek data Jabatan & Departemen dari database
+        $jabatan = \App\Models\Jabatan::find($request->jabatan_id);
+
+        // Default role_id untuk Staff = 1
+        $roleId = 1;
+        $golonganId = 1;
+
+        // Bersihkan teks nama jabatan & dept untuk pengecekan (case-insensitive)
+        $namaJabatan = strtolower($jabatan->name ?? $jabatan->nama ?? '');
+
+        // Cek jika Jabatan mengandung kata 'manager' ATAU Departemen mengandung 'hr' / 'ga'
+        if (str_contains($namaJabatan, 'Manager') || str_contains($namaJabatan, 'HRGA')) {$roleId = 2;} // Set ke Manager & HRGA}
+        if (str_contains($namaJabatan, 'Manager') || str_contains($namaJabatan, 'HRGA')) {$golonganId = 2;} // Set ke Manager & HRGA}
+
+        User::create([
+            'name'          => $request->name,
+            'email'         => $request->email,
+            'nik'           => $request->nik,
+            'role_id'       => $roleId,
+            'golongan_id'   => $golonganId,
+            'department_id' => $request->department_id,
+            'jabatan_id'    => $request->jabatan_id,
+            'password'      => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('login')->with('success', 'Pendaftaran akun berhasil! Silakan masuk.');
     }
 }

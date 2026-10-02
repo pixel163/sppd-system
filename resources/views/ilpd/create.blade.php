@@ -4,7 +4,7 @@
 
 @section('content')
 
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -17,9 +17,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> --}}
 
-    <style>
+    {{-- <style>
         * {
             box-sizing: border-box;
         }
@@ -252,8 +252,8 @@
                 justify-content: center;
             }
         }
-    </style>
-</head>
+    </style> --}}
+{{-- </head> --}}
 
 <body class="min-h-screen bg-white text-[#1e293b]">
 
@@ -331,7 +331,8 @@
                                     type="date"
                                     class="w-full border-0 text-[14px] outline-none"
                                     value="{{ $sppd->tanggal_awal?->format('Y-m-d') ?? '' }}"
-                                    onchange="hitunglSemua()">
+                                    data-durasi="{{ $sppd->durasi ?? 1 }}"
+                                    onchange="hitungSemua()">
                             </div>
 
                             <span class="text-[14px] font-semibold text-[#64748b]">s/d</span>
@@ -359,7 +360,6 @@
 
                         <div class="transport-grid grid grid-cols-3 gap-x-6 gap-y-3">
                             @foreach ($transports as $transport)
-                                {{-- pointer-events-none mengunci klik, cursor-default menjaga tampilan kursor biasa --}}
                                 <label class="flex items-center gap-2 pointer-events-none cursor-default">
                                     <input
                                         type="checkbox"
@@ -397,47 +397,6 @@
                                 readonly>
                         </div>
                     </div>
-                    {{-- <div class="mb-4">
-
-                        <label class="mb-2 block text-[13px] font-semibold">
-                            Transportasi <span class="text-red-500">*</span>
-                        </label>
-
-                        <div class="transport-grid grid grid-cols-3 gap-x-6 gap-y-3">
-                            @foreach ($transports as $transport)
-                                <label class="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        name="transport_id"
-                                        value="{{ $transport->id }}"
-                                        class="size-[18px] accent-[#2563eb]"
-                                        {{ $sppd->transport_id == $transport->id ? 'checked' : '' }}>
-                                    <span class="text-[14px]">
-                                        {{ $transport->name }}
-                                    </span>
-                                </label>
-                            @endforeach
-                        </div>
-                        
-                        <div class="mt-2 flex items-center gap-3">
-
-                            <label class="flex items-center gap-2">
-
-                                <input type="checkbox"
-                                    class="size-[18px] accent-[#2563eb]">
-
-                                <span class="text-[14px]">
-                                    Lainnya
-                                </span>
-
-                            </label>
-
-                            <input
-                                type="text"
-                                placeholder="Sebutkan..."
-                                class="w-[180px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[12px] outline-none">
-                        </div>
-                    </div> --}}
 
                     {{-- KEPERLUAN --}}
                     <div class="mb-4">
@@ -447,7 +406,6 @@
 
                         <div class="keperluan-grid grid grid-cols-3 gap-x-6 gap-y-3">
                             @foreach ($keperluans as $keperluan)
-                                {{-- pointer-events-none mengunci klik, cursor-default menjaga tampilan kursor biasa --}}
                                 <label class="flex items-center gap-2 pointer-events-none cursor-default">
                                     <input
                                         type="checkbox"
@@ -485,48 +443,6 @@
                                 readonly>
                         </div>
                     </div>
-                    {{-- <div class="mb-4">
-
-                        <label class="mb-2 block text-[13px] font-semibold">
-                            Keperluan <span class="text-red-500">*</span>
-                        </label>
-
-                        <div class="keperluan-grid grid grid-cols-3 gap-x-6 gap-y-3">
-                            @foreach ($keperluans as $keperluan)
-                                <label class="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        name="keperluan_id"
-                                        value="{{ $keperluan->id }}"
-                                        class="size-[18px] accent-[#2563eb]"
-                                        {{ $sppd->keperluan_id == $keperluan->id ? 'checked' : '' }}>
-                                    <span class="text-[14px]">
-                                        {{ $keperluan->name }}
-                                    </span>
-                                </label>
-                            @endforeach
-                        </div>
-
-                        <div class="mt-2 flex items-center gap-3">
-
-                            <label class="flex items-center gap-2">
-
-                                <input type="checkbox"
-                                    class="size-[18px] accent-[#2563eb]">
-
-                                <span class="text-[14px]">
-                                    Lainnya
-                                </span>
-
-                            </label>
-
-                            <input
-                                type="text"
-                                placeholder="Sebutkan..."
-                                class="w-[180px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[12px] outline-none">
-                        </div>
-
-                    </div> --}}
 
                     {{-- TUGAS --}}
                     <div>
@@ -587,8 +503,8 @@
                                 max="1000000"
                                 placeholder="Masukkan jumlah biaya BBM"
                                 class="currency-input expense-input"
+                                {{-- class="form-control" --}}
                                 oninput="validateInput(this)">
-                                {{-- oninput="formatRupiah(this); hitungSemua()"> --}}
 
                         </div>
 
@@ -833,8 +749,6 @@
                                     placeholder="Masukkan jumlah"
                                     class="currency-input expense-input"
                                     oninput="validateInput(this)">
-                                    {{-- class="currency-input"
-                                    oninput="formatRupiah(this); hitungTotal()"> --}}
 
                             </div>
 
@@ -946,16 +860,15 @@
 </div>
 
 </body>
-</html>
+{{-- </html> --}}
 
 @endsection
 
 @push('scripts')
 
-<script>
+{{-- <script>
     document.addEventListener('DOMContentLoaded', function () {
         const inputMulai = document.getElementById('tanggalMulai');
-        // const inputSelesai = document.getElementById('tanggalSelesai');
         
         if (inputMulai) {
             // 1. Set minimal tanggal awal = H+1 (Besok)
@@ -973,14 +886,6 @@
                 hitungSemua();
             }
         }
-        // }
-
-        // if (inputSelesai) {
-        //     inputSelesai.addEventListener('change', hitungSemua);
-        // }
-
-        // // Jalankan perhitungan awal saat halaman dimuat
-        // hitungSemua();
     });
 
     // Helper: Membersihkan format Rupiah (titik/koma) menjadi angka murni
@@ -1014,14 +919,11 @@
 
     // Fungsi Utama: Menghitung Total Biaya
     function hitungSemua() {
-        // const inputMulai = document.getElementById('tanggalMulai')?.value;
         const inputMulai = document.getElementById('tanggalMulai');
         const inputSelesai = document.getElementById('tanggalSelesai');
         const info = document.getElementById('infoLamaPerjalanan');
-        // const durasiFallback = parseInt("{{ $sppd->durasi ?? 1 }}");
         
-        // // Kunci UX: Jika tanggalMulai belum diisi, durasi dianggap 0 (biaya harian belum dihitung)
-        // let durasiHari = inputMulai ? durasiFallback : 0;
+        // Kunci UX: Jika tanggalMulai belum diisi, durasi dianggap 0 (biaya harian belum dihitung)
         const durasiHari = parseInt("{{ $sppd->durasi ?? 1 }}");
 
         if (!inputMulai || !inputMulai.value) return;
@@ -1070,143 +972,9 @@
         if (inputTotal) inputTotal.value = formatRupiah(grandTotal);
         if (inputUangMuka) inputUangMuka.value = formatRupiah(grandTotal);
     }
-</script>
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const inputMulai = document.getElementById('tanggalMulai');
-        
-        if (inputMulai) {
-            // 1. Set minimal tanggal awal = H+1 (Besok)
-            const besok = new Date();
-            besok.setDate(besok.getDate() + 1);
-            
-            // Format ke YYYY-MM-DD
-            const minDate = besok.toISOString().split('T')[0];
-            inputMulai.setAttribute('min', minDate);
-
-            // 2. Pasang event listener saat tanggal awal diubah
-            inputMulai.addEventListener('change', hitungSemua);
-
-            // 3. Jalankan perhitungan otomatis jika tanggalMulai sudah terisi saat halaman dimuat
-            if (inputMulai.value) {
-                hitungSemua();
-            }
-        }
-    });
-
-    // Helper: Membersihkan format Rupiah (titik/koma) menjadi angka murni
-    function parseRupiah(val) {
-        if (!val) return 0;
-        return parseInt(val.toString().replace(/[^0-9]/g, '')) || 0;
-    }
-
-    function formatRupiah(angka) {
-        return new Intl.NumberFormat('id-ID').format(angka);
-    }
-    
-    // Helper: Format angka murni ke format ribuan Indonesia (contoh: 1500000 -> 1.500.000)
-    // function formatRupiah(val) {
-    //         let number = parseRupiah(val);
-    //         return number ? number.toLocaleString('id-ID') : '';
-    //     }
-
-    // function validateInput(element) {
-    //     let maxLimit = parseInt(element.getAttribute('max')) || 1000000;
-    //     let nominal = parseRupiah(element.value);
-
-    //     // Batasi jika melebihi nilai max
-    //     if (nominal > maxLimit) {
-    //         nominal = maxLimit;
-    //     }
-
-    //     // Ubah tampilan input dengan format ribuan
-    //     element.value = formatRupiah(nominal);
-
-    //     // Kalkulasi ulang total seperti kalkulator
-    //     hitungSemua();
-    // }
-    // Fungsi Utama: Menghitung Tanggal Selesai & Total Biaya Sekaligus
-    // function hitungSemua() {
-    //     const durasiHari = parseInt("{{ $sppd->durasi ?? 1 }}");
-
-    //     // 1. Biaya Harian (Dinas + Makan + Hotel) x Durasi
-    //     const dinas = parseRupiah(document.getElementById('dinas')?.value);
-    //     const makan = parseRupiah(document.getElementById('makan')?.value);
-    //     const hotel = parseRupiah(document.getElementById('hotel')?.value);
-    //     const totalHarian = (dinas + makan + hotel) * durasiHari;
-
-    //     // 2. Biaya Opsional (BBM + Biaya Lainnya)
-    //     const bbm = parseRupiah(document.getElementById('bbm')?.value);
-    //     const transportLokal = parseRupiah(document.getElementById('transportLokal')?.value);
-    //     const visa = parseRupiah(document.getElementById('visa')?.value);
-    //     const fiskal = parseRupiah(document.getElementById('fiskal')?.value);
-    //     const airportTax = parseRupiah(document.getElementById('airportTax')?.value);
-    //     const parkirToll = parseRupiah(document.getElementById('parkirToll')?.value);
-    //     const entertainment = parseRupiah(document.getElementById('entertainment')?.value);
-    //     const biayaLainnya = parseRupiah(document.getElementById('biayaLainnya')?.value);
-
-    //     const totalOpsional = bbm + transportLokal + visa + fiskal + airportTax + parkirToll + entertainment + biayaLainnya;
-
-    //     // 3. Kalkulasi Grand Total
-    //     const grandTotal = totalHarian + totalOpsional;
-
-    //     // Update kolom Total dan Uang Muka
-    //     const inputTotal = document.getElementById('total');
-    //     const inputUangMuka = document.getElementById('uangMuka');
-
-    //     if (inputTotal) inputTotal.value = formatRupiah(grandTotal);
-    //     if (inputUangMuka) inputUangMuka.value = formatRupiah(grandTotal);
-    // }
-
-    // // Jalankan perhitungan awal saat halaman selesai dimuat
-    // document.addEventListener('DOMContentLoaded', () => {
-    //     hitungSemua();
-    // });
-    function hitungSemua() {
-        const inputMulai = document.getElementById('tanggalMulai');
-        const inputSelesai = document.getElementById('tanggalSelesai');
-        const info = document.getElementById('infoLamaPerjalanan');
-
-        // Ambil durasi dari Blade (default: 1)
-        const durasiHari = parseInt("{{ $sppd->durasi ?? 1 }}");
-
-        if (!inputMulai || !inputMulai.value) return;
-
-        // A. HITUNG TANGGAL SELESAI
-        const tglMulai = new Date(inputMulai.value);
-        const tglSelesai = new Date(tglMulai);
-        tglSelesai.setDate(tglMulai.getDate() + (durasiHari - 1));
-
-        const yyyy = tglSelesai.getFullYear();
-        const mm = String(tglSelesai.getMonth() + 1).padStart(2, '0');
-        const dd = String(tglSelesai.getDate()).padStart(2, '0');
-        const formattedSelesai = `${yyyy}-${mm}-${dd}`;
-
-        if (inputSelesai) inputSelesai.value = formattedSelesai;
-        if (info) {
-            info.innerText = `Total perjalanan: ${durasiHari} Hari (${inputMulai.value} s/d ${formattedSelesai})`;
-            info.classList.remove('hidden');
-        }
-
-        // B. HITUNG TOTAL BIAYA & UANG MUKA
-        // const bbm = parseRupiah(document.getElementById('bbm')?.value);
-        const dinas = parseRupiah(document.getElementById('dinas')?.value);
-        const hotel = parseRupiah(document.getElementById('hotel')?.value);
-        const makan = parseRupiah(document.getElementById('makan')?.value);
-
-        // Rumus: (Dinas + Makan + Hotel) x Durasi
-        const totalPerHari = dinas + makan + hotel;
-        const totalBiaya = totalPerHari * durasiHari;
-
-        // Masukkan ke Input Total & Uang Muka
-        const inputTotal = document.getElementById('total');
-        const inputUangMuka = document.getElementById('uangMuka');
-
-        if (inputTotal) inputTotal.value = formatRupiah(totalBiaya);
-        if (inputUangMuka) inputUangMuka.value = formatRupiah(totalBiaya);
-    }
 </script> --}}
 
     {{-- @vite('resources/js/ilpd.js') --}}
+    @vite('resources/js/ilpd/form.js')
 
 @endpush

@@ -89,12 +89,10 @@
                             </span>
 
                             <input
-                                {{-- id="searchInput" --}}
                                 name="search"
                                 type="text"
                                 value="{{ request('search') }}"
                                 placeholder="Cari No. Dinas atau tujuan..."
-                                {{-- oninput="renderHistory()" --}}
                                 class="min-w-0 flex-1 bg-transparent text-[12px] outline-none placeholder:text-[#94a3b8]">
 
                         </div>
@@ -103,12 +101,15 @@
                         <select
                             name="status"
                             id="statusFilter"
-                            {{-- onchange="document.getElementById('filterForm').submit()" --}}
                             onchange="this.form.submit()"
                             class="rounded-lg border border-[#e2e8f0] bg-white px-3 py-2 text-[12px] font-semibold text-[#64748b] outline-none focus:border-[#0d6efd]">
 
                             <option value="all" {{ request('status') == 'all' || !request('status') ? 'selected' : '' }}>
                                 Semua Status
+                            </option>
+
+                            <option value="Draft" {{ request('status') == 'Draft' ? 'selected' : '' }}>
+                                Draft
                             </option>
 
                             <option value="Menunggu Approval" {{ request('status') == 'Menunggu Approval' ? 'selected' : '' }}>
@@ -128,32 +129,6 @@
                             </option>
 
                         </select>
-                        {{-- <select
-                            id="statusFilter"
-                            onchange="renderHistory()"
-                            class="rounded-lg border border-[#e2e8f0] bg-white px-3 py-2 text-[12px] font-semibold text-[#64748b] outline-none focus:border-[#0d6efd]">
-
-                            <option value="all">
-                                Semua Status
-                            </option>
-
-                            <option value="manager">
-                                Menunggu Approval
-                            </option>
-
-                            <option value="ga">
-                                Sedang Diproses
-                            </option>
-
-                            <option value="rejected">
-                                Disetujui
-                            </option>
-
-                            <option value="done">
-                                Selesai
-                            </option>
-
-                        </select> --}}
 
                     </form>
 
@@ -174,25 +149,6 @@
                         <div class="w-18 shrink-0">SLA</div>
                         <div class="w-20 shrink-0 text-right">Aksi</div>
                     </div>
-                    {{-- <div class="grid grid-cols-[130px_110px_130px_130px_110px_80px_110px] gap-3 bg-[#f4f6fb] px-4 py-3 text-[11px] font-semibold text-[#64748b]">
-
-                        <span>No. Dinas</span>
-
-                        <span>Tujuan</span>
-
-                        <span>Tanggal Perjalanan</span>
-
-                        <span>Status</span>
-
-                        <span>Diajukan Pada</span>
-
-                        <span>SLA</span>
-
-                        <span class="text-center">
-                            Aksi
-                        </span>
-
-                    </div> --}}
 
                     {{-- DATA --}}
                     <div class="divide-y divide-slate-100">
@@ -453,8 +409,8 @@
                         class="btn btn-primary">
                     Detail
                 </button>
-            @endforeach
-            <div> --}}
+            @endforeach --}}
+            <div>
                 <p class="mb-3 text-[13px] font-bold">
                     Alur Pengajuan
                 </p>
@@ -465,98 +421,9 @@
                 </div>
             </div>
 
-            {{-- <div>
-
-                <p class="mb-3 text-[13px] font-bold">
-                    Alur Pengajuan
-                </p>
-
-                <div class="space-y-3">
-
-                    <div class="flex items-center gap-3">
-
-                        <div class="flex size-8 items-center justify-center rounded-full bg-[#eff6ff] text-xs font-bold text-[#0d6efd]">
-                            1
-                        </div>
-
-                        <div>
-
-                            <p class="text-[12px] font-semibold">
-                                Manager
-                            </p>
-
-                            <p class="text-[11px] text-[#94a3b8]">
-                                Pemeriksaan pengajuan
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="flex items-center gap-3">
-
-                        <div class="flex size-8 items-center justify-center rounded-full bg-[#eff6ff] text-xs font-bold text-[#0d6efd]">
-                            2
-                        </div>
-
-                        <div>
-
-                            <p class="text-[12px] font-semibold">
-                                General Affair
-                            </p>
-
-                            <p class="text-[11px] text-[#94a3b8]">
-                                Pemeriksaan budget dan tiket
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="flex items-center gap-3">
-
-                        <div class="flex size-8 items-center justify-center rounded-full bg-[#eff6ff] text-xs font-bold text-[#0d6efd]">
-                            3
-                        </div>
-
-                        <div>
-
-                            <p class="text-[12px] font-semibold">
-                                General Manager
-                            </p>
-
-                            <p class="text-[11px] text-[#94a3b8]">
-                                Persetujuan akhir
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div> --}}
-
         </div>
 
         {{-- FOOTER --}}
-        {{-- <div class="flex justify-end gap-2 border-t border-[#e2e8f0] p-5">
-
-            <button
-                type="button"
-                onclick="closeDetail()"
-                class="rounded-lg border border-[#e2e8f0] px-4 py-2 text-[12px] font-semibold text-[#64748b]">
-                Tutup
-            </button>
-
-            <button
-                type="button"
-                onclick="printCurrentDetail()"
-                class="rounded-lg bg-[#0d6efd] px-4 py-2 text-[12px] font-semibold text-white">
-                Cetak
-            </button>
-
-        </div> --}}
 
     </div>
 

@@ -8,19 +8,10 @@ use Illuminate\Http\Request;
 
 class TarifController extends Controller
 {
-    // public function index()
-    // {
-    //     $items = Tarif::latest()->paginate(10);
-    //     $title = 'Tarif';
-    //     $routeName = 'tarif'; // Sesuaikan dengan nama route resource di web.php
-
-    //     return view('master.index', compact('items', 'title', 'routeName'));
-    // }
     public function index()
     {
-        // $tarifs = Tarif::with('creator')->latest()->paginate(10);
         $tarifs = Tarif::with('kotaKategori','golongan')->latest()->paginate(10);
-        // return view('master.index', compact('tarifs'));
+        
         return view('master.tarif.index', compact('tarifs'));
     }
 

@@ -8,19 +8,10 @@ use Illuminate\Http\Request;
 
 class KotaKategoriController extends Controller
 {
-    // public function index()
-    // {
-    //     $items = KotaKategori::latest()->paginate(10);
-    //     $title = 'KotaKategori';
-    //     $routeName = 'kotakategori'; // Sesuaikan dengan nama route resource di web.php
-
-    //     return view('master.index', compact('items', 'title', 'routeName'));
-    // }
     public function index()
     {
-        // $kotakategoris = KotaKategori::with('creator')->latest()->paginate(10);
         $kotakategoris = KotaKategori::latest()->paginate(10);
-        // return view('master.index', compact('kotakategori'));
+        
         return view('master.kotakategori.index', compact('kotakategoris'));
     }
 

@@ -8,19 +8,11 @@ use Illuminate\Http\Request;
 
 class GolonganController extends Controller
 {
-    // public function index()
-    // {
-    //     $items = Golongan::latest()->paginate(10);
-    //     $title = 'Golongan';
-    //     $routeName = 'golongan'; // Sesuaikan dengan nama route resource di web.php
-
-    //     return view('master.index', compact('items', 'title', 'routeName'));
-    // }
+    
     public function index()
     {
-        // $golongans = Golongan::with('creator')->latest()->paginate(10);
         $golongans = Golongan::latest()->paginate(10);
-        // return view('master.index', compact('golongans'));
+        
         return view('master.golongan.index', compact('golongans'));
     }
 

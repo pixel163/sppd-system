@@ -15,6 +15,7 @@ use App\Models\IlpdApproval;
 use App\Models\DetailIlpd;
 use App\Models\Tiket;
 use App\Models\Dinas;
+use App\Models\Laporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,7 @@ class IlpdController extends Controller
             // Jika ID ada tapi bukan milik user yang sedang login
             if (!$sppd) {
                 return redirect()->route('dashboard')
-                    ->with('warning', 'Akses ditolak: Form SPPD tidak ditemukan atau sudah diajukan/diproses.');
+                    ->with('error', 'Akses ditolak: Form SPPD tidak ditemukan atau sudah diajukan/diproses.');
             }
         } else {
             // 2. Jika diakses dari Sidebar tanpa ID (/ilpd/create), ambil SPPD terbaru milik user
@@ -51,13 +52,8 @@ class IlpdController extends Controller
         // 3. Jika user SAMA SEKALI BELUM PERNAH buat Form 1 (SPPD)
         if (!$sppd) {
             return redirect()->route('sppd.create')
-                ->with('warning', 'Anda harus mengisi Form SPPD terlebih dahulu sebelum membuat Perizinan.');
+                ->with('error', 'Anda harus mengisi Form SPPD terlebih dahulu sebelum membuat Perizinan.');
         }
-
-        // if ($sppd->status !== 'Draft') {
-        //     return redirect()->route('dashboard')
-        //         ->with('warning', 'Form 2 untuk SPPD ini sudah dikirim atau sudah diproses.');
-        // }
 
         // 4. Ambil Golongan User dari relasi SPPD -> User -> Golongan
         $golonganId = $sppd->user->golongan_id ?? null;
@@ -69,9 +65,6 @@ class IlpdController extends Controller
         $tarif = Tarif::where('golongan_id', $golonganId)
             ->where('kota_kategori_id', $kotaKategoriId)
             ->first();
-
-        // $transports = Transport::all(); 
-        // $keperluans = Keperluan::all();
 
         $transports = Transport::where('is_active', true)->get(); 
         $keperluans = Keperluan::where('is_active', true)->get();
@@ -100,38 +93,65 @@ class IlpdController extends Controller
             ->where('kota_kategori_id', $kotaKategoriId)
             ->first();
 
+        // $durasi = (int) ($sppd->durasi_hari ?? 1);
+
+        // // Parse input
+        // $makanPerHari  = (int) preg_replace('/[^0-9]/', '', $request->input('uang_makan', $tarif->makan ?? 0));
+        // $dinasPerHari  = (int) preg_replace('/[^0-9]/', '', $request->input('uang_dinas', $tarif->dinas ?? 0));
+        // $hotelPerMalam = (int) preg_replace('/[^0-9]/', '', $request->input('uang_hotel', $tarif->hotel ?? 0));
+
+        // // Total per komponen
+        // $totalMakan = $makanPerHari * $durasi;
+        // $totalDinas = $dinasPerHari * $durasi;
+        // $totalHotel = $hotelPerMalam * $durasi;
+
+        // // Grand Total langsung dijumlahkan (karena masing-masing sudah dikali durasi)
+        // $grandTotal = $totalMakan + $totalDinas + $totalHotel;
+
+        $durasi = (int) ($sppd->durasi ?? 1);
+
         // 4. Bersihkan/Parse Nominal Rupiah dari Input Form (Hapus Titik)
         $makanPerHari = (int) preg_replace('/[^0-9]/', '', $request->input('uang_makan', $tarif->makan ?? 0));
         $dinasPerHari = (int) preg_replace('/[^0-9]/', '', $request->input('uang_dinas', $tarif->dinas ?? 0));
         $hotelPerMalam = (int) preg_replace('/[^0-9]/', '', $request->input('uang_hotel', $tarif->hotel ?? 0));
 
-        // 5. Kalkulasi Total Biaya
-        $durasiHari = (int) ($sppd->durasi ?? 1);
+        $totalMakan = $makanPerHari * $durasi;
+        $totalDinas = $dinasPerHari * $durasi;
+        $totalHotel = $hotelPerMalam * $durasi;
+
+        // // 5. Kalkulasi Total Biaya
+        // $durasiHari = (int) ($sppd->durasi ?? 1);
         $totalPerHari = $makanPerHari + $dinasPerHari + $hotelPerMalam;
-        $grandTotal = $totalPerHari * $durasiHari;
+        // $totalPerHari = $totalMakan + $totalDinas + $totalHotel;
+        // $grandTotal = $totalPerHari * $durasiHari;
+        $grandTotal = $totalPerHari * $durasi;
 
         // --- LOGIKA HITUNG SLA DINAMIS ---
-        $tglBerangkat = Carbon::parse($request->tanggal_awal)->startOfDay();
-        $sekarang     = now();
+        $dinas = Dinas::findOrFail($sppd->dinas_id);
 
-        if ($tglBerangkat->isPast()) {
-            // Kasus: Pengajuan Susulan (Dinas sudah berlangsung/selesai)
-            $slaDueAt = $sekarang->copy()->addHours(24);
-        } else {
-            // Hitung sisa jam dari sekarang sampai tanggal keberangkatan
-            $selisihJam = $sekarang->diffInHours($tglBerangkat, false);
+        $slaDueAt =$dinas->overall_sla;
+        // $tglBerangkat = Carbon::parse($request->tanggal_awal)->startOfDay();
+        // $sekarang     = now();
 
-            if ($selisihJam <= 24 && $selisihJam > 0) {
-                // Mendadak (Berangkat < 24 jam lagi): SLA menyesuaikan sisa jam sebelum berangkat
-                $slaDueAt = $tglBerangkat;
-            } else {
-                // Reguler (Berangkat masih lama): SLA standar 24 jam dari submit
-                $slaDueAt = $sekarang->copy()->addHours(168);
-            }
-        }
+        // if ($tglBerangkat->isPast()) {
+        //     // Kasus: Pengajuan Susulan (Dinas sudah berlangsung/selesai)
+        //     $slaDueAt = $sekarang->copy()->addHours(24);
+        // } else {
+        //     // Hitung sisa jam dari sekarang sampai tanggal keberangkatan
+        //     $selisihJam = $sekarang->diffInHours($tglBerangkat, false);
+
+        //     if ($selisihJam <= 24 && $selisihJam > 0) {
+        //         // Mendadak (Berangkat < 24 jam lagi): SLA menyesuaikan sisa jam sebelum berangkat
+        //         $slaDueAt = $tglBerangkat;
+        //     } else {
+        //         // Reguler (Berangkat masih lama): SLA standar 24 jam dari submit
+        //         $slaDueAt = $sekarang->copy()->addHours(168);
+        //     }
+        // }
 
         // 6. Eksekusi Simpan dengan Database Transaction
-        DB::transaction(function () use ($request, $sppd, $tarif, $makanPerHari, $dinasPerHari, $hotelPerMalam, $grandTotal, $slaDueAt) {
+        DB::transaction(function () use ($request, $sppd, $tarif, $makanPerHari, $dinasPerHari, $hotelPerMalam, $totalDinas, $totalHotel, $totalMakan, $grandTotal, $slaDueAt) {
+        // DB::transaction(function () use ($request, $sppd, $tarif, $makanPerHari, $dinasPerHari, $hotelPerMalam, $grandTotal, $slaDueAt) {
             
             // A. Simpan ke Tabel `ilpd`
             $ilpd = Ilpd::create([
@@ -140,6 +160,7 @@ class IlpdController extends Controller
                 'no_ilpd'       => $this->generateNoIlpd(), // Panggil helper generator
                 'tanggal_awal'  => $request->tanggal_awal,
                 'tanggal_akhir' => $request->tanggal_akhir,
+                // 'status'        => 'Sedang Diproses',
                 'status'        => 'Menunggu Approval',
             ]);
 
@@ -147,10 +168,13 @@ class IlpdController extends Controller
             DetailIlpd::create([
                 'ilpd_id'  => $ilpd->id,
                 'tarif_id' => $tarif->id ?? null,
-                'makan'    => $makanPerHari,
-                'dinas'    => $dinasPerHari,
-                'hotel'    => $hotelPerMalam,
-                'laundry'    => 'Actual',
+                // 'makan'    => $makanPerHari,
+                // 'dinas'    => $dinasPerHari,
+                // 'hotel'    => $hotelPerMalam,
+                'makan' => $totalMakan,
+                'dinas' => $totalDinas,
+                'hotel' => $totalHotel,
+                'laundry'  => 'Actual',
                 'bbm'             => ($request->bbm),
                 'transport_lokal' => ($request->transport_lokal),
                 'visa'            => ($request->visa),
@@ -159,15 +183,7 @@ class IlpdController extends Controller
                 'parkir_toll'     => ($request->parkir_toll), // Sesuaikan nama kolom migration
                 'entertaiment'    => ($request->entertaiment),
                 'dll'             => ($request->dll),
-                // 'bbm'             => $request->filled('bbm') ? ($request->bbm) : null,
-                // 'transport_lokal' => $request->filled('transport_lokal') ? ($request->transport_lokal) : null,
-                // 'visa'            => $request->filled('visa') ? ($request->visa) : null,
-                // 'fiskal'          => $request->filled('fiskal') ? ($request->fiskal) : null,
-                // 'airport_tax'     => $request->filled('airport_tax') ? ($request->airport_tax) : null,
-                // 'parkir&toll'     => $request->filled('parkir&toll') ? ($request->parkirtoll) : null,
-                // 'entertaiment'    => $request->filled('entertaiment') ? ($request->entertaiment) : null,
-                // 'dll'             => $request->filled('dll') ? ($request->dll) : null,
-                'total'    => $grandTotal,
+                'total'        => $grandTotal,
                 'uang_muka'    => $grandTotal,
             ]);
 
@@ -190,6 +206,7 @@ class IlpdController extends Controller
             IlpdApproval::create([
                 'ilpd_id'     => $ilpd->id,
                 'approver_id' => null,
+                // 'status'      => 'Sedang Diproses',
                 'status'      => 'Menunggu Approval',
                 'signature'   => null,
                 'sla_due_at'  => $slaDueAt,
@@ -256,6 +273,8 @@ class IlpdController extends Controller
         ->where('status', 'Sedang Diproses')
         ->findOrFail($id);
 
+        $sppd = $ilpd->sppd;
+
         // 1. Ambil ID Kategori Kota dari kota tujuan di SPPD
         $kotaKategoriId = $ilpd->sppd->kota->kota_kategori_id ?? null;
 
@@ -268,70 +287,79 @@ class IlpdController extends Controller
         // 3. Ambil SEMUA data tarif yang Kategori Kotanya cocok dengan kota tujuan SPPD
         $tarifs = Tarif::with('golongan')
             ->where('kota_kategori_id', $kotaKategoriId)
+            // ->where('golongan_id', $golonganId)
             ->get();
 
-        return view('ilpd.approve', compact('ilpd', 'transports', 'keperluans', 'tarifs', 'golonganId'));
+        // return view('ilpd.approve', compact('ilpd', 'sppd', 'transports', 'keperluans', 'tarifs'));
+        return view('ilpd.approve', compact('ilpd', 'sppd', 'transports', 'keperluans', 'tarifs', 'golonganId'));
+        // return view('approval.general', compact('ilpd', 'sppd', 'transports', 'keperluans', 'tarifs', 'golonganId'));
     }
-    // public function show($id)
-    // {
-    //     // Mengambil data ILPD beserta SPPD (+relasi kota & user), Detail ILPD, dan Tiket jika ada
-    //     $ilpd = Ilpd::with([
-    //         'dinas',
-    //         'sppd.kota',
-    //         'sppd.user',
-    //         'detail_ilpd', // Relasi ke tabel detail_ilpd
-    //     ])
-    //     ->where('status', 'Sedang Diproses')
-    //     ->findOrFail($id);
-
-    //     $kotaKategoriId = $ilpd->sppd->kota->kota_kategori_id ?? null;
-    //     $transports = Transport::all(); 
-    //     $keperluans = Keperluan::all();
-    //     // $golonganId   = Golongan::all();
-    //     $golonganId     = $sppd->user->golongan_id ?? null;
-    //     // $tarifs = Tarif::with('kota_kategori_id', $kotaKategoriId)
-    //     //     ->get();
-    //     $tarifs = Tarif::where('kota_kategori_id', $kotaKategoriId)
-    //     // ->where($golongan)
-    //     ->where('golongan_id', $golonganId)
-    //     ->get();
-
-    //     return view('ilpd.approve', compact('ilpd', 'transports', 'keperluans','tarifs'));
-    // }
 
     /**
      * Memproses persetujuan/pemeriksaan dari GA
      */
     public function approve(Request $request, $id)
     {
-        // 1. Cek apakah user yang login sudah set TTD di profilnya
+        // 1. Cek TTD User
         $user = Auth::user();
         if (!$user->signature) {
             return redirect()->back()->with('error', 'Gagal: Anda belum mengatur tanda tangan di profil!');
         }
 
-        // 2. Validasi file tiket dan input opsional
+        // 2. Validasi Input
         $request->validate([
-            'tiket_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // Maks 5MB
-            'bbm'        => 'nullable|numeric',
-            'transport_lokal' => 'nullable|numeric',
-            'visa'       => 'nullable|numeric',
-            'fiskal'     => 'nullable|numeric',
-            'airport_tax' => 'nullable|numeric',
-            'parkir&toll' => 'nullable|numeric',
-            'entertaiment' => 'nullable|numeric',
-            'dll'        => 'nullable|numeric',
+            'tanggal_awal'      => 'required|date',
+            'transport_id'      => 'nullable|array', // Karena JSON/Multi-select
+            'keperluan_id'      => 'nullable|array', // Karena JSON/Multi-select
+            'transport_lainnya' => 'nullable|string',
+            'keperluan_lainnya' => 'nullable|string',
+            'tiket_file'        => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'bbm'               => 'nullable|numeric',
+            'transport_lokal'   => 'nullable|numeric',
+            'visa'              => 'nullable|numeric',
+            'fiskal'            => 'nullable|numeric',
+            'airport_tax'       => 'nullable|numeric',
+            'parkir_toll'       => 'nullable|numeric', // Sesuaikan name di form HTML (parkir_toll)
+            'entertaiment'      => 'nullable|numeric',
+            'dll'               => 'nullable|numeric',
         ]);
 
         DB::beginTransaction();
-
         $filePath = null;
 
         try {
-            // 3. Ambil data ILPD beserta relasinya
-            $ilpd = Ilpd::findOrFail($id);
+            // 3. Ambil data ILPD beserta SPPD-nya
+            $ilpd = Ilpd::with('sppd')->findOrFail($id);
+            $sppd = $ilpd->sppd;
 
-            // 4. Upload file tiket
+            // --- A. HITUNG TANGGAL AKHIR BERDASARKAN DURASI SPPD ---
+            $tanggalAwalBaru = \Carbon\Carbon::parse($request->tanggal_awal);
+            $durasiHari = (int) ($sppd->durasi ?? 1);
+            
+            // Hitung tanggal akhir (misal: durasi 3 hari, tgl 1 s/d tgl 3 -> subDay(1) atau addDays sesuai rumus durasi sistemmu)
+            $tanggalAkhirBaru = $tanggalAwalBaru->copy()->addDays($durasiHari - 1);
+
+            // Update Tanggal ke tabel ILPD
+            $ilpd->update([
+                'tanggal_awal'  => $tanggalAwalBaru->format('Y-m-d'),
+                'tanggal_akhir' => $tanggalAkhirBaru->format('Y-m-d'),
+                'status'        => 'Disetujui',
+            ]);
+
+            // --- B. UPDATE TRANSPORT & KEPERLUAN KE TABEL SPPDS ---
+            if ($sppd) {
+                $sppd->update([
+                    // Jika di Model Sppd $casts = ['transport_id' => 'array'], Laravel otomatis handles json_encode
+                    // 'transport_id'      => $request->transport_id ? json_encode($request->transport_id) : null,
+                    // 'keperluan_id'      => $request->keperluan_id ? json_encode($request->keperluan_id) : null,
+                    'transport_id' => $request->transport_id,
+                    'keperluan_id' => $request->keperluan_id,
+                    'transport_lainnya' => $request->transport_lainnya,
+                    'keperluan_lainnya' => $request->keperluan_lainnya,
+                ]);
+            }
+
+            // --- C. UPLOAD TIKET (OPSIONAL) ---
             if ($request->hasFile('tiket_file')) {
                 $file = $request->file('tiket_file');
                 $filePath = $file->store('tikets', 'public');
@@ -345,19 +373,27 @@ class IlpdController extends Controller
                 ]);
             }
 
-            // 5. Update status di tabel 'ilpds'
-            $ilpd->update([
-                'status' => 'Disetujui',
-            ]);
-
-            // 6. Update status di tabel 'dinas' (jika ada relasinya)
+            // --- D. UPDATE STATUS DINAS (JIKA ADA) ---
             if ($ilpd->dinas_id) {
-                Dinas::where('id', $ilpd->dinas_id)->update([
-                    'status' => 'Disetujui',
-                ]);
-            }
+                $dinas = Dinas::find($ilpd->dinas_id);
+                
+                if ($dinas) {
+                    // Cek apakah waktu approve GA saat ini melebihi overall_sla master
+                    $statusSlaFinal = now()->lessThanOrEqualTo($dinas->overall_sla) ? 'ON_TIME' : 'LATE';
 
-            // 7. Handle update di tabel 'detail_ilpds'
+                    $dinas->update([
+                        'status'     => 'Disetujui',
+                        'status_sla' => $statusSlaFinal, // Menandai finalisasi SLA (ON_TIME / LATE)
+                    ]);
+                }
+            }
+            // if ($ilpd->dinas_id) {
+            //     Dinas::where('id', $ilpd->dinas_id)->update([
+            //         'status' => 'Disetujui',
+            //     ]);
+            // }
+
+            // --- E. UPDATE DETAIL ILPD (RINCIAN BIAYA) ---
             $dataToUpdate = array_filter([
                 'tarif_id'        => $request->tarif_id,
                 'dinas'           => $request->dinas,
@@ -368,49 +404,54 @@ class IlpdController extends Controller
                 'visa'            => $request->visa,
                 'fiskal'          => $request->fiskal,
                 'airport_tax'     => $request->airport_tax,
-                'parkir&toll'     => $request->parkir_toll,
+                'parkir&toll'     => $request->parkir_toll, // name atribut di DB 'parkir&toll'
                 'entertaiment'    => $request->entertaiment,
                 'dll'             => $request->dll,
             ], function ($value) {
-                return !is_null($value); // Hanya simpan/update field yang diisi/memiliki nilai
+                return !is_null($value);
             });
 
-            // Jalankan updateOrCreate sekaligus jika ada data yang diisi
             if (!empty($dataToUpdate)) {
                 DetailIlpd::updateOrCreate(
                     ['ilpd_id' => $ilpd->id],
                     $dataToUpdate
                 );
             }
-            // if ($request->filled('bbm')) {
-            //     DetailIlpd::updateOrCreate(
-            //         ['ilpd_id' => $ilpd->id],
-            //         ['bbm' => $request->bbm]
-            //     );
-            // }
 
-            // --- TAMBAHAN PENTING UNTUK SLA ---
-            // Ambil deadline SLA dari record 'Menunggu Approval' sebelumnya
+            // --- F. LOG APPROVAL & SLA ---
+            // $pendingApproval = IlpdApproval::where('ilpd_id', $ilpd->id)
+            //     ->whereNull('approved_at')
+            //     ->latest()
+            //     ->first();
+
+            // if ($pendingApproval) {
+            //     $pendingApproval->update([
+            //         'approver_id' => $user->id,
+            //         'status'      => 'Disetujui',
+            //         'signature'   => $user->signature,
+            //         'approved_at' => now(),
+            //     ]);
+            // } else {
             $lastApproval = IlpdApproval::where('ilpd_id', $ilpd->id)->latest()->first();
 
-            // 8. Buat record riwayat baru di tabel 'ilpd_approvals'
             IlpdApproval::create([
                 'ilpd_id'     => $ilpd->id,
                 'approver_id' => $user->id,
                 'status'      => 'Disetujui',
                 'signature'   => $user->signature,
-                'sla_due_at'  => $lastApproval?->sla_due_at, // Forward batas waktu SLA dari tahap sebelumnya
-                'approved_at' => now(),                     // Timer SLA Form 2 SELESAI di sini
+                // 'sla_due_at'  => $lastApproval?->sla_due_at,
+                'sla_due_at'  => $lastApproval?->sla_due_at ?? $ilpd->dinas?->overall_sla,
+                'approved_at' => now(),
             ]);
+            // }
 
             DB::commit();
 
-            return redirect()->route('dashboard')->with('success', 'ILPD berhasil disetujui dan tiket telah diunggah.');
+            return redirect()->route('dashboard')->with('success', 'ILPD berhasil disetujui dan data diperbarui.');
 
         } catch (\Exception $e) {
             DB::rollBack();
 
-            // Hapus file tiket jika terjadi error pada database
             if ($filePath && Storage::disk('public')->exists($filePath)) {
                 Storage::disk('public')->delete($filePath);
             }
@@ -418,83 +459,267 @@ class IlpdController extends Controller
             return redirect()->back()->with('error', 'Gagal menyetujui ILPD: ' . $e->getMessage());
         }
     }
-    // public function approve(Request $request, $id)
+    // public function laporan($id)
     // {
-    //     // 1. Cek dulu apakah user yang login sudah set TTD di profilnya
+    //     // Mengambil data ILPD beserta SPPD (+relasi kota & user), Detail ILPD, dan Tiket jika ada
+    //     $ilpd = Ilpd::with([
+    //         'dinas',
+    //         'sppd.kota',
+    //         'sppd.user.golongan', // tambahkan .golongan agar nama/data golongan user terbawa
+    //         'detail_ilpd', // Relasi ke tabel detail_ilpd
+    //     ])
+    //     ->where('status', 'Sedang Diproses')
+    //     ->findOrFail($id);
+
+    //     $sppd = $ilpd->sppd;
+
+    //     // 1. Ambil ID Kategori Kota dari kota tujuan di SPPD
+    //     $kotaKategoriId = $ilpd->sppd->kota->kota_kategori_id ?? null;
+
+    //     // 2. Ambil Golongan ID Pemohon (dari relasi user via SPPD)
+    //     $golonganId = $ilpd->sppd->user->golongan_id ?? null;
+
+    //     $transports = Transport::all(); 
+    //     $keperluans = Keperluan::all();
+
+    //     // 3. Ambil SEMUA data tarif yang Kategori Kotanya cocok dengan kota tujuan SPPD
+    //     $tarifs = Tarif::with('golongan')
+    //         ->where('kota_kategori_id', $kotaKategoriId)
+    //         ->get();
+
+    //     return view('ilpd.laporan', compact('ilpd', 'sppd', 'transports', 'keperluans', 'tarifs', 'golonganId'));
+    // }
+
+    // public function report(Request $request, $id)
+    // {
+    //     // 1. Cek TTD User
     //     $user = Auth::user();
     //     if (!$user->signature) {
     //         return redirect()->back()->with('error', 'Gagal: Anda belum mengatur tanda tangan di profil!');
     //     }
 
-    //     // Validasi file tiket dan optional input lainnya
+    //     // 2. Validasi Input
     //     $request->validate([
-    //         'tiket_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // Maks 5MB
-    //         'bbm'        => 'nullable|numeric',
+    //         'tanggal_awal'      => 'required|date',
+    //         'transport_id'      => 'nullable|array', // Karena JSON/Multi-select
+    //         'keperluan_id'      => 'nullable|array', // Karena JSON/Multi-select
+    //         'transport_lainnya' => 'nullable|string',
+    //         'keperluan_lainnya' => 'nullable|string',
+    //         'tiket_file'        => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+    //         'bbm'               => 'nullable|numeric',
+    //         'transport_lokal'   => 'nullable|numeric',
+    //         'visa'              => 'nullable|numeric',
+    //         'fiskal'            => 'nullable|numeric',
+    //         'airport_tax'       => 'nullable|numeric',
+    //         'parkir_toll'       => 'nullable|numeric', // Sesuaikan name di form HTML (parkir_toll)
+    //         'entertaiment'      => 'nullable|numeric',
+    //         'dll'               => 'nullable|numeric',
     //     ]);
 
     //     DB::beginTransaction();
+    //     $filePath = null;
 
     //     try {
-    //         // 2. Ambil data ILPD beserta relasinya
-    //         $ilpd = Ilpd::findOrFail($id);
+    //         // 3. Ambil data ILPD beserta SPPD-nya
+    //         $ilpd = Ilpd::with('sppd')->findOrFail($id);
+    //         $sppd = $ilpd->sppd;
 
-    //         // 3. Upload file tiket
-    //         $filePath = null;
+    //         // --- A. HITUNG TANGGAL AKHIR BERDASARKAN DURASI SPPD ---
+    //         $tanggalAwalBaru = \Carbon\Carbon::parse($request->tanggal_awal);
+    //         $durasiHari = (int) ($sppd->durasi ?? 1);
+            
+    //         // Hitung tanggal akhir (misal: durasi 3 hari, tgl 1 s/d tgl 3 -> subDay(1) atau addDays sesuai rumus durasi sistemmu)
+    //         $tanggalAkhirBaru = $tanggalAwalBaru->copy()->addDays($durasiHari - 1);
+
+    //         // Update Tanggal ke tabel ILPDS
+    //         $ilpd->update([
+    //             'tanggal_awal'  => $tanggalAwalBaru->format('Y-m-d'),
+    //             'tanggal_akhir' => $tanggalAkhirBaru->format('Y-m-d'),
+    //             'status'        => 'Disetujui',
+    //         ]);
+
+    //         // --- B. UPDATE TRANSPORT & KEPERLUAN KE TABEL SPPDS ---
+    //         if ($sppd) {
+    //             $sppd->update([
+    //                 // Jika di Model Sppd $casts = ['transport_id' => 'array'], Laravel otomatis handles json_encode
+    //                 // 'transport_id'      => $request->transport_id ? json_encode($request->transport_id) : null,
+    //                 // 'keperluan_id'      => $request->keperluan_id ? json_encode($request->keperluan_id) : null,
+    //                 'transport_id' => $request->transport_id,
+    //                 'keperluan_id' => $request->keperluan_id,
+    //                 'transport_lainnya' => $request->transport_lainnya,
+    //                 'keperluan_lainnya' => $request->keperluan_lainnya,
+    //             ]);
+    //         }
+
+    //         // --- C. UPLOAD TIKET (OPSIONAL) ---
     //         if ($request->hasFile('tiket_file')) {
     //             $file = $request->file('tiket_file');
     //             $filePath = $file->store('tikets', 'public');
 
     //             Tiket::create([
     //                 'ilpd_id'     => $ilpd->id,
-    //                 'type'        => 'jalan', // Sesuaikan nilainya
+    //                 'type'        => 'jalan',
     //                 'file'        => $filePath,
     //                 'uploaded_by' => $user->id,
     //                 'uploaded_at' => now(),
     //             ]);
     //         }
 
-    //         // 4. Update status di tabel 'ilpds'
-    //         $ilpd->update([
-    //             'status' => 'Disetujui',
-    //         ]);
-
-    //         // 5. Update status di tabel 'dinas' (jika ada relasinya)
+    //         // --- D. UPDATE STATUS DINAS (JIKA ADA) ---
     //         if ($ilpd->dinas_id) {
     //             Dinas::where('id', $ilpd->dinas_id)->update([
     //                 'status' => 'Disetujui',
     //             ]);
     //         }
 
-    //         // 6. Handle perubahan / update di tabel 'detail_ilpds'
-    //         if ($request->filled('bbm')) {
+    //         // --- E. UPDATE DETAIL ILPD (RINCIAN BIAYA) ---
+    //         $dataToUpdate = array_filter([
+    //             'tarif_id'        => $request->tarif_id,
+    //             'dinas'           => $request->dinas,
+    //             'makan'           => $request->makan,
+    //             'hotel'           => $request->hotel,
+    //             'bbm'             => $request->bbm,
+    //             'transport_lokal' => $request->transport_lokal,
+    //             'visa'            => $request->visa,
+    //             'fiskal'          => $request->fiskal,
+    //             'airport_tax'     => $request->airport_tax,
+    //             'parkir&toll'     => $request->parkir_toll, // name atribut di DB 'parkir&toll'
+    //             'entertaiment'    => $request->entertaiment,
+    //             'dll'             => $request->dll,
+    //         ], function ($value) {
+    //             return !is_null($value);
+    //         });
+
+    //         if (!empty($dataToUpdate)) {
     //             DetailIlpd::updateOrCreate(
     //                 ['ilpd_id' => $ilpd->id],
-    //                 ['bbm' => $request->bbm]
+    //                 $dataToUpdate
     //             );
     //         }
 
-    //         // 7. Buat record di tabel 'ilpd_approvals' dengan TTD Gambar dari user
+    //         // --- F. LOG APPROVAL & SLA ---
+    //         $lastApproval = IlpdApproval::where('ilpd_id', $ilpd->id)->latest()->first();
+
     //         IlpdApproval::create([
     //             'ilpd_id'     => $ilpd->id,
     //             'approver_id' => $user->id,
     //             'status'      => 'Disetujui',
-    //             'signature'   => $user->signature, // <--- Menggunakan path file TTD dari profil user
+    //             'signature'   => $user->signature,
+    //             'sla_due_at'  => $lastApproval?->sla_due_at,
     //             'approved_at' => now(),
     //         ]);
 
     //         DB::commit();
 
-    //         return redirect()->route('dashboard')->with('success', 'ILPD berhasil disetujui dan tiket telah diunggah.');
+    //         return redirect()->route('dashboard')->with('success', 'ILPD berhasil disetujui dan data diperbarui.');
 
     //     } catch (\Exception $e) {
     //         DB::rollBack();
 
-    //         // Hapus file tiket yang terlanjur terunggah jika terjadi error database
     //         if ($filePath && Storage::disk('public')->exists($filePath)) {
     //             Storage::disk('public')->delete($filePath);
     //         }
 
     //         return redirect()->back()->with('error', 'Gagal menyetujui ILPD: ' . $e->getMessage());
     //     }
+    // }
+    // public function laporan($ilpd_id)
+    public function laporan($id)
+    {
+        // Fetch ILPD lengkap dengan SPPD, Kota, & Detail Biaya Pengajuan
+        $ilpd = Ilpd::with(['sppd.kota', 'detail_ilpd', 'laporan', 'sppd.user'])
+                    ->findOrFail($id);
+
+        // Ambil data laporan jika sudah pernah diisi (untuk mode edit/view)
+        $laporan = $ilpd->laporan ?? new Laporan();
+
+        return view('ilpd.laporan', compact('ilpd', 'laporan'));
+    }
+
+    /**
+     * Menyimpan atau Memperbarui Laporan Perjalanan Dinas (LPJ)
+     */
+    public function report(Request $request, $id)
+    {
+        $ilpd = Ilpd::with('detail_ilpd')->findOrFail($id);
+
+        // Validasi input
+        $validated = $request->validate([
+            'realisasi'       => 'required|array',
+            'uang_muka'       => 'nullable|numeric|min:0',
+            'total_realisasi' => 'required|numeric|min:0',
+            'total_dibayar'   => 'required|numeric|min:0',
+            'selisih'         => 'required|numeric',
+            'keterangan'      => 'nullable|string',
+            'laporan_1'       => 'nullable|string',
+            'laporan_2'       => 'nullable|string',
+            // 'status'                   => 'required|in:draft,submitted',
+        ]);
+
+        // Ambil total perkiraan dari detail_ilpd (auto sum)
+        $totalPerkiraan = $ilpd->detail_ilpd ? $ilpd->detail_ilpd->sum('uang_muka') : 0;
+
+        // Hitung ulang selisih di BE untuk keamanan data
+        $uangMuka = (float) $request->input('uang_muka', 0);
+        $totalRealisasi = (float) $request->input('total_realisasi', 0);
+        
+        // FIX BE: Uang Muka - Total Realisasi
+        $selisihBE = $uangMuka - $totalRealisasi;
+
+        DB::transaction(function () use ($request, $ilpd, $totalPerkiraan) {
+        
+            // 1. Simpan / Update data Laporan Dinas
+            Laporan::updateOrCreate(
+                ['ilpd_id' => $ilpd->id],
+                [
+                    'realisasi'       => $request->input('realisasi'),
+                    'perkiraan'       => $totalPerkiraan,
+                    'uang_muka'       => $request->input('uang_muka', 0),
+                    'total_realisasi' => $request->input('total_realisasi', 0),
+                    'total_dibayar'   => $request->input('total_dibayar', 0),
+                    'selisih'         => $selisihBE,
+                    // 'selisih'         => $request->input('selisih', 0),
+                    'keterangan'      => $request->input('keterangan'),
+                    'laporan_1'       => $request->input('laporan_1'),
+                    'laporan_2'       => $request->input('laporan_2'),
+                ]
+            );
+
+            // 2. Update status pada tabel dinas
+            // Opsi A: Jika $ilpd memiliki relasi ke model Dinas ($ilpd->dinas)
+            if ($ilpd->dinas) {
+                $ilpd->dinas->update([
+                    'status' => 'Selesai'
+                ]);
+            } 
+            // Opsi B: Jika ilpd_id ada langsung di tabel dinas (Foreign Key)
+            else {
+                Dinas::where('ilpd_id', $ilpd->id)->update([
+                    'status' => 'Selesai'
+                ]);
+            }
+        });
+
+        return redirect()->route('dashboard')->with('success', 'Laporan Perjalanan Dinas berhasil disimpan.');
+    }
+        // Simpan / Update data Laporan Dinas
+        // Laporan::updateOrCreate(
+        //     ['ilpd_id' => $ilpd->id],
+        //     [
+        //         'realisasi'       => $request->input('realisasi'), // Array 12 komponen biaya
+        //         'perkiraan'       => $totalPerkiraan,
+        //         'uang_muka'       => $request->input('uang_muka', 0),
+        //         'total_realisasi' => $request->input('total_realisasi', 0),
+        //         'total_dibayar'   => $request->input('total_dibayar', 0),
+        //         'selisih'         => $request->input('selisih', 0),
+        //         'keterangan'      => $request->input('keterangan'),
+        //         'laporan_1'       => $request->input('laporan_1'),
+        //         'laporan_2'       => $request->input('laporan_2'),
+        //         // 'status'                   => $request->input('status', 'submitted'),
+        //     ]
+        // );
+
+        // return redirect()->route('dashboard')->with('success', 'Laporan Perjalanan Dinas berhasil disimpan.');
+        // return redirect()->back()->with('success', 'Laporan Perjalanan Dinas berhasil disimpan.');
     // }
 }

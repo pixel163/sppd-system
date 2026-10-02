@@ -8,19 +8,11 @@ use Illuminate\Http\Request;
 
 class JabatanController extends Controller
 {
-    // public function index()
-    // {
-    //     $items = Jabatan::latest()->paginate(10);
-    //     $title = 'Jabatan';
-    //     $routeName = 'jabatan'; // Sesuaikan dengan nama route resource di web.php
-
-    //     return view('master.index', compact('items', 'title', 'routeName'));
-    // }
     public function index()
     {
-        // $jabatans = Jabatan::with('creator')->latest()->paginate(10);
+        
         $jabatans = Jabatan::latest()->paginate(10);
-        // return view('master.index', compact('jabatans'));
+        
         return view('master.jabatan.index', compact('jabatans'));
     }
 

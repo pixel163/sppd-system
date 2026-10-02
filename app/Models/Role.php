@@ -9,6 +9,8 @@ class Role extends Model
 {
     protected $fillable = [
         'name',
+        'created_by',
+        'is_active',
     ];
 
     protected $table = 'role';

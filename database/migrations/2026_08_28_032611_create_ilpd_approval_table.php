@@ -19,9 +19,6 @@ return new class extends Migration
                 ->constrained('ilpd')
                 ->cascadeOnDelete();
 
-            // $table->foreignId('approver_id')
-            //     ->constrained('users')
-            //     ->restrictOnDelete();
             $table->foreignId('approver_id')
                 ->nullable()
                 ->constrained('users')

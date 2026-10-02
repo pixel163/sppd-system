@@ -111,6 +111,39 @@
                                     </div>
 
                                     <div class="flex shrink-0 gap-2">
+                                        {{-- @if(($item->dinas->status ?? '') === 'Selesai' && empty($item->ilpd->laporan)) --}}
+                                        @if(($item->dinas->status ?? '') === 'Laporan' && empty($item->ilpd->laporan))
+                                            {{-- Tombol PROSES: Hanya muncul jika dinas Selesai DAN ILPD belum pernah diisi --}}
+                                            <a href="{{ route('ilpd.laporan', $item->id) }}"
+                                            class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]">
+                                                Proses
+                                            </a>
+                                        @else
+                                            {{-- Tombol DETAIL: Dipakai saat belum Selesai, ATAU jika ILPD sudah diisi --}}
+                                            <button type="button" 
+                                                    onclick='showDetail(@json($item))'
+                                                    class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]">
+                                                Detail
+                                            </button>
+                                        @endif
+                                    </div>
+                                    {{-- <div class="flex shrink-0 gap-2">
+                                        @if(($item->dinas->status ?? '') === 'Selesai')
+
+                                            <a href="{{ route('ilpd.laporan', $item->id) }}"
+                                            class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]">
+                                                Proses
+                                            </a>
+                                        @else
+                                            <button
+                                                type="button"
+                                                onclick='showDetail(@json($item))'
+                                                class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]">
+                                                Detail
+                                            </button>
+                                        @endif
+                                    </div> --}}
+                                    {{-- <div class="flex shrink-0 gap-2">
 
                                         <button
                                             type="button"
@@ -119,7 +152,7 @@
                                             Detail
                                         </button>
 
-                                    </div>
+                                    </div> --}}
 
                                 </div>
 
@@ -236,7 +269,8 @@
 
                                             <div class="flex shrink-0 gap-2">
 
-                                                <a href="{{ route('approval.show', $item->id) }}"
+                                                <a href="{{ route('approval.manager', $item->id) }}"
+                                                {{-- <a href="{{ route('sppd.approve', $item->id) }}" --}}
                                                 class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]">
                                                     Proses
                                                 </a>
@@ -280,7 +314,6 @@
         <div id="gaSection" class="mt-6">
 
             {{-- STATISTIK --}}
-            {{-- <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4"> --}}
             <div class="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
 
                 {{-- Draft --}}
@@ -448,23 +481,11 @@
                                     <td class="whitespace-nowrap px-4 py-3">
 
                                         @php
-                                            // 1. Style Warna untuk Status Pengajuan
-                                            // $statusClass = match(strtolower($item->dinas->status ?? '')) {
-                                            //     'approved', 'disetujui' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                                            //     'rejected', 'ditolak'   => 'bg-rose-50 text-rose-600 border-rose-100',
-                                            //     default                 => 'bg-amber-50 text-amber-600 border-amber-100',
-                                            // };
-
                                             // 2. Ambil Informasi SLA dari Model Dinas
                                             $sla = $item->dinas->sla_info;
                                         @endphp
 
                                         <div class="flex items-center gap-1.5">
-                                            {{-- Badge Status Pengajuan Utama --}}
-                                            {{-- <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
-                                                {{ str_replace('_', ' ', $item->dinas->status) }}
-                                            </span> --}}
-
                                             {{-- Badge Timer SLA (Hanya Tampil Jika Masih Proses / Ada SLA) --}}
                                             @if($sla['status'] !== 'none')
                                                 <span class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold {{ $sla['class'] }}" title="Batas Waktu SLA">
@@ -477,33 +498,9 @@
                                         </div>
 
                                     </td>
-                                    {{-- <td class="whitespace-nowrap px-4 py-3">
-
-                                        @php
-                                            $statusClass = match($item->dinas->status) {
-                                                'approved', 'disetujui'
-                                                    => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-
-                                                'rejected', 'ditolak'
-                                                    => 'bg-rose-50 text-rose-600 border-rose-100',
-
-                                                default
-                                                    => 'bg-amber-50 text-amber-600 border-amber-100',
-                                            };
-                                        @endphp
-
-                                        <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
-                                            {{ str_replace('_', ' ', $item->dinas->status) }}
-                                        </span>
-
-                                    </td> --}}
 
                                     <td class="whitespace-nowrap px-4 py-3 text-right">
 
-                                        {{-- <a href="{{ route('approve.show', $item->id) }}"
-                                           class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[10px] font-semibold text-white hover:bg-[#0958c9]">
-                                            Detail
-                                        </a> --}}
                                         <button 
                                             type="button" 
                                             onclick='showDetail(@json($item))'

@@ -8,19 +8,10 @@ use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
-    // public function index()
-    // {
-    //     $items = Department::latest()->paginate(10);
-    //     $title = 'Department';
-    //     $routeName = 'department'; // Sesuaikan dengan nama route resource di web.php
-
-    //     return view('master.index', compact('items', 'title', 'routeName'));
-    // }
     public function index()
     {
         $departments = Department::with('created_by')->latest()->paginate(10);
-        // $departments = Department::latest()->paginate(10);
-        // return view('master.index', compact('departments'));
+        
         return view('master.department.index', compact('departments'));
     }
 

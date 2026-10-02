@@ -18,6 +18,8 @@ return new class extends Migration
                     ->restrictOnDelete();
             $table->string('no_dinas')->unique();
             $table->string('status')->default('Draft');
+            $table->timestamp('overall_sla')->nullable();
+            $table->string('status_sla')->default('IN_PROGRESS');
 
             $table->timestamps();
         });

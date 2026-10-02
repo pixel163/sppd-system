@@ -4,7 +4,7 @@
 
 @section('content')
 
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -17,9 +17,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> --}}
 
-    <style>
+    {{-- <style>
         * {
             box-sizing: border-box;
         }
@@ -252,8 +252,8 @@
                 justify-content: center;
             }
         }
-    </style>
-</head>
+    </style> --}}
+{{-- </head> --}}
 
 <body class="min-h-screen bg-white text-[#1e293b]">
 
@@ -357,6 +357,8 @@
                             readonly>
                     </div>
 
+                    {{-- <input type="hidden" id="durasiAwal" value="{{ $ilpd->sppd->durasi ?? 1 }}"> --}}
+
                     {{-- LAMA PERJALANAN --}}
                     <div class="mb-4">
                         <label class="mb-1.5 block text-[13px] font-semibold">
@@ -372,7 +374,8 @@
                                     type="date"
                                     class="w-full border-0 text-[14px] outline-none"
                                     value="{{ isset($ilpd->tanggal_awal) ? \Carbon\Carbon::parse($ilpd->tanggal_awal)->format('Y-m-d') : '-' }}"
-                                    readonly>
+                                    data-durasi="{{ $ilpd->sppd->durasi ?? $sppd->durasi ?? 1 }}"
+                                    onchange="hitungSemua()">
                             </div>
 
                             <span class="text-[14px] font-semibold text-[#64748b]">s/d</span>
@@ -385,7 +388,7 @@
                                     type="date"
                                     class="w-full border-0 bg-transparent text-[14px] outline-none"
                                     value="{{ isset($ilpd->tanggal_akhir) ? \Carbon\Carbon::parse($ilpd->tanggal_akhir)->format('Y-m-d') : '-' }}"
-                                    readonly>
+                                    disabled>
                             </div>
                         </div>
 
@@ -393,13 +396,12 @@
                     </div>
 
                     {{-- TRANSPORTASI --}}
-                    <div class="mb-4">
+                    {{-- <div class="mb-4">
                         <label class="mb-2 block text-[13px] font-semibold text-[#0f172a]">
                             Transportasi
                         </label>
 
                         <div class="transport-grid grid grid-cols-3 gap-x-6 gap-y-3">
-                            {{-- Loop data dari tabel 'transports' --}}
                             @foreach ($transports as $transport)
                                 @php
                                     $isChecked = isset($ilpd->sppd) && $ilpd->sppd->transport_id == $transport->id;
@@ -417,7 +419,6 @@
                             @endforeach
                         </div>
                         
-                        {{-- Input Lainnya (Read-only) --}}
                         @if(isset($ilpd->sppd->transport_lainnya))
                             <div class="mt-2 flex items-center gap-3">
                                 <label class="flex items-center gap-2 cursor-default">
@@ -431,16 +432,61 @@
                                     class="w-[180px] rounded-md border border-[#cbd5e1] bg-[#f8fafc] px-3 py-1.5 text-[12px] text-[#0f172a] outline-none cursor-default">
                             </div>
                         @endif
+                    </div> --}}
+
+                    <div class="mb-4">
+
+                        <label class="mb-2 block text-[13px] font-semibold">
+                            Transportasi <span class="text-red-500">*</span>
+                        </label>
+
+                        <div class="transport-grid grid grid-cols-3 gap-x-6 gap-y-3">
+                            @foreach ($transports as $transport)
+                                <label class="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        name="transport_id[]"
+                                        value="{{ $transport->id }}"
+                                        class="size-[18px] accent-[#2563eb]"
+                                        {{-- {{ $sppd->transport_id == $transport->id ? 'checked' : '' }}> --}}
+                                        {{ in_array($transport->id, $sppd->transport_id ?? []) ? 'checked' : '' }}>
+                                    <span class="text-[14px]">
+                                        {{ $transport->name }}
+                                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+                        
+                        <div class="mt-2 flex items-center gap-3">
+
+                            <label class="flex items-center gap-2">
+
+                                <input 
+                                    type="checkbox"
+                                    class="size-[18px] accent-[#2563eb]"
+                                    {{ !empty($sppd->transport_lainnya) ? 'checked' : '' }}>
+                                <span class="text-[14px]">
+                                    Lainnya
+                                </span>
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="transport_lainnya"
+                                value="{{ $sppd->transport_lainnya }}"
+                                placeholder="Sebutkan..."
+                                class="w-[180px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[12px] outline-none">
+                        </div>
                     </div>
 
                     {{-- KEPERLUAN --}}
-                    <div class="mb-4">
+                    {{-- <div class="mb-4">
                         <label class="mb-2 block text-[13px] font-semibold text-[#0f172a]">
                             Keperluan
                         </label>
 
                         <div class="keperluan-grid grid grid-cols-3 gap-x-6 gap-y-3">
-                            {{-- Loop data dari tabel 'keperluans' --}}
                             @foreach ($keperluans as $keperluan)
                                 @php
                                     $isChecked = isset($ilpd->sppd) && $ilpd->sppd->keperluan_id == $keperluan->id;
@@ -458,7 +504,6 @@
                             @endforeach
                         </div>
 
-                        {{-- Input Lainnya (Read-only) --}}
                         @if(isset($ilpd->sppd->keperluan_lainnya))
                             <div class="mt-2 flex items-center gap-3">
                                 <label class="flex items-center gap-2 cursor-default">
@@ -472,12 +517,55 @@
                                     class="w-[180px] rounded-md border border-[#cbd5e1] bg-[#f8fafc] px-3 py-1.5 text-[12px] text-[#0f172a] outline-none cursor-default">
                             </div>
                         @endif
+                    </div> --}}
+
+                    <div class="mb-4">
+                        <label class="mb-2 block text-[13px] font-semibold">
+                            Keperluan <span class="text-red-500">*</span>
+                        </label>
+
+                        <div class="keperluan-grid grid grid-cols-3 gap-x-6 gap-y-3">
+                            @foreach ($keperluans as $keperluan)
+                                {{-- pointer-events-none mengunci klik, cursor-default menjaga tampilan kursor biasa --}}
+                                <label class="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        name="keperluan_id[]"
+                                        value="{{ $keperluan->id }}"
+                                        class="size-[18px] accent-[#2563eb]"
+                                        {{ in_array($keperluan->id, $sppd->keperluan_id ?? []) ? 'checked' : '' }}>
+                                    <span class="text-[14px] text-slate-800">
+                                        {{ $keperluan->name }}
+                                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+                        
+                        {{-- Keperluan Lainnya --}}
+                        <div class="mt-2 flex items-center gap-3">
+                            <label class="flex items-center gap-2">
+                                <input 
+                                    type="checkbox"
+                                    class="size-[18px] accent-[#2563eb]"
+                                    {{ !empty($sppd->keperluan_lainnya) ? 'checked' : '' }}>
+                                <span class="text-[14px] text-slate-800">
+                                    Lainnya
+                                </span>
+                            </label>
+
+                            <input
+                                type="text"
+                                name="keperluan_lainnya"
+                                value="{{ $sppd->keperluan_lainnya }}"
+                                placeholder="Sebutkan..."
+                                class="w-[180px] rounded-md border border-[#cbd5e1] bg-slate-50 px-3 py-2 text-[12px] outline-none text-slate-800 cursor-default">
+                        </div>
                     </div>
 
                     {{-- TUGAS --}}
                     <div>
                         <label for="tugas" class="mb-1.5 block text-[13px] font-semibold text-[#0f172a]">
-                            Tugas
+                            Tugas <span class="text-red-500">*</span>
                         </label>
 
                         <textarea
@@ -512,8 +600,10 @@
                     </div>
 
                     <div class="mb-5">
-                        <label class="mb-2 block text-[13px] font-semibold text-[#0f172a]">
-                            Tiket <span class="text-red-500">*</span>
+                        {{-- <label class="mb-2 block text-[13px] font-semibold text-[#0f172a]"> --}}
+                        <label class="mb-1.5 block text-[12px] font-semibold text-[#64748b]">
+                            {{-- Tiket <span class="text-red-500">*</span> --}}
+                            Tiket (Opsional)
                         </label>
 
                         {{-- DROPZONE BOX --}}
@@ -525,7 +615,7 @@
                                 id="tiket_file" 
                                 name="tiket_file" 
                                 accept=".pdf,.jpg,.jpeg,.png"
-                                required
+                                {{-- required --}}
                                 class="absolute inset-0 z-10 cursor-pointer opacity-0" 
                                 onchange="updateFileName(this)"
                                 oninvalid="this.setCustomValidity('Silahkan upload tiket')"
@@ -636,7 +726,8 @@
                                         name="uang_dinas"
                                         type="text"
                                         class="currency-input input-biaya"
-                                        value="{{ number_format($ilpd->detail_ilpd->dinas ?? 0, 0, ',', '.') }}"
+                                        value="{{ number_format($ilpd->detail_ilpd->tarif->dinas ?? 0, 0, ',', '.') }}"
+                                        {{-- value="{{ number_format($tarifs->dinas ?? 0, 0, ',', '.') }}" --}}
                                         readonly>
                                 </div>
                             </div>
@@ -653,7 +744,8 @@
                                         name="uang_makan"
                                         type="text"
                                         class="currency-input input-biaya"
-                                        value="{{ number_format($ilpd->detail_ilpd->makan ?? 0, 0, ',', '.') }}"
+                                        value="{{ number_format($ilpd->detail_ilpd->tarif->makan ?? 0, 0, ',', '.') }}"
+                                        {{-- value="{{ number_format($tarifs->makan ?? 0, 0, ',', '.') }}" --}}
                                         readonly>
                                 </div>
                             </div>
@@ -670,7 +762,7 @@
                                         name="uang_hotel"
                                         type="text"
                                         class="currency-input input-biaya"
-                                        value="{{ number_format($ilpd->detail_ilpd->hotel ?? 0, 0, ',', '.') }}"
+                                        value="{{ number_format($ilpd->detail_ilpd->tarif->hotel ?? 0, 0, ',', '.') }}"
                                         readonly>
                                 </div>
                             </div>
@@ -951,13 +1043,43 @@
 </div>
 
 </body>
-</html>
+{{-- </html> --}}
 
 @endsection
 
 @push('scripts')
 
-<script>
+{{-- <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputMulai = document.getElementById('tanggalMulai');
+        // const inputSelesai = document.getElementById('tanggalSelesai');
+        
+        if (inputMulai) {
+            // 1. Set minimal tanggal awal = H+1 (Besok)
+            // const besok = new Date();
+            // besok.setDate(besok.getDate() + 1);
+            
+            // Format ke YYYY-MM-DD
+            // const minDate = besok.toISOString().split('T')[0];
+            // inputMulai.setAttribute('min', minDate);
+
+            // 2. Pasang event listener saat tanggal awal diubah
+            inputMulai.addEventListener('change', hitungSemua);
+
+            if (inputMulai.value) {
+                hitungSemua();
+            }
+        }
+        // }
+
+        // if (inputSelesai) {
+        //     inputSelesai.addEventListener('change', hitungSemua);
+        // }
+
+        // // Jalankan perhitungan awal saat halaman dimuat
+        // hitungSemua();
+    });
+
     // ============================================================
     // 1. UPDATE NAMA FILE TIKET
     // ============================================================
@@ -1011,6 +1133,35 @@
         }
     }
 
+    function hitungSemua() {
+        // const inputMulai = document.getElementById('tanggalMulai')?.value;
+        const inputMulai = document.getElementById('tanggalMulai');
+        const inputSelesai = document.getElementById('tanggalSelesai');
+        const info = document.getElementById('infoLamaPerjalanan');
+        // const durasiFallback = parseInt("{{ $sppd->durasi ?? 1 }}");
+        
+        // // Kunci UX: Jika tanggalMulai belum diisi, durasi dianggap 0 (biaya harian belum dihitung)
+        // let durasiHari = inputMulai ? durasiFallback : 0;
+        const durasiHari = parseInt("{{ $sppd->durasi ?? 1 }}");
+
+        if (!inputMulai || !inputMulai.value) return;
+
+        // A. HITUNG TANGGAL SELESAI
+        const tglMulai = new Date(inputMulai.value);
+        const tglSelesai = new Date(tglMulai);
+        tglSelesai.setDate(tglMulai.getDate() + (durasiHari - 1));
+
+        const yyyy = tglSelesai.getFullYear();
+        const mm = String(tglSelesai.getMonth() + 1).padStart(2, '0');
+        const dd = String(tglSelesai.getDate()).padStart(2, '0');
+        const formattedSelesai = `${yyyy}-${mm}-${dd}`;
+
+        if (inputSelesai) inputSelesai.value = formattedSelesai;
+        if (info) {
+            info.innerText = `Total perjalanan: ${durasiHari} Hari (${inputMulai.value} s/d ${formattedSelesai})`;
+            info.classList.remove('hidden');
+        }
+    }
 
     // ============================================================
     // 5. HITUNG TOTAL
@@ -1304,56 +1455,9 @@
             });
         }
     });
-</script>
-{{-- <script>
-    function updateFileName(input) {
-        const label = document.getElementById('file-label');
-        if (input.files && input.files[0]) {
-            label.innerText = 'File Terpilih: ' + input.files[0].name;
-            label.classList.add('text-[#2563eb]');
-        } else {
-            label.innerText = 'Upload tiket perjalanan';
-            label.classList.remove('text-[#2563eb]');
-        }
-    }
-
-    // Helper: Membersihkan format Rupiah (titik/koma) menjadi angka murni
-    function parseRupiah(val) {
-        if (!val) return 0;
-        return parseInt(val.toString().replace(/[^0-9]/g, '')) || 0;
-    }
-
-    // Helper: Format angka murni ke format ribuan Indonesia (contoh: 1500000 -> 1.500.000)
-    function formatRupiah(angka) {
-        return new Intl.NumberFormat('id-ID').format(angka);
-    }
-
-    function toggleAdjustTarif() {
-        const wrapper = document.getElementById('wrapperDropdownGolongan');
-        wrapper.classList.toggle('hidden');
-    }
-
-    function applyTarifOverride(select) {
-        const selectedOption = select.options[select.selectedIndex];
-        if (!selectedOption.value) return;
-
-        // Ambil data dari atribut option yang dipilih
-        const dinas = selectedOption.getAttribute('data-dinas');
-        const makan = selectedOption.getAttribute('data-makan');
-        const hotel = selectedOption.getAttribute('data-hotel');
-
-        // Update nilai input
-        document.getElementById('inputDinas').value = formatRupiah(dinas);
-        document.getElementById('inputMakan').value = formatRupiah(makan);
-        document.getElementById('inputHotel').value = formatRupiah(hotel);
-    }
-
-    function formatRupiah(angka) {
-        return new Intl.NumberFormat('id-ID').format(angka);
-    }
-
 </script> --}}
 
     {{-- @vite('resources/js/ilpd.js') --}}
+    @vite('resources/js/ilpd/approve.js')
 
 @endpush

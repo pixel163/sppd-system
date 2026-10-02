@@ -8,19 +8,10 @@ use Illuminate\Http\Request;
 
 class KeperluanController extends Controller
 {
-    // public function index()
-    // {
-    //     $items = Keperluan::latest()->paginate(10);
-    //     $title = 'Keperluan';
-    //     $routeName = 'keperluan'; // Sesuaikan dengan nama route resource di web.php
-
-    //     return view('master.index', compact('items', 'title', 'routeName'));
-    // }
     public function index()
     {
         $keperluans = Keperluan::with('creator')->latest()->paginate(10);
-        // $keperluans = Keperluan::latest()->paginate(10);
-        // return view('master.index', compact('keperluans'));
+        
         return view('master.keperluan.index', compact('keperluans'));
     }
 

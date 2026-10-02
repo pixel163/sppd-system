@@ -8,19 +8,10 @@ use Illuminate\Http\Request;
 
 class TransportController extends Controller
 {
-    // public function index()
-    // {
-    //     $items = Transport::latest()->paginate(10);
-    //     $title = 'Transport';
-    //     $routeName = 'transport'; // Sesuaikan dengan nama route resource di web.php
-
-    //     return view('master.index', compact('items', 'title', 'routeName'));
-    // }
     public function index()
     {
-        // $transports = Transport::with('creator')->latest()->paginate(10);
         $transports = Transport::latest()->paginate(10);
-        // return view('master.index', compact('transports'));
+        
         return view('master.transport.index', compact('transports'));
     }
 

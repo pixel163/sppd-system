@@ -1,185 +1,3 @@
-const dataByRole = {
-
-    staff: [
-
-        {
-            no: 'SPPD-2026-00124',
-            tujuan: 'Bandung',
-            tanggal: '20 - 22 Agustus 2026',
-            status: 'Selesai',
-            pemohon: 'Eko Saputra',
-            tanggalPengajuan: '5 Agustus 2026, 09:00 WIB',
-            dokumen: ['sppd', 'perizinan', 'tiket']
-        },
-
-        {
-            no: 'SPPD-2026-00115',
-            tujuan: 'Jakarta',
-            tanggal: '10 - 12 Agustus 2026',
-            status: 'Selesai',
-            pemohon: 'Eko Saputra',
-            tanggalPengajuan: '2 Agustus 2026, 10:20 WIB',
-            dokumen: ['sppd', 'perizinan', 'tiket']
-        },
-
-        {
-            no: 'SPPD-2026-00102',
-            tujuan: 'Surabaya',
-            tanggal: '28 - 30 Juli 2026',
-            status: 'Approval',
-            pemohon: 'Eko Saputra',
-            tanggalPengajuan: '20 Juli 2026, 08:40 WIB',
-            dokumen: ['sppd', 'perizinan', 'tiket']
-        },
-
-        {
-            no: 'SPPD-2026-00087',
-            tujuan: 'Yogyakarta',
-            tanggal: '15 - 17 Juli 2026',
-            status: 'Approval',
-            pemohon: 'Eko Saputra',
-            tanggalPengajuan: '10 Juli 2026, 13:15 WIB',
-            dokumen: ['sppd', 'perizinan', 'tiket']
-        },
-
-        {
-            no: 'SPPD-2026-00096',
-            tujuan: 'Semarang',
-            tanggal: '10 - 13 Juni 2026',
-            status: 'Selesai',
-            pemohon: 'Eko Saputra',
-            tanggalPengajuan: '9 Juni 2026, 13:15 WIB',
-            dokumen: ['sppd', 'perizinan', 'tiket']
-        },
-
-    ],
-
-    manager: [
-
-        {
-            no: 'SPPD-2026-00124',
-            tujuan: 'Bandung',
-            tanggal: '20 - 22 Agustus 2026',
-            status: 'Selesai',
-            pemohon: 'Andi Wijaya',
-            tanggalPengajuan: '5 Agustus 2026, 09:00 WIB',
-            dokumen: ['sppd', 'perizinan', 'tiket']
-        },
-
-        {
-            no: 'SPPD-2026-00118',
-            tujuan: 'Jakarta',
-            tanggal: '18 - 19 Agustus 2026',
-            status: 'Approval',
-            pemohon: 'Budi Santoso',
-            tanggalPengajuan: '8 Agustus 2026, 10:00 WIB',
-            dokumen: ['sppd', 'perizinan']
-        },
-
-        {
-            no: 'SPPD-2026-00110',
-            tujuan: 'Bogor',
-            tanggal: '12 - 13 Agustus 2026',
-            status: 'Approval',
-            pemohon: 'Andi Pratama',
-            tanggalPengajuan: '6 Agustus 2026, 14:00 WIB',
-            dokumen: ['sppd']
-        }
-
-    ],
-
-    ga: [
-
-        {
-            no: 'SPPD-2026-00124',
-            tujuan: 'Bandung',
-            tanggal: '20 - 22 Agustus 2026',
-            status: 'Selesai',
-            pemohon: 'Eko Saputra',
-            tanggalPengajuan: '5 Agustus 2026, 09:00 WIB',
-            dokumen: ['sppd', 'perizinan', 'tiket']
-        },
-
-        {
-            no: 'SPPD-2026-00118',
-            tujuan: 'Jakarta',
-            tanggal: '18 - 19 Agustus 2026',
-            status: 'Approval',
-            pemohon: 'Budi Santoso',
-            tanggalPengajuan: '8 Agustus 2026, 10:00 WIB',
-            dokumen: ['sppd', 'perizinan']
-        },
-
-        {
-            no: 'SPPD-2026-00110',
-            tujuan: 'Bogor',
-            tanggal: '12 - 13 Agustus 2026',
-            status: 'Approval',
-            pemohon: 'Andi Pratama',
-            tanggalPengajuan: '6 Agustus 2026, 14:00 WIB',
-            dokumen: ['sppd']
-        },
-
-        {
-            no: 'SPPD-2026-00102',
-            tujuan: 'Surabaya',
-            tanggal: '28 - 30 Juli 2026',
-            status: 'Selesai',
-            pemohon: 'Eko Saputra',
-            tanggalPengajuan: '20 Juli 2026, 08:40 WIB',
-            dokumen: ['sppd', 'perizinan', 'tiket']
-        },
-
-        {
-            no: 'SPPD-2026-00087',
-            tujuan: 'Yogyakarta',
-            tanggal: '15 - 17 Juli 2026',
-            status: 'Approval',
-            pemohon: 'Dewi Lestari',
-            tanggalPengajuan: '10 Juli 2026, 13:15 WIB',
-            dokumen: ['sppd', 'perizinan']
-        },
-
-    ]
-
-};
-
-/* =========================================================
-    ROLE CONFIG
-========================================================== */
-
-const roleConfig = {
-
-    staff: {
-        name: 'Eko Saputra',
-        label: 'Staff',
-        description: 'Menampilkan pengajuan SPPD milik Anda.',
-        note: 'Pastikan dokumen perjalanan dicetak sebelum berangkat untuk keperluan pelaporan dinas.'
-    },
-
-    manager: {
-        name: 'Andi Wijaya',
-        label: 'Manager',
-        description: 'Menampilkan pengajuan SPPD yang berada dalam lingkup Anda.',
-        note: 'Periksa informasi pengajuan sebelum memberikan keputusan pada proses perjalanan dinas.'
-    },
-
-    ga: {
-        name: 'Budi Santoso',
-        label: 'General Affair',
-        description: 'Menampilkan seluruh pengajuan SPPD yang perlu dikelola oleh GA.',
-        note: 'Periksa kebutuhan tiket dan budget perjalanan sesuai dengan pengajuan yang tersedia.'
-    }
-
-};
-
-let currentRole =
-    localStorage.getItem('sppd_role') || 'staff';
-
-let currentData = [];
-let selectedId = null;
-let statusFilter = 'all';
-
 /* =========================================================
     HELPER
 ========================================================== */
@@ -201,83 +19,6 @@ function getStatusClass(status) {
     return 'bg-[#f5f5f5] text-[#616161]';
 
 }
-
-function getDocumentData(type) {
-
-    const documents = {
-
-        sppd: {
-            title: '1. Form SPPD',
-            description: 'Formulir Surat Perjalanan Dinas yang telah diisi oleh Staff.',
-            date: 'Diajukan: 5 Agustus 2026, 09:00 WIB',
-            iconBg: 'bg-[#eff6ff]',
-            iconColor: 'text-[#0d6efd]',
-            border: 'border-[#0d6efd]'
-        },
-
-        perizinan: {
-            title: '2. Form Perizinan (Disetujui)',
-            description: 'Formulir perizinan yang telah diperiksa oleh GA.',
-            date: 'Diperiksa: 6 Agustus 2026, 14:20 WIB',
-            iconBg: 'bg-[#e8f5e9]',
-            iconColor: 'text-[#2e7d32]',
-            border: 'border-[#2e7d32]'
-        },
-
-        tiket: {
-            title: '3. Tiket Perjalanan',
-            description: 'E-ticket perjalanan dinas yang telah disiapkan oleh GA.',
-            date: 'Diterbitkan: 6 Agustus 2026, 15:10 WIB',
-            iconBg: 'bg-[#f3e5f5]',
-            iconColor: 'text-[#8e24aa]',
-            border: 'border-[#8e24aa]'
-        }
-
-    };
-
-    return documents[type];
-
-}
-
-/* =========================================================
-    RENDER ROLE
-========================================================== */
-
-// function renderRole() {
-
-//     const config = roleConfig[currentRole];
-
-//     document.getElementById('profileName').textContent =
-//         config.name;
-
-//     document.getElementById('profileRole').textContent =
-//         config.label;
-
-//     document.getElementById('pageDescription').textContent =
-//         config.description;
-
-//     document.getElementById('roleBadge').textContent =
-//         config.label.toUpperCase();
-
-//     document.getElementById('roleNote').textContent =
-//         config.note;
-
-//     statusFilter = 'all';
-
-//     currentData = dataByRole[currentRole];
-
-//     selectedId =
-//         currentData.length > 0
-//             ? currentData[0].no
-//             : null;
-
-//     document.getElementById('searchInput').value = '';
-
-//     renderList();
-
-//     renderDetail();
-
-// }
 
 /* =========================================================
     SWITCH ROLE
@@ -764,38 +505,6 @@ function printDocument() {
 window.printDocument = printDocument;
 
 /* =========================================================
-    PROFILE DROPDOWN
-========================================================== */
-
-/* =========================================================
-    SEARCH
-========================================================== */
-
-// document
-//     .getElementById('searchInput')
-//     .addEventListener('input', function() {
-
-//         renderList();
-
-//     });
-
-/* =========================================================
-    FILTER BUTTON
-========================================================== */
-
-// document
-//     .getElementById('filterButton')
-//     .addEventListener('click', function(event) {
-
-//         event.stopPropagation();
-
-//         document
-//             .getElementById('filterMenu')
-//             .classList.toggle('hidden');
-
-//     });
-
-/* =========================================================
     DETAIL BUTTON
 ========================================================== */
 
@@ -900,6 +609,40 @@ function generateSppdLayout(doc) {
     // const sppd = doc.sppd || {};
     // const user = doc.user || {};
     // const kota = doc.kota || {};
+
+    const today = new Date();
+    const formattedDate = new Intl.DateTimeFormat('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    }).format(today);
+
+    // 1. Ambil array approval
+    const approvals = doc.sppd_approval || doc.approval || [];
+
+    console.log("=== DEBUG DATA UTAMA ===", doc);
+    console.log("=== sppd APPROVALS ===", doc.sppd_approval || doc.approval);
+    console.log("=== ilpd APPROVALS ===", doc.ilpd_approval || doc.approval);
+    
+    // 2. Cari data approval yang sudah 'Disetujui' dan punya signature/approver
+    const managerApp = Array.isArray(approvals) 
+    ? approvals.find(app => app.status === 'Disetujui' && app.signature) || {}
+    : (approvals || {});
+
+    console.log("=== sppd APPROVALS ===", managerApp);
+
+    // 3. Ambil TTD Manager
+    const managerSignature = managerApp.signature ? `/storage/${managerApp.signature}` : null;
+
+    // 4. Ambil Nama Manager (panggil relasi 'sppd_approver' yang baru kamu buat)
+    const managerName = managerApp.sppd_approver?.name || '........................';
+
+    console.log("=== managername ===", managerName);
+
+    // 3. TTD Pemohon (User pembuat SPPD)
+    const pemohonUser = doc.user || {};
+    const pemohonSignature = pemohonUser.signature ? `/storage/${pemohonUser.signature}` : null;
+    const pemohonName = pemohonUser.name || '........................';
 
     // Masukkan kode HTML ILPD kamu di dalam template string backtick (`)
     return `
@@ -1199,12 +942,12 @@ function generateSppdLayout(doc) {
                     <tr>
                         <td class="label-col">Keperluan</td>
                         <td class="colon-col">:</td>
-                        <td><div class="value-box">${doc.keperluan?.name || doc.name || '-'}</div></td>
+                        <td><div class="value-box">${doc.keperluan_list || doc.keperluan_lainnya || '-'}</div></td>
                     </tr>
                     <tr>
                         <td class="label-col">Jenis Transportasi</td>
                         <td class="colon-col">:</td>
-                        <td><div class="value-box">${doc.transport?.name || doc.name || '-'}</div></td>
+                        <td><div class="value-box">${doc.transport_list || doc.transport_lainnya || '-'}</div></td>
                     </tr>
                     <tr>
                         <td class="label-col">Tugas</td>
@@ -1220,24 +963,34 @@ function generateSppdLayout(doc) {
                 <!-- 5. TANGGAL & MASA TANDA TANGAN (5 KOLOM) -->
                 <div class="ttd-section">
                     <div class="tanggal-surat">
-                        Jakarta, ......................... 20....
+                        Jakarta, ${formattedDate}
                     </div>
 
                     <table class="ttd-table">
                         <tr>
                             <th>Pemohon</th>
                             <th>Atasan Langsung</th>
-                            <th>HRD / GA</th>
+                            <th>HR / GA</th>
                             <th>Finance</th>
                             <th>Direksi</th>
                         </tr>
                         <tr>
-                            <td>
-                                <div class="nama-ttd">( ........................ )</div>
+                            <td style="vertical-align: bottom; text-align: center;">
+                                <div style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                                    ${pemohonSignature 
+                                        ? `<img src="${pemohonSignature}" style="max-height: 55px; max-width: 120px; object-fit: contain;" />` 
+                                        : ''}
+                                </div>
+                                <div class="nama-ttd">( ${pemohonName} )</div>
                                 <div>Staf</div>
                             </td>
-                            <td>
-                                <div class="nama-ttd">( ........................ )</div>
+                            <td style="vertical-align: bottom; text-align: center;">
+                                <div style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                                    ${managerSignature 
+                                        ? `<img src="${managerSignature}" style="max-height: 55px; max-width: 120px; object-fit: contain;" />` 
+                                        : ''}
+                                </div>
+                                <div class="nama-ttd">( ${managerName} )</div>
                                 <div>Manager / Team Lead</div>
                             </td>
                             <td>
@@ -1262,6 +1015,11 @@ function generateSppdLayout(doc) {
     `;
 }
 
+const formatRupiah = (val) => {
+    if (!val || isNaN(val)) return '0';
+    return new Intl.NumberFormat('id-ID').format(val);
+};
+
 // Fungsi khusus untuk me-render HTML ILPD
 function generateIlpdLayout(doc) {
     console.log("ISI DATA DOC/ILPD:", doc);
@@ -1272,10 +1030,52 @@ function generateIlpdLayout(doc) {
     // const kota = sppd.kota || {};
     // const user = doc.user || {};
     const perkiraan = doc.detail_ilpd || {};
-    const realisasi = doc.realisasi_biaya || {};
+    // const realisasi = doc.realisasi_biaya || {};
     // // Ambil data tiket jika ada
     // const tiketList = ilpd.tikets || ilpd.tiket || [];
     // const tiket = Array.isArray(tiketList) ? (tiketList[0] || {}) : tiketList;
+
+    const today = new Date();
+    const formattedDate = new Intl.DateTimeFormat('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    }).format(today);
+
+    const laporan = ilpd.laporan || {};
+
+    let realisasi = {};
+        if (typeof laporan.realisasi === 'string') {
+            try {
+                realisasi = JSON.parse(laporan.realisasi);
+            } catch (e) {
+                realisasi = {};
+            }
+        } else if (laporan.realisasi) {
+            realisasi = laporan.realisasi;
+        }
+
+    const approvals = doc.ilpd_approval || doc.approval || [];
+
+    console.log("=== DEBUG DATA Realisasi ===", ilpd.laporan);
+    console.log("=== DEBUG DATA ILPD UTAMA ===", doc);
+    console.log("=== DEBUG APPROVALS ===", doc.ilpd_approval || doc.approval);
+
+    // 2. Cari data approval yang sudah 'Disetujui' dan punya signature/approver
+    const managerApp = Array.isArray(approvals) 
+        ? approvals.find(app => app.status === 'Disetujui' && app.signature) || {}
+        : (approvals || {});
+
+    // 3. Ambil TTD Manager
+    const managerSignature = managerApp.signature ? `/storage/${managerApp.signature}` : null;
+
+    // 4. Ambil Nama Manager (panggil relasi 'sppd_approver' yang baru kamu buat)
+    const managerName = managerApp.ilpd_approver?.name || '........................';
+
+    // 3. TTD Pemohon (User pembuat SPPD)
+    const pemohonUser = doc.user || {};
+    const pemohonSignature = pemohonUser.signature ? `/storage/${pemohonUser.signature}` : null;
+    const pemohonName = pemohonUser.name || '........................';
 
     // Masukkan kode HTML ILPD kamu di dalam template string backtick (`)
     return `
@@ -1320,20 +1120,44 @@ function generateIlpdLayout(doc) {
                     <td colspan="4" class="text-right"><strong>No:</strong> ${doc.no_ilpd || '-'}</td>
                 </tr>
                 <!-- Nama Penandatangan Atas -->
-                <tr class="text-center bg-gray font-bold">
-                    <td>${ilpd.ttd_1_nama || 'Pemohon'}</td>
-                    <td>${ilpd.ttd_2_nama || 'Atasan Direct'}</td>
-                    <td>${ilpd.ttd_3_nama || 'Head Dept'}</td>
-                    <td>${ilpd.ttd_4_nama || 'HRD'}</td>
-                    <td>${ilpd.ttd_5_nama || 'Finance'}</td>
-                    <td>${ilpd.ttd_6_nama || 'GA'}</td>
-                    <td>${ilpd.ttd_7_nama || 'Director'}</td>
-                    <td>Tanggal</td>
+                <!-- Baris 1: Judul Jabatan / Header TTD -->
+                <tr class="text-center font-bold bg-gray-100">
+                    <td style="padding: 6px;">Direktur Utama</td>
+                    <td style="padding: 6px;">Direktur</td>
+                    <td style="padding: 6px;">Direktur Finance</td>
+                    <td style="padding: 6px;">Finance</td>
+                    <td style="padding: 6px;">HRGA</td>
+                    <td style="padding: 6px;">Pemohon</td>
+                    <td style="padding: 6px;">Atasan / Manager</td>
+                    <td style="padding: 6px;">Tanggal Cetak</td>
                 </tr>
-                <!-- Area TTD Atas -->
-                <tr class="ttd-box">
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    <td class="text-center">${ilpd.tanggal || '-'}</td>
+
+                <!-- Baris 2: Area Gambar TTD (ttd-box) -->
+                <tr class="ttd-box text-center" style="height: 65px;">
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_3 ? `<img src="/storage/${ilpd.ttd_3}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_4 ? `<img src="/storage/${ilpd.ttd_4}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_5 ? `<img src="/storage/${ilpd.ttd_5}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_6 ? `<img src="/storage/${ilpd.ttd_6}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_7 ? `<img src="/storage/${ilpd.ttd_7}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${pemohonSignature ? `<img src="${pemohonSignature}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${managerSignature ? `<img src="${managerSignature}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle; font-size: 11px;">
+                        ${formattedDate || '-'}
+                    </td>
                 </tr>
             </table>
 
@@ -1350,11 +1174,11 @@ function generateIlpdLayout(doc) {
                 </tr>
                 <tr>
                     <td><strong>Transportasi</strong></td>
-                    <td colspan="3">: ${sppd.transport?.name || ilpd.transport_id || '-'}</td>
+                    <td colspan="3">: ${sppd.transport_list || ilpd.transport_lainnya || '-'}</td>
                 </tr>
                 <tr>
                     <td><strong>Keperluan</strong></td>
-                    <td colspan="3">: ${sppd.keperluan?.name || ilpd.keperluan_id || '-'}</td>
+                    <td colspan="3">: ${sppd.keperluan_list || ilpd.keperluan_lainnya || '-'}</td>
                 </tr>
                 <tr>
                     <td><strong>Tugas</strong></td>
@@ -1376,35 +1200,39 @@ function generateIlpdLayout(doc) {
                     <!-- Kolom Perkiraan -->
                     <td>
                         <table style="width:100%;">
-                            <tr><td>BBM</td><td class="text-right">Rp ${perkiraan.bbm || '0'}</td></tr>
-                            <tr><td>Uang Harian (Dinas)</td><td class="text-right">Rp ${perkiraan.dinas || '0'}</td></tr>
-                            <tr><td>Uang Makan</td><td class="text-right">Rp ${perkiraan.makan || '0'}</td></tr>
-                            <tr><td>Hotel</td><td class="text-right">Rp ${perkiraan.hotel || '0'}</td></tr>
-                            <tr><td>Transport Lokal</td><td class="text-right">Rp ${perkiraan.transport_lokal || '0'}</td></tr>
-                            <tr><td>Visa</td><td class="text-right">Rp ${perkiraan.visa || '0'}</td></tr>
-                            <tr><td>Fiskal</td><td class="text-right">Rp ${perkiraan.fiskal || '0'}</td></tr>
-                            <tr><td>Tax Airport</td><td class="text-right">Rp ${perkiraan.airport_tax || '0'}</td></tr>
-                            <tr><td>Parkir / Tol</td><td class="text-right">Rp ${perkiraan.parkirtoll || '0'}</td></tr>
-                            <tr><td>Laundry / Lainnya</td><td class="text-right">Rp ${perkiraan.laundry_dll || '0'}</td></tr>
+                            <tr><td>BBM</td><td class="text-right">Rp ${formatRupiah(perkiraan.bbm)}</td></tr>
+                            <tr><td>Uang Harian (Dinas)</td><td class="text-right">Rp ${formatRupiah(perkiraan.dinas)}</td></tr>
+                            <tr><td>Uang Makan</td><td class="text-right">Rp ${formatRupiah(perkiraan.makan)}</td></tr>
+                            <tr><td>Hotel</td><td class="text-right">Rp ${formatRupiah(perkiraan.hotel)}</td></tr>
+                            <tr><td>Transport Lokal</td><td class="text-right">Rp ${formatRupiah(perkiraan.transport_lokal)}</td></tr>
+                            <tr><td>Visa</td><td class="text-right">Rp ${formatRupiah(perkiraan.visa)}</td></tr>
+                            <tr><td>Fiskal</td><td class="text-right">Rp ${formatRupiah(perkiraan.fiskal)}</td></tr>
+                            <tr><td>Tax Airport</td><td class="text-right">Rp ${formatRupiah(perkiraan.airport_tax)}</td></tr>
+                            <tr><td>Parkir & Tol</td><td class="text-right">Rp ${formatRupiah(perkiraan.parkirtoll)}</td></tr>
+                            <tr><td>Entertaiment</td><td class="text-right">Rp ${formatRupiah(perkiraan.entertaiment)}</td></tr>
+                            <tr><td>Lainnya</td><td class="text-right">Rp ${formatRupiah(perkiraan.dll)}</td></tr>
                         </table>
                     </td>
                     <!-- Kolom Realisasi -->
                     <td>
                         <table style="width:100%;">
-                            <tr><td>BBM</td><td class="text-right">Rp ${realisasi.bbm || '0'}</td></tr>
-                            <tr><td>Uang Harian (Dinas)</td><td class="text-right">Rp ${realisasi.uang_dinas || '0'}</td></tr>
-                            <tr><td>Uang Makan</td><td class="text-right">Rp ${realisasi.uang_makan || '0'}</td></tr>
-                            <tr><td>Hotel</td><td class="text-right">Rp ${realisasi.hotel || '0'}</td></tr>
-                            <tr><td>Transport Lokal</td><td class="text-right">Rp ${realisasi.transport_lokal || '0'}</td></tr>
-                            <tr><td>Visa / Fiskal</td><td class="text-right">Rp ${realisasi.visa_fiskal || '0'}</td></tr>
-                            <tr><td>Tax Airport / Parkir / Tol</td><td class="text-right">Rp ${realisasi.tax_parkir_tol || '0'}</td></tr>
-                            <tr><td>Laundry / Lainnya</td><td class="text-right">Rp ${realisasi.laundry_dll || '0'}</td></tr>
+                            <tr><td>BBM</td><td class="text-right">Rp ${formatRupiah(realisasi.bbm)}</td></tr>
+                            <tr><td>Uang Harian (Dinas)</td><td class="text-right">Rp ${formatRupiah(realisasi.dinas)}</td></tr>
+                            <tr><td>Uang Makan</td><td class="text-right">Rp ${formatRupiah(realisasi.makan)}</td></tr>
+                            <tr><td>Hotel</td><td class="text-right">Rp ${formatRupiah(realisasi.hotel)}</td></tr>
+                            <tr><td>Transport Lokal</td><td class="text-right">Rp ${formatRupiah(realisasi.transport_lokal)}</td></tr>
+                            <tr><td>Visa</td><td class="text-right">Rp ${formatRupiah(realisasi.visa)}</td></tr>
+                            <tr><td>Fiskal</td><td class="text-right">Rp ${formatRupiah(realisasi.fiskal)}</td></tr>
+                            <tr><td>Tax Airport</td><td class="text-right">Rp ${formatRupiah(realisasi.airport_tax)}</td></tr>
+                            <tr><td>Parkir & Tol</td><td class="text-right">Rp ${formatRupiah(realisasi.parkirtoll)}</td></tr>
+                            <tr><td>Entertaiment</td><td class="text-right">Rp ${formatRupiah(realisasi.entertaiment)}</td></tr>
+                            <tr><td>Lainnya</td><td class="text-right">Rp ${formatRupiah(realisasi.dll)}</td></tr>
                         </table>
                     </td>
                 </tr>
                 <tr class="font-bold bg-gray">
-                    <td>TOTAL PERKIRAAN: <span style="float:right;">Rp ${perkiraan.total || '0'}</span></td>
-                    <td>TOTAL REALISASI: <span style="float:right;">Rp ${realisasi.total || '0'}</span></td>
+                    <td>TOTAL PERKIRAAN: <span style="float:right;">Rp ${formatRupiah(perkiraan.total)}</span></td>
+                    <td>TOTAL REALISASI: <span style="float:right;">Rp ${formatRupiah(laporan.total_realisasi)}</span></td>
                 </tr>
             </table>
 
@@ -1413,18 +1241,18 @@ function generateIlpdLayout(doc) {
                 <tr>
                     <td width="50%" rowspan="3">
                         <strong>Yang Dikunjungi / Judul:</strong><br>
-                        ${ilpd.yang_dikunjungi || '-'}
+                        ${laporan.laporan_1 || '-'}
                     </td>
                     <td width="25%"><strong>Uang Muka</strong></td>
-                    <td width="25%" class="text-right">Rp ${perkiraan.uang_muka || '0'}</td>
+                    <td width="25%" class="text-right">Rp ${formatRupiah(perkiraan.uang_muka)}</td>
                 </tr>
                 <tr>
                     <td><strong>Selisih (Lebih / Kurang)</strong></td>
-                    <td class="text-right">Rp ${ilpd.selisih || '0'}</td>
+                    <td class="text-right">Rp ${formatRupiah(laporan.selisih)}</td>
                 </tr>
                 <tr>
                     <td><strong>Keterangan Selisih</strong></td>
-                    <td>${ilpd.keterangan_selisih || '-'}</td>
+                    <td>${laporan.keterangan || '-'}</td>
                 </tr>
             </table>
 
@@ -1432,23 +1260,44 @@ function generateIlpdLayout(doc) {
             <div class="section-title">LAPORAN HASIL PERJALANAN DINAS</div>
             <table class="table-doc">
                 <tr>
-                    <td style="height: 60px;">${ilpd.laporan_hasil || '-'}</td>
+                    <td style="height: 60px;">${laporan.laporan_2 || '-'}</td>
                 </tr>
             </table>
 
             <!-- 6. TTD BAWAH (APPROVAL AKHIR) -->
             <table class="table-doc">
-                <tr class="text-center bg-gray font-bold">
-                    <td>${ilpd.ttd_bwh_1 || 'Dibuat Oleh'}</td>
-                    <td>${ilpd.ttd_bwh_2 || 'Diperiksa'}</td>
-                    <td>${ilpd.ttd_bwh_3 || 'Disetujui'}</td>
-                    <td>${ilpd.ttd_bwh_4 || 'Finance'}</td>
-                    <td>${ilpd.ttd_bwh_5 || 'Kasir'}</td>
-                    <td>${ilpd.ttd_bwh_6 || 'Penerima'}</td>
-                    <td>${ilpd.ttd_bwh_7 || 'Mengetahui'}</td>
+                <tr class="text-center font-bold bg-gray-100">
+                    <td style="padding: 6px;">Direktur Utama</td>
+                    <td style="padding: 6px;">Direktur</td>
+                    <td style="padding: 6px;">Direktur Finance</td>
+                    <td style="padding: 6px;">Finance</td>
+                    <td style="padding: 6px;">HRGA</td>
+                    <td style="padding: 6px;">Pemohon</td>
+                    <td style="padding: 6px;">Manager</td>
                 </tr>
-                <tr class="ttd-box">
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+
+                <tr class="ttd-box text-center" style="height: 65px;">
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_3 ? `<img src="/storage/${ilpd.ttd_3}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_4 ? `<img src="/storage/${ilpd.ttd_4}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_5 ? `<img src="/storage/${ilpd.ttd_5}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_6 ? `<img src="/storage/${ilpd.ttd_6}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${ilpd.ttd_7 ? `<img src="/storage/${ilpd.ttd_7}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${pemohonSignature ? `<img src="${pemohonSignature}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
+                    <td style="vertical-align: middle;">
+                        ${managerSignature ? `<img src="${managerSignature}" style="max-height: 55px; max-width: 110px; margin: 0 auto; object-fit: contain;" />` : ''}
+                    </td>
                 </tr>
             </table>
 
@@ -1483,9 +1332,3 @@ document.addEventListener('keydown', function(event) {
     }
 
 });
-
-/* =========================================================
-    INITIALIZE
-========================================================== */
-
-// renderRole();

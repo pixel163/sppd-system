@@ -22,7 +22,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <style>
+    {{-- <style>
         * {
             box-sizing: border-box;
         }
@@ -159,7 +159,7 @@
                 display: none;
             }
         }
-    </style>
+    </style> --}}
 </head>
 
 <body class="min-h-screen bg-white text-[#1e293b]">
@@ -318,7 +318,6 @@
                                     oninvalid="this.setCustomValidity('Silahkan masukan waktu dinas')"
                                     onkeydown="cekkunci(event)"
                                     oninput="this.setCustomValidity(''); validasiWaktu(this)">
-                                    {{-- oninput="validasiWaktu(this)"> --}}
 
                                 <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[13px] text-[#94a3b8]">
                                     hari
@@ -442,37 +441,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- <div class="form-row flex gap-6 py-3">
-                        <label for="keperluan" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
-                            Keperluan Dinas
-                        </label>
-
-                        <div class="flex-1">
-                            <div class="relative">
-                                <select 
-                                    id="keperluan" 
-                                    name="keperluan_id" 
-                                    class="form-select w-full appearance-none rounded-lg border border-[#e2e8f0] bg-white px-4 py-2.5 pr-10 text-[14px] text-slate-800 outline-none transition-all duration-200 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20"
-                                    required
-                                    oninvalid="this.setCustomValidity('Silahkan pilih keperluan dinas')"
-                                    oninput="this.setCustomValidity('')">
-                                    <option value="" disabled {{ old('keperluan_id') ? '' : 'selected' }}>Pilih Keperluan Dinas</option>
-                                    @foreach($masterKeperluan as $keperluan)
-                                        <option value="{{ $keperluan->id }}" {{ old('keperluan_id') == $keperluan->id ? 'selected' : '' }}>
-                                            {{ $keperluan->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                <!-- Custom Arrow Icon -->
-                                <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
 
                     {{-- Transportasi (Dropdown Custom) --}}
                     <div class="form-row flex gap-6 py-3" 
@@ -582,37 +550,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- <div class="form-row flex gap-6 py-3">
-                        <label for="transport" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
-                            Transportasi
-                        </label>
-
-                        <div class="flex-1">
-                            <div class="relative">
-                                <select 
-                                    id="transport" 
-                                    name="transport_id" 
-                                    class="form-select w-full appearance-none rounded-lg border border-[#e2e8f0] bg-white px-4 py-2.5 pr-10 text-[14px] text-slate-800 outline-none transition-all duration-200 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20"
-                                    required
-                                    oninvalid="this.setCustomValidity('Silahkan pilih transportasi')"
-                                    oninput="this.setCustomValidity('')">
-                                    <option value="" disabled {{ old('transport_id') ? '' : 'selected' }}>Pilih Jenis Transportasi</option>
-                                    @foreach($masterTransport as $transport)
-                                        <option value="{{ $transport->id }}" {{ old('transport_id') == $transport->id ? 'selected' : '' }}>
-                                            {{ $transport->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                <!-- Custom Arrow Icon -->
-                                <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
 
                     {{-- Tugas --}}
                     <div class="form-row flex gap-6 py-3">
@@ -673,7 +610,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 
-<script>
+{{-- <script>
 // 1. Mencegah pengetikan karakter non-angka seperti e, +, -, ., dan ,
 function cekkunci(e) {
     if (['e', 'E', '+', '-', '.', ','].includes(e.key)) {
@@ -768,7 +705,8 @@ new TomSelect("#kota", {
     }
 });
 
-</script>
-    {{-- @vite('resources/js/sppd.js') --}}
+</script> --}}
+
+    @vite('resources/js/sppd/form.js')
 
 @endpush

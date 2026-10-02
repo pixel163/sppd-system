@@ -8,19 +8,10 @@ use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
-    // public function index()
-    // {
-    //     $items = Role::latest()->paginate(10);
-    //     $title = 'Role';
-    //     $routeName = 'role'; // Sesuaikan dengan nama route resource di web.php
-
-    //     return view('master.index', compact('items', 'title', 'routeName'));
-    // }
     public function index()
     {
-        // $roles = Role::with('creator')->latest()->paginate(10);
         $roles = Role::latest()->paginate(10);
-        // return view('master.index', compact('roles'));
+        
         return view('master.role.index', compact('roles'));
     }
 

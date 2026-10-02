@@ -55,4 +55,9 @@ class Ilpd extends Model
         // Gunakan hasOne dan latestOfMany() agar mengambil 1 record terakhir
         return $this->hasOne(IlpdApproval::class, 'ilpd_id')->latestOfMany();
     }
+
+    public function laporan()
+    {
+        return $this->hasOne(Laporan::class, 'ilpd_id');
+    }
 }

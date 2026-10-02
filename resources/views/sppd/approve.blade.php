@@ -373,7 +373,7 @@
                 {{-- =================================================
                     SECTION KEPUTUSAN APPROVAL MANAGER
                 ================================================== --}}
-                <form id="approvalForm" method="POST" action="{{ route('sppd.approve', $sppd->id) }}" enctype="multipart/form-data">
+                <form id="approvalForm" method="POST" action="{{ route('sppd.approvals', $sppd->id) }}" enctype="multipart/form-data">
                     @csrf
 
                     {{-- BUTTON ACTIONS --}}

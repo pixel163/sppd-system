@@ -12,11 +12,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="min-h-screen bg-white font-['Inter',sans-serif]">
 
-    @if ($errors->any())
+    {{-- @if ($errors->any())
         <div id="errorPopup" style="
             position: fixed;
             top: 20px;
@@ -49,7 +50,7 @@
                 padding: 0 4px;
             ">&times;</button>
         </div>
-    @endif
+    @endif --}}
     {{-- @if ($errors->any())
         <div style="padding: 12px; background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 6px; margin-bottom: 15px;">
             ⚠️ {{ $errors->first() }}
@@ -238,6 +239,16 @@
 
                     </button>
 
+                    <!-- Link menuju Halaman Register -->
+                    <div class="mt-0 text-center">
+                        <p class="text-[14px] text-slate-500">
+                            Belum punya akun? 
+                            <a href="{{ route('register') }}" class="font-semibold text-[#1c61e7] transition hover:underline">
+                                Daftar di sini
+                            </a>
+                        </p>
+                    </div>
+
                 </form>
 
             </div>
@@ -341,6 +352,58 @@
 
         }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Notifikasi jika ada Session Success (misal: "Registrasi Berhasil, Silakan Login")
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            @endif
+
+            // Notifikasi jika ada Session Status (bawaan Laravel Auth / Fortify)
+            @if(session('status'))
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Informasi',
+                    text: "{{ session('status') }}",
+                    confirmButtonColor: '#3085d6'
+                });
+            @endif
+
+            // Notifikasi jika ada Error umum (misal: "Email atau Password Salah")
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Login!',
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: '#ef4444'
+                });
+            @endif
+
+            // OPTIONAL: Menampilkan Error Validasi Form (misal email wajib diisi)
+            @if($errors->any())
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan Validasi!',
+                    html: `
+                        <ul style="text-align: left; font-size: 14px; color: #dc2626;">
+                            @foreach($errors->all() as $error)
+                                <li>• {{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    `,
+                    confirmButtonColor: '#ef4444'
+                });
+            @endif
+        });
+    </script>
 
 </body>
 </html>

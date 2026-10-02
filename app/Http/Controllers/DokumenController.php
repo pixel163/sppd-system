@@ -17,9 +17,6 @@ class DokumenController extends Controller
 
         // 1. Query Utama untuk List Sisi Kiri (dinas + sppd + ilpd)
         $query = Dinas::with(['sppd.kota', 'ilpd'])
-            // ->whereHas('sppd', function ($query) use ($userId) {
-            //     $query->where('user_id', $userId);
-            // })
             ->whereIn('status', ['Disetujui', 'Selesai']);
         
         if ($user?->jabatan?->name !== 'HRGA') { 
@@ -59,18 +56,18 @@ class DokumenController extends Controller
             $dinas = Dinas::with([
                 'sppd.kota',
                 'sppd.user',
-                'sppd.keperluan',
-                'sppd.transport',
+                'sppd.sppd_approval.sppd_approver',
+                // 'sppd.keperluan',
+                // 'sppd.transport',
                 'ilpd.sppd.kota',
-                'ilpd.sppd.transport',
-                'ilpd.sppd.keperluan',
+                'ilpd.ilpd_approval',
+                // 'ilpd.sppd.transport',
+                // 'ilpd.sppd.keperluan',
+                'ilpd.laporan',
                 'ilpd.detail_ilpd',
-                'ilpd.tiket' // Menarik ILPD beserta Tiket sekaligus
+                'ilpd.tiket'
             ])
             ->where('id', $selectedId)
-            // ->whereHas('sppd', function ($query) use ($userId) {
-            //     $query->where('user_id', $userId);
-            // })
             ->first();
 
             if ($dinas) {

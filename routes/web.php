@@ -24,46 +24,61 @@ Route::get('/login', function () {return view('login');})->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.store');
+
 Route::get('/test', function () {return view('test');})->name('test');
 Route::get('/test1', function () {return view('test1');})->name('test1');
 Route::get('/tes-excel', [ExcelController::class, 'test']);
 
 Route::middleware('auth')->group(function () {
 
+    // Route::get('/', function () {return view('login');})->name('login');
+    // Route::post('/', [AuthController::class, 'login'])->name('login');
+    // Route::get('/login', function () {return view('login');})->name('login');
+    // Route::post('/login', [AuthController::class, 'login'])->name('login');
+    // Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
     // all
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [AuthController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/signature', [AuthController::class, 'update'])->name('profile.update');
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
-    // Route::get('/riwayat/{id}', [RiwayatController::class, 'show'])->name('show');
     Route::get('/dokumen', [DokumenController::class, 'index'])->name('dokumen');
 
-    // staff sppd
+    // staff or manager sppd
     Route::get('/sppd/create', [SppdController::class, 'create'])->name('sppd.create');
     Route::post('/sppd/create', [SppdController::class, 'store'])->name('sppd.store');
     // Route::get('sppd/{id}/edit', [SppdController::class, 'edit'])->name('sppd.edit');
     // Route::put('sppd/{id}/edit', [SppdController::class, 'update'])->name('sppd.update');
     
-    // staff ilpd
+    // staff or manager ilpd
     Route::get('/ilpd/create/{sppd?}', [IlpdController::class, 'create'])->name('ilpd.create');
     Route::post('/ilpd/create', [IlpdController::class, 'store'])->name('ilpd.store');
     // Route::get('/ilpd/create/{sppd}', [IlpdController::class, 'create'])->name('ilpd.create');
     // Route::get('ilpd/{id}/edit', [IlpdController::class, 'edit'])->name('ilpd.edit');
     // Route::put('ilpd/{id}/edit', [IlpdController::class, 'update'])->name('ilpd.update');
     
-    //  manager
-    Route::get('/sppd/{id}', [SppdController::class, 'show'])->name('approval.show');
+    //  manager approval sppd
+    Route::get('/sppd/{id}/approves', [SppdController::class, 'shows'])->name('sppd.approves');
+    Route::post('/sppd/{id}/approvals', [SppdController::class, 'approvals'])->name('sppd.approvals');
+    Route::get('/sppd/{id}', [SppdController::class, 'show'])->name('approval.manager');
+    // Route::get('/sppd/{id}', [SppdController::class, 'show'])->name('sppd.approve');
     Route::post('/sppd/{id}/approve', [SppdController::class, 'approve'])->name('sppd.approve');
     // Route::get('/sppd/manager/{id}', [SppdController::class, 'show'])->name('manager.show');
 
-    // ga
+    // ga approval ilpd
+    // Route::get('/ilpd/{id}', [IlpdController::class, 'show'])->name('approval.general');
     Route::get('/ilpd/{id}', [IlpdController::class, 'show'])->name('approve.show');
     Route::post('/ilpd/{id}/approve', [IlpdController::class, 'approve'])->name('ilpd.approve');
+    
+    Route::get('/laporan/{id}', [IlpdController::class, 'laporan'])->name('ilpd.laporan');
+    Route::post('/laporan/{id}/report', [IlpdController::class, 'report'])->name('laporan.report');
 
-});
+    // Route::get('/{ilpd_id}/laporan', [IlpdController::class, 'laporanIndex'])->name('ilpd.laporan.index');
+    // Route::post('/{ilpd_id}/laporan', [IlpdController::class, 'laporanStore'])->name('ilpd.laporan.store');
 
-    // Route::middleware(['auth', 'jabatan:HRGA'])->prefix('master')->name('master.')->group(function () {
-    Route::middleware(['auth'])->prefix('master')->name('master.')->group(function () {
+    Route::prefix('master')->name('master.')->group(function () {
         Route::resource('keperluan', KeperluanController::class);
         Route::resource('transport', TransportController::class);
         Route::resource('golongan', GolonganController::class);
@@ -73,7 +88,22 @@ Route::middleware('auth')->group(function () {
         Route::resource('kotakategori', KotaKategoriController::class);
         Route::resource('kota', KotaController::class);
         Route::resource('tarif', TarifController::class);
+    });
+
 });
+
+    // Route::middleware(['auth', 'jabatan:HRGA'])->prefix('master')->name('master.')->group(function () {
+//     Route::middleware(['auth'])->prefix('master')->name('master.')->group(function () {
+//         Route::resource('keperluan', KeperluanController::class);
+//         Route::resource('transport', TransportController::class);
+//         Route::resource('golongan', GolonganController::class);
+//         Route::resource('department', DepartmentController::class);
+//         Route::resource('jabatan', JabatanController::class);
+//         Route::resource('role', RoleController::class);
+//         Route::resource('kotakategori', KotaKategoriController::class);
+//         Route::resource('kota', KotaController::class);
+//         Route::resource('tarif', TarifController::class);
+// });
 
 
 // Route::get('/sppd', function () {return view('sppd');});
