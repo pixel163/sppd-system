@@ -32,8 +32,6 @@ class AuthController extends Controller
         }
 
         return back()->with('error', 'Email atau password salah.')->withInput($request->only('email'));
-        // return back()->with('warning', 'Email atau password salah.')->withInput($request->only('email'));
-        // return back()->withErrors(['email' => 'Email atau password salah.',])->onlyInput('email');
     }
 
     public function logout(Request $request)
@@ -56,13 +54,11 @@ class AuthController extends Controller
     {
         $user = auth()->user();
 
-        // 1. Opsi A: Jika User Mengunggah File Gambar (PNG/JPG)
         if ($request->hasFile('signature_file')) {
             $request->validate([
                 'signature_file' => 'required|image|mimes:png,jpg,jpeg|max:2048',
             ]);
 
-            // Hapus TTD lama jika ada
             if ($user->signature) {
                 Storage::disk('public')->delete($user->signature);
             }
@@ -73,16 +69,13 @@ class AuthController extends Controller
             return back()->with('success', 'Master TTD berhasil diperbarui via Upload File!');
         }
 
-        // 2. Opsi B: Jika User Menggambar via Canvas (Base64 String)
         if ($request->input('signature_canvas')) {
             $dataUrl = $request->input('signature_canvas');
 
-            // Format Base64: data:image/png;base64,iVBORw0KGgo...
             list($type, $data) = explode(';', $dataUrl);
             list(, $data)      = explode(',', $data);
             $decodedData = base64_decode($data);
 
-            // Hapus TTD lama jika ada
             if ($user->signature) {
                 Storage::disk('public')->delete($user->signature);
             }
@@ -100,16 +93,13 @@ class AuthController extends Controller
 
     public function registerForm()
     {
-        // Mengambil data master departemen dan jabatan untuk dropdown
+
         $departments = Department::all();
         $jabatans = Jabatan::all();
-
-        // dd($departments, $jabatans);
 
         return view('register', compact('departments', 'jabatans'));
     }
 
-    // Memproses data pendaftaran akun baru
     public function register(Request $request)
     {
         $request->validate([
@@ -118,26 +108,23 @@ class AuthController extends Controller
             'nik'           => 'required|numeric|digits_between:5,16|unique:users,nik',
             'department_id' => 'required|exists:department,id',
             'jabatan_id'    => 'required|exists:jabatan,id',
-            'password'      => 'required|string|min:8|confirmed',
+            'password'      => 'required|string|min:3|confirmed',
+            // 'password'      => 'required|string|min:8|confirmed',
         ], [
             'nik.unique'        => 'NIK sudah terdaftar di sistem.',
             'email.unique'      => 'Email sudah terdaftar.',
             'password.confirmed'=> 'Konfirmasi password tidak cocok.',
         ]);
 
-        // 2. Cek data Jabatan & Departemen dari database
         $jabatan = \App\Models\Jabatan::find($request->jabatan_id);
 
-        // Default role_id untuk Staff = 1
         $roleId = 1;
         $golonganId = 1;
 
-        // Bersihkan teks nama jabatan & dept untuk pengecekan (case-insensitive)
         $namaJabatan = strtolower($jabatan->name ?? $jabatan->nama ?? '');
 
-        // Cek jika Jabatan mengandung kata 'manager' ATAU Departemen mengandung 'hr' / 'ga'
-        if (str_contains($namaJabatan, 'Manager') || str_contains($namaJabatan, 'HRGA')) {$roleId = 2;} // Set ke Manager & HRGA}
-        if (str_contains($namaJabatan, 'Manager') || str_contains($namaJabatan, 'HRGA')) {$golonganId = 2;} // Set ke Manager & HRGA}
+        if (str_contains($namaJabatan, 'Manager') || str_contains($namaJabatan, 'HRGA')) {$roleId = 2;}
+        if (str_contains($namaJabatan, 'Manager') || str_contains($namaJabatan, 'HRGA')) {$golonganId = 2;}
 
         User::create([
             'name'          => $request->name,

@@ -24,14 +24,13 @@ return new class extends Migration
                 ->constrained('users')
                 ->restrictOnDelete();
 
-            $table->string('status');
+            // $table->string('status');
+            $table->unsignedTinyInteger('status');
 
             $table->string('signature')->nullable();
 
-            // Waktu batas akhir/deadline SLA
             $table->timestamp('sla_due_at')->nullable();
 
-            // Waktu aktual ketika approver mengeksekusi (Approve/Reject)
             $table->timestamp('approved_at')->nullable();
 
             $table->timestamps();

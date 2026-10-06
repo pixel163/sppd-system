@@ -62,9 +62,11 @@ Route::middleware('auth')->group(function () {
     //  manager approval sppd
     Route::get('/sppd/{id}/approves', [SppdController::class, 'shows'])->name('sppd.approves');
     Route::post('/sppd/{id}/approvals', [SppdController::class, 'approvals'])->name('sppd.approvals');
+
     Route::get('/sppd/{id}', [SppdController::class, 'show'])->name('approval.manager');
     // Route::get('/sppd/{id}', [SppdController::class, 'show'])->name('sppd.approve');
     Route::post('/sppd/{id}/approve', [SppdController::class, 'approve'])->name('sppd.approve');
+    Route::post('/sppd/{id}/reject', [SppdController::class, 'reject'])->name('sppd.reject');
     // Route::get('/sppd/manager/{id}', [SppdController::class, 'show'])->name('manager.show');
 
     // ga approval ilpd

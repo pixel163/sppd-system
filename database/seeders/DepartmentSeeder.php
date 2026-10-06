@@ -34,11 +34,10 @@ class DepartmentSeeder extends Seeder
             ],
         ];
 
-        // Gunakan updateOrInsert agar saat re-seed tidak error duplicate entry
         foreach ($departments as $department) {
             DB::table('department')->updateOrInsert(
-                ['name' => $department['name']], // Key acuan pengecekan
-                $department                      // Data yang diinsert/update
+                ['name' => $department['name']],
+                $department                      
             );
         }
     }

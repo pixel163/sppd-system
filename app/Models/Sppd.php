@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\SppdStatus;
 
 class Sppd extends Model
 {
@@ -28,6 +29,7 @@ class Sppd extends Model
     protected $casts = [
         'keperluan_id' => 'array',
         'transport_id' => 'array',
+        'status' => SppdStatus::class,
     ];
 
     public function Dinas(): BelongsTo
@@ -70,35 +72,14 @@ class Sppd extends Model
         return $this->hasOne(SppdApproval::class, 'sppd_id')->latestOfMany();
     }
 
-    // public function getKeperluanListAttribute()
-    // {
-    //     $names = \App\Models\Keperluan::whereIn('id', $this->keperluan_id ?? [])->pluck('name')->toArray();
-    //     if ($this->keperluan_lainnya) {
-    //         $names[] = $this->keperluan_lainnya;
-    //     }
-    //     return implode(', ', $names);
-    // }
-
-    // public function getTransportListAttribute()
-    // {
-    //     $names = \App\Models\Transport::whereIn('id', $this->transport_id ?? [])->pluck('name')->toArray();
-    //     if ($this->transport_lainnya) {
-    //         $names[] = $this->transport_lainnya;
-    //     }
-    //     return implode(', ', $names);
-    // }
-
     public function getKeperluanListAttribute()
     {
-        // Decode JSON string ke array PHP
         $rawIds = $this->keperluan_id;
         $ids = is_string($rawIds) ? (json_decode($rawIds, true) ?? []) : ($rawIds ?? []);
         $ids = is_array($ids) ? $ids : [$ids];
 
-        // Ambil nama dari tabel master Keperluan
         $names = \App\Models\Keperluan::whereIn('id', $ids)->pluck('name')->toArray();
 
-        // Gabungkan dengan keperluan_lainnya jika diisi
         if (!empty($this->keperluan_lainnya)) {
             $names[] = trim($this->keperluan_lainnya);
         }
@@ -108,15 +89,12 @@ class Sppd extends Model
 
     public function getTransportListAttribute()
     {
-        // Decode JSON string ke array PHP
         $rawIds = $this->transport_id;
         $ids = is_string($rawIds) ? (json_decode($rawIds, true) ?? []) : ($rawIds ?? []);
         $ids = is_array($ids) ? $ids : [$ids];
 
-        // Ambil nama dari tabel master Transport
         $names = \App\Models\Transport::whereIn('id', $ids)->pluck('name')->toArray();
 
-        // Gabungkan dengan transport_lainnya jika diisi
         if (!empty($this->transport_lainnya)) {
             $names[] = trim($this->transport_lainnya);
         }

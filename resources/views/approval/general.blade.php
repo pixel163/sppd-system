@@ -80,35 +80,6 @@
             </button>
         </div>
     </form>
-    {{-- <form
-        action="{{ route('sppd.approve', $sppd->id) }}"
-        method="POST"
-        class="mt-6 border-t border-gray-200 pt-4"
-    >
-        @csrf
-
-        <div class="flex justify-end gap-4">
-
-            <button
-                type="submit"
-                name="action"
-                value="reject"
-                class="btn-danger"
-            >
-                ✗ Tolak Pengajuan
-            </button>
-
-            <button
-                type="submit"
-                name="action"
-                value="approve"
-                class="btn-success"
-            >
-                ✓ Setujui SPPD & ILPD
-            </button>
-
-        </div>
-    </form> --}}
 
 </div>
 

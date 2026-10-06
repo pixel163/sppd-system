@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\SppdApprovalStatus;
 
 class SppdApproval extends Model
 {
@@ -20,6 +21,7 @@ class SppdApproval extends Model
 
     protected $casts = [
         'approved_at' => 'datetime',
+        'status' => SppdApprovalStatus::class,
     ];
 
     public function sppd(): BelongsTo
@@ -34,22 +36,18 @@ class SppdApproval extends Model
 
     public function getSlaStatusAttribute(): string
     {
-        // Jika belum ada batas waktu SLA
         if (!$this->sla_due_at) {
             return 'none';
         }
 
-        // Jika sudah dieksekusi (Approve/Reject)
         if ($this->approved_at) {
             return $this->approved_at->gt($this->sla_due_at) ? 'breached' : 'on_time';
         }
 
-        // Jika masih PENDING
         if (now()->gt($this->sla_due_at)) {
             return 'breached';
         }
 
-        // Jika sisa waktu kurang dari 4 jam (Warning)
         if (now()->diffInHours($this->sla_due_at, false) <= 4) {
             return 'warning';
         }

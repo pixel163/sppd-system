@@ -36,6 +36,11 @@
         <div id="tab-sppd-content" class="tab-content p-6">
             @include('components.sppd')
 
+            {{-- <form action="{{ route('sppd.reject', $sppd->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menolak pengajuan ini?')">
+                @csrf
+                <button type="submit" class="btn btn-danger">Tolak</button>
+            </form> --}}
+
             <!-- Tombol ditempatkan langsung di dalam Tab SPPD -->
             <form id="approvalForm" method="POST" action="{{ route('sppd.approve', $sppd->id) }}" enctype="multipart/form-data">
                 @csrf
@@ -60,80 +65,8 @@
                 </div>
             @endif
         </div>
-        {{-- KONTEN TAB 1 --}}
-        {{-- <div
-            id="tab-sppd-content"
-            class="tab-content p-6"
-        >
-            @include('components.sppd')
-        </div> --}}
-
-
-        {{-- KONTEN TAB 2 --}}
-        {{-- <div
-            id="tab-ilpd-content"
-            class="tab-content hidden p-6"
-        >
-
-            @if(isset($ilpd) && $ilpd)
-
-                @include('components.ilpd')
-
-            @else
-
-                <div class="p-8 text-center text-gray-500">
-                    <p class="font-semibold">
-                        Form 2 (ILPD) Belum Diisi oleh Pemohon.
-                    </p>
-                </div>
-
-            @endif
-
-        </div> --}}
 
     </div>
-
-    {{-- FOOTER ACTION MANAGER --}}
-    {{-- <form id="approvalForm" method="POST" action="{{ route('sppd.approve', $sppd->id) }}" enctype="multipart/form-data">
-        @csrf
-
-        <div class="form-actions flex justify-end gap-3 pt-6">
-            <button 
-                type="submit"
-                class="rounded-lg bg-[#2563eb] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#1d4ed8]">
-                Setujui
-            </button>
-        </div>
-    </form> --}}
-    {{-- <form
-        action="{{ route('sppd.approve', $sppd->id) }}"
-        method="POST"
-        class="mt-6 border-t border-gray-200 pt-4"
-    >
-        @csrf
-
-        <div class="flex justify-end gap-4">
-
-            <button
-                type="submit"
-                name="action"
-                value="reject"
-                class="btn-danger"
-            >
-                ✗ Tolak Pengajuan
-            </button>
-
-            <button
-                type="submit"
-                name="action"
-                value="approve"
-                class="btn-success"
-            >
-                ✓ Setujui SPPD & ILPD
-            </button>
-
-        </div>
-    </form> --}}
 
 </div>
 

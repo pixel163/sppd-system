@@ -7,55 +7,53 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
-class UserSeeder extends Seeder
+class AkunSeeder extends Seeder
 {
     public function run(): void
     {
         $users = [
             [
                 'name' => 'staff',
-                'email' => 'staff@example.com',
+                'email' => 'staff@gmail.com',
                 'nik' => '123456789',
                 'role_id' => 2,
                 'department_id' => 1,
                 'jabatan_id' => 1,
                 'golongan_id' => 1,
-                'password' => Hash::make('password'),
-                // 'created_by'  => 3,
+                'password' => Hash::make('123'),
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
             [
                 'name' => 'manager',
-                'email' => 'manager@example.com',
+                'email' => 'manager@gmail.com',
                 'nik' => '987654321',
                 'role_id' => 3,
                 'department_id' => 1,
                 'jabatan_id' => 2,
                 'golongan_id' => 2,
-                'password' => Hash::make('password'),
+                'password' => Hash::make('123'),
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
             [
                 'name' => 'hrga',
-                'email' => 'hrga@example.com',
+                'email' => 'hrga@gmail.com',
                 'nik' => '456789123',
                 'role_id' => 1,
                 'department_id' => 2,
                 'jabatan_id' => 3,
                 'golongan_id' => 2,
-                'password' => Hash::make('password'),
+                'password' => Hash::make('123'),
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
         ];
 
-        // Gunakan updateOrInsert agar saat re-seed tidak error duplicate entry
         foreach ($users as $user) {
             DB::table('users')->updateOrInsert(
-                ['name' => $user['name']], // Key acuan pengecekan
-                $user                      // Data yang diinsert/update
+                ['name' => $user['name']],
+                $user                      
             );
         }
     }

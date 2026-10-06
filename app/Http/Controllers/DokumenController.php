@@ -15,17 +15,15 @@ class DokumenController extends Controller
         $userId = auth()->id();
         $user   = auth()->user();
 
-        // 1. Query Utama untuk List Sisi Kiri (dinas + sppd + ilpd)
         $query = Dinas::with(['sppd.kota', 'ilpd'])
             ->whereIn('status', ['Disetujui', 'Selesai']);
         
         if ($user?->jabatan?->name !== 'HRGA') { 
             $query->whereHas('sppd', function ($q) use ($userId) {
-                $q->where('user_id', $userId); // Gunakan $userId langsung di sini
+                $q->where('user_id', $userId);
             });
         }
 
-        // Filter Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -36,33 +34,25 @@ class DokumenController extends Controller
             });
         }
 
-        // Filter Status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         $daftarDinas = $query->orderBy('dinas.created_at', 'desc')->paginate(10);
 
-        // 2. Tentukan ID mana yang sedang dipilih/diklik
         $selectedId = $request->get('selected_id');
         if (!$selectedId && $daftarDinas->isNotEmpty()) {
             $selectedId = $daftarDinas->first()->id;
         }
 
-        // 3. Ambil Detail Sisi Kanan (Detail Dinas, Form 1 SPPD, Form 2 ILPD, & Tiket)
         $detailData = null;
         if ($selectedId) {
-            // Data Utama Dinas + SPPD + ILPD
             $dinas = Dinas::with([
                 'sppd.kota',
                 'sppd.user',
                 'sppd.sppd_approval.sppd_approver',
-                // 'sppd.keperluan',
-                // 'sppd.transport',
                 'ilpd.sppd.kota',
                 'ilpd.ilpd_approval',
-                // 'ilpd.sppd.transport',
-                // 'ilpd.sppd.keperluan',
                 'ilpd.laporan',
                 'ilpd.detail_ilpd',
                 'ilpd.tiket'
@@ -75,7 +65,6 @@ class DokumenController extends Controller
             $sppdDoc = $dinas->sppd ? collect([$dinas->sppd]) : collect();
                 $ilpdDoc = $dinas->ilpd ? collect([$dinas->ilpd]) : collect();
                 
-                // Mengambil tiket dari relasi ILPD (jika ILPD punya banyak tiket)
                 $tiketDoc = $dinas->ilpd && $dinas->ilpd->tiket 
                     ? (is_iterable($dinas->ilpd->tiket) ? $dinas->ilpd->tiket : collect([$dinas->ilpd->tiket]))
                     : collect();

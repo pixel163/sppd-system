@@ -24,7 +24,8 @@ return new class extends Migration
                 ->constrained('users')
                 ->restrictOnDelete();
 
-            $table->string('status');
+            // $table->string('status');
+            $table->unsignedTinyInteger('status');
 
             $table->string('signature')->nullable();
 

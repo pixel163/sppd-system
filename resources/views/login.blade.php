@@ -17,46 +17,6 @@
 
 <body class="min-h-screen bg-white font-['Inter',sans-serif]">
 
-    {{-- @if ($errors->any())
-        <div id="errorPopup" style="
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            min-width: 300px;
-            max-width: 400px;
-            padding: 14px 16px;
-            background-color: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-            border-radius: 8px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        ">
-            <div>
-                <strong>⚠️ Kesalahan:</strong>
-                <p style="margin: 4px 0 0 0; font-size: 13px;">{{ $errors->first() }}</p>
-            </div>
-            <button onclick="document.getElementById('errorPopup').remove()" style="
-                background: none;
-                border: none;
-                color: #991b1b;
-                font-size: 18px;
-                font-weight: bold;
-                cursor: pointer;
-                padding: 0 4px;
-            ">&times;</button>
-        </div>
-    @endif --}}
-    {{-- @if ($errors->any())
-        <div style="padding: 12px; background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 6px; margin-bottom: 15px;">
-            ⚠️ {{ $errors->first() }}
-        </div>
-    @endif --}}
-
     <main class="flex min-h-screen w-full bg-white">
 
         {{-- =========================

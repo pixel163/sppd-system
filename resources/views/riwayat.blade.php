@@ -402,14 +402,6 @@
             </div>
 
             {{-- ALUR --}}
-            {{-- @foreach($daftarDinas as $dinas)
-                <!-- Tombol Detail Modal -->
-                <button type="button" 
-                        onclick="openDetail({{ json_encode($dinas) }})"
-                        class="btn btn-primary">
-                    Detail
-                </button>
-            @endforeach --}}
             <div>
                 <p class="mb-3 text-[13px] font-bold">
                     Alur Pengajuan

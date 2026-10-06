@@ -36,72 +36,70 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'name' => 'Eko Saputra',
-                'email' => 'eko@example.com',
+                'email' => 'eko@gmail.com',
                 'nik' => '123456789',
                 'role_id' => 2,
                 'department_id' => 1,
                 'jabatan_id' => 1,
                 'golongan_id' => 1,
-                'password' => Hash::make('password'),
-                // 'created_by'  => 3,
+                'password' => Hash::make('123'),
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
             [
                 'name' => 'Budi',
-                'email' => 'budi@example.com',
+                'email' => 'budi@gmail.com',
                 'nik' => '987654321',
                 'role_id' => 3,
                 'department_id' => 1,
                 'jabatan_id' => 2,
                 'golongan_id' => 2,
-                'password' => Hash::make('password'),
+                'password' => Hash::make('123'),
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
             [
                 'name' => 'Citra',
-                'email' => 'citra@example.com',
+                'email' => 'citra@gmail.com',
                 'nik' => '456789123',
                 'role_id' => 1,
                 'department_id' => 2,
                 'jabatan_id' => 3,
                 'golongan_id' => 2,
-                'password' => Hash::make('password'),
+                'password' => Hash::make('123'),
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
             [
                 'name' => 'Andi',
-                'email' => 'andi@example.com',
+                'email' => 'andi@gmail.com',
                 'nik' => '210987654',
                 'role_id' => 2,
                 'department_id' => 2,
                 'jabatan_id' => 1,
                 'golongan_id' => 1,
-                'password' => Hash::make('password'),
+                'password' => Hash::make('123'),
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
             [
                 'name' => 'Suci',
-                'email' => 'suci@example.com',
+                'email' => 'suci@gmail.com',
                 'nik' => '192837456',
                 'role_id' => 3,
                 'department_id' => 2,
                 'jabatan_id' => 2,
                 'golongan_id' => 2,
-                'password' => Hash::make('password'),
+                'password' => Hash::make('123'),
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
         ];
 
-        // Gunakan updateOrInsert agar saat re-seed tidak error duplicate entry
         foreach ($users as $user) {
             DB::table('users')->updateOrInsert(
-                ['name' => $user['name']], // Key acuan pengecekan
-                $user                      // Data yang diinsert/update
+                ['name' => $user['name']],
+                $user                     
             );
         }
     }

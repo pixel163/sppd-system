@@ -37,7 +37,8 @@ return new class extends Migration
                 $table->unsignedInteger('durasi');
 
                 $table->text('tugas');
-                $table->string('status')->default('Draft');
+                // $table->string('status')->default('Draft');
+                $table->unsignedTinyInteger('status')->default(0);
 
                 $table->timestamps();
             });

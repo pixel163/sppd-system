@@ -86,11 +86,6 @@
                                     {{ $dept->name }}
                                 </option>
                             @endforeach
-                        @else
-                            {{-- <option value="1">Human Capital / HR</option>
-                            <option value="2">Finance & Accounting</option>
-                            <option value="3">Information Technology</option>
-                            <option value="4">General Affair</option> --}}
                         @endif
                     </select>
                 </div>
@@ -109,11 +104,6 @@
                                     {{ $jab->name }}
                                 </option>
                             @endforeach
-                        @else
-                            {{-- <option value="1">Staff / Officer</option>
-                            <option value="2">Senior Staff</option>
-                            <option value="3">Supervisor</option>
-                            <option value="4">Manager</option> --}}
                         @endif
                     </select>
                 </div>

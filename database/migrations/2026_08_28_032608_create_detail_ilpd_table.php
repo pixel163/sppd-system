@@ -22,9 +22,11 @@ return new class extends Migration
                 ->constrained('tarif')
                 ->restrictOnDelete();
 
-            $table->decimal('makan', 15, 2)->default(0);
             $table->decimal('dinas', 15, 2)->default(0);
+            $table->decimal('makan', 15, 2)->default(0);
+            $table->integer('makan_qty')->default(0);
             $table->decimal('hotel', 15, 2)->default(0);
+            $table->integer('hotel_qty')->default(0);
 
             $table->text('laundry');
             $table->decimal('bbm', 15, 2)->nullable();
@@ -33,7 +35,7 @@ return new class extends Migration
             $table->decimal('fiskal', 15, 2)->nullable();
             $table->decimal('airport_tax', 15, 2)->nullable();
             $table->decimal('parkir&toll', 15, 2)->nullable();
-            $table->decimal('entertaiment', 15, 2)->nullable();
+            $table->decimal('entertainment', 15, 2)->nullable();
             $table->decimal('dll', 15, 2)->nullable();
 
             $table->decimal('total', 15, 2)->default(0);

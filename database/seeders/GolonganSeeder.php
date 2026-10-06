@@ -40,11 +40,10 @@ class GolonganSeeder extends Seeder
             ],
         ];
 
-        // Gunakan updateOrInsert agar saat re-seed tidak error duplicate entry
         foreach ($golongans as $golongan) {
             DB::table('golongan')->updateOrInsert(
-                ['name' => $golongan['name']], // Key acuan pengecekan
-                $golongan                      // Data yang diinsert/update
+                ['name' => $golongan['name']], 
+                $golongan                      
             );
         }
     }

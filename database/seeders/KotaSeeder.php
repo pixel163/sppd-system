@@ -13,7 +13,6 @@ class KotaSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Data mapping kota berdasarkan ID kategori
         $dataKota = [
             1 => [
                 'Balikpapan', 'Pontianak', 'Samarinda', 'Palangkaraya', 'Manado', 'Gorontalo',
@@ -26,12 +25,10 @@ class KotaSeeder extends Seeder
             ],
         ];
 
-        // 2. Loop dan insert/update menggunakan updateOrInsert
-        // Menggunakan updateOrInsert mencegah error "Duplicate entry" karena kolom 'name' bertipe UNIQUE
         foreach ($dataKota as $kategoriId => $daftarKota) {
             foreach ($daftarKota as $namaKota) {
                 DB::table('kota')->updateOrInsert(
-                    ['name' => $namaKota], // Acuan pengecekan (Unique Column)
+                    ['name' => $namaKota],
                     [
                         'kota_kategori_id' => $kategoriId,
                         'created_by'       => 3,

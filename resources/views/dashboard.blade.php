@@ -52,20 +52,15 @@
                                             </span>
 
                                             @php
-                                                $statusClass = match($item->status) {
-                                                    'approved', 'disetujui'
-                                                        => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-
-                                                    'rejected', 'ditolak'
-                                                        => 'bg-rose-50 text-rose-600 border-rose-100',
-
-                                                    default
-                                                        => 'bg-amber-50 text-amber-600 border-amber-100',
+                                                $statusClass = match($item->dinas->status ?? $item->status) {
+                                                    \App\Enums\DinasStatus::DRAFT => 'bg-yellow-100 text-yellow-800',
+                                                    \App\Enums\DinasStatus::DISETUJUI => 'bg-green-100 text-green-800',
+                                                    default => 'bg-gray-100 text-gray-800',
                                                 };
                                             @endphp
 
-                                            <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
-                                                {{ str_replace('_', ' ', $item->dinas->status) }}
+                                            <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium {{ $statusClass }}">
+                                                {{ $item->dinas->status->label() }}
                                             </span>
 
                                         </div>
@@ -111,7 +106,6 @@
                                     </div>
 
                                     <div class="flex shrink-0 gap-2">
-                                        {{-- @if(($item->dinas->status ?? '') === 'Selesai' && empty($item->ilpd->laporan)) --}}
                                         @if(($item->dinas->status ?? '') === 'Laporan' && empty($item->ilpd->laporan))
                                             {{-- Tombol PROSES: Hanya muncul jika dinas Selesai DAN ILPD belum pernah diisi --}}
                                             <a href="{{ route('ilpd.laporan', $item->id) }}"
@@ -127,32 +121,6 @@
                                             </button>
                                         @endif
                                     </div>
-                                    {{-- <div class="flex shrink-0 gap-2">
-                                        @if(($item->dinas->status ?? '') === 'Selesai')
-
-                                            <a href="{{ route('ilpd.laporan', $item->id) }}"
-                                            class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]">
-                                                Proses
-                                            </a>
-                                        @else
-                                            <button
-                                                type="button"
-                                                onclick='showDetail(@json($item))'
-                                                class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]">
-                                                Detail
-                                            </button>
-                                        @endif
-                                    </div> --}}
-                                    {{-- <div class="flex shrink-0 gap-2">
-
-                                        <button
-                                            type="button"
-                                            onclick='showDetail(@json($item))'
-                                            class="rounded-lg bg-[#0d6efd] px-3 py-2 text-[11px] font-semibold text-white hover:bg-[#0958c9]">
-                                            Detail
-                                        </button>
-
-                                    </div> --}}
 
                                 </div>
 
@@ -209,20 +177,15 @@
                                                     </span>
 
                                                     @php
-                                                        $statusClass = match($item->status) {
-                                                            'approved', 'disetujui'
-                                                                => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-
-                                                            'rejected', 'ditolak'
-                                                                => 'bg-rose-50 text-rose-600 border-rose-100',
-
-                                                            default
-                                                                => 'bg-amber-50 text-amber-600 border-amber-100',
+                                                        $statusClass = match($item->dinas->status ?? $item->status) {
+                                                            \App\Enums\DinasStatus::DRAFT => 'bg-yellow-100 text-yellow-800',
+                                                            \App\Enums\DinasStatus::DISETUJUI => 'bg-green-100 text-green-800',
+                                                            default => 'bg-gray-100 text-gray-800',
                                                         };
                                                     @endphp
 
-                                                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
-                                                        {{ str_replace('_', ' ', $item->status) }}
+                                                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium {{ $statusClass }}">
+                                                        {{ $item->dinas->status->label() }}
                                                     </span>
 
                                                 </div>

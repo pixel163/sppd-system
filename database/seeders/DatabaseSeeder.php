@@ -239,7 +239,7 @@ class DatabaseSeeder extends Seeder
             KotaKategoriSeeder::class,
             KotaSeeder::class,
             TarifSeeder::class,
-            AkunSeeder::class,
+            // AkunSeeder::class,
         ]);
     }
 }

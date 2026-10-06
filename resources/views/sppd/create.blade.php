@@ -22,144 +22,6 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    {{-- <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f8fafc;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 999px;
-        }
-
-        /* Input / Select */
-        .form-input,
-        .form-select {
-            width: 100%;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 11px 14px;
-            font-size: 14px;
-            outline: none;
-            background: white;
-            color: #1e293b;
-            transition: all .2s ease;
-        }
-
-        .form-input::placeholder {
-            color: #94a3b8;
-        }
-
-        .form-input:focus,
-        .form-select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .08);
-        }
-
-        .form-input[readonly] {
-            background: #f8fafc;
-            color: #475569;
-            cursor: not-allowed;
-        }
-
-        .form-textarea {
-            width: 100%;
-            min-height: 130px;
-            resize: vertical;
-            border: 0;
-            outline: none;
-            font-size: 14px;
-            color: #1e293b;
-        }
-
-        .form-textarea::placeholder {
-            color: #94a3b8;
-        }
-
-        /* Mobile */
-        @media (max-width: 767px) {
-            .desktop-sidebar {
-                position: static;
-                width: 100%;
-                height: auto;
-                border-right: 0;
-                border-bottom: 1px solid #e2e8f0;
-                padding: 16px;
-            }
-
-            .sidebar-menu {
-                display: flex;
-                overflow-x: auto;
-                gap: 6px;
-                padding-bottom: 3px;
-            }
-
-            .sidebar-menu a {
-                flex: 0 0 auto;
-                white-space: nowrap;
-            }
-
-            .sidebar-bottom {
-                display: none;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .top-navbar {
-                height: auto;
-                padding: 14px 16px;
-            }
-
-            .content-wrapper {
-                padding: 20px 16px;
-            }
-
-            .form-card {
-                padding: 18px;
-            }
-
-            .form-row {
-                flex-direction: column;
-                gap: 8px;
-                padding: 10px 0;
-            }
-
-            .form-label {
-                width: 100%;
-                padding-top: 0;
-            }
-
-            .form-actions {
-                flex-direction: column-reverse;
-            }
-
-            .form-actions a,
-            .form-actions button {
-                width: 100%;
-                text-align: center;
-            }
-
-            .user-info {
-                display: none;
-            }
-        }
-    </style> --}}
 </head>
 
 <body class="min-h-screen bg-white text-[#1e293b]">
@@ -553,6 +415,22 @@
 
                     {{-- Tugas --}}
                     <div class="form-row flex gap-6 py-3">
+                        <label for="tugas" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                            Tugas
+                        </label>
+
+                        <div class="flex min-h-[160px] flex-1 flex-col rounded-lg border border-[#e2e8f0] px-4 py-3 focus-within:border-[#2563eb]">
+                            <textarea
+                                id="tugas"
+                                name="tugas"
+                                class="form-textarea mt-1 flex-1 border-none outline-none focus:ring-0"
+                                placeholder="1. Isi tugas pertama..."
+                                required
+                                oninvalid="this.setCustomValidity('Silahkan masukan tugas')"
+                                oninput="this.setCustomValidity('')">1. </textarea>
+                        </div>
+                    </div>
+                    {{-- <div class="form-row flex gap-6 py-3">
 
                         <label for="tugas"
                             class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
@@ -572,7 +450,7 @@
 
                         </div>
 
-                    </div>
+                    </div> --}}
 
                     {{-- =================================================
                         BUTTON
@@ -609,103 +487,6 @@
 @push('scripts')
 
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-
-{{-- <script>
-// 1. Mencegah pengetikan karakter non-angka seperti e, +, -, ., dan ,
-function cekkunci(e) {
-    if (['e', 'E', '+', '-', '.', ','].includes(e.key)) {
-        e.preventDefault();
-    }
-}
-
-// 2. Membersihkan input jika di-paste & membatasi nilai max 14 dan min 1
-function validasiWaktu(input) {
-    // Hapus karakter selain digit angka
-    input.value = input.value.replace(/[^0-9]/g, '');
-
-    if (input.value !== '') {
-        let val = parseInt(input.value, 10);
-        
-        // Mencegah nilai lebih dari 14
-        if (val > 14) {
-            input.value = 14;
-        }
-        
-        // Mencegah angka 0 di depan (misal: 05 -> 5 atau 00 -> 1)
-        if (val < 1) {
-            input.value = '';
-        }
-    }
-}
-
-// 1. Fungsi Toggle Buka/Tutup Menu
-function toggleDropdown(buttonEl) {
-    const container = buttonEl.closest('.relative');
-    const menu = container.querySelector('.dropdown-menu');
-    const arrow = buttonEl.querySelector('.dropdown-arrow');
-
-    // Tutup dropdown lain yang sedang terbuka
-    document.querySelectorAll('.dropdown-menu').forEach(m => {
-        if (m !== menu) m.classList.add('hidden');
-    });
-    document.querySelectorAll('.dropdown-arrow').forEach(a => {
-        if (a !== arrow) a.classList.remove('rotate-180');
-    });
-
-    // Toggle dropdown yang diklik
-    menu.classList.toggle('hidden');
-    if (arrow) arrow.classList.toggle('rotate-180');
-}
-
-// 2. Fungsi Update Teks Pilihan
-function updateDropdownText(checkboxEl, placeholderDefault) {
-    const container = checkboxEl.closest('.relative');
-    const textSpan = container.querySelector('.selected-text');
-    const checkboxes = container.querySelectorAll('.dropdown-checkbox:checked');
-
-    if (checkboxes.length === 0) {
-        textSpan.innerText = placeholderDefault;
-        textSpan.classList.add('text-slate-400');
-        textSpan.classList.remove('text-slate-800');
-    } else if (checkboxes.length === 1) {
-        const labelText = checkboxes[0].nextElementSibling.innerText.trim();
-        textSpan.innerText = labelText;
-        textSpan.classList.remove('text-slate-400');
-        textSpan.classList.add('text-slate-800');
-    } else {
-        textSpan.innerText = `${checkboxes.length} Pilihan Dipilih`;
-        textSpan.classList.remove('text-slate-400');
-        textSpan.classList.add('text-slate-800');
-    }
-}
-
-// 3. Event Listener Klik Luar Area (Auto Close)
-document.addEventListener('click', function(event) {
-    if (!event.target.closest('.relative')) {
-        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
-        document.querySelectorAll('.dropdown-arrow').forEach(a => a.classList.remove('rotate-180'));
-    }
-});
-
-// 4. Jalankan saat Pertama Kali Dimuat (Initial State)
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.dropdown-checkbox').forEach(cb => {
-        // Trigger update text untuk masing-masing container
-        const container = cb.closest('.relative');
-        const defaultText = container.querySelector('.selected-text')?.dataset.placeholder || 'Pilih Data';
-        updateDropdownText(cb, defaultText);
-    });
-});
-
-new TomSelect("#kota", {
-    create: false,
-    sortField: {
-        field: "text",
-        direction: "asc"
-    }
-});
-
-</script> --}}
 
     @vite('resources/js/sppd/form.js')
 

@@ -432,43 +432,6 @@
                                 readonly>
                         </div>
                     </div>
-                    {{-- <div class="mb-4">
-                        <label class="mb-2 block text-[13px] font-semibold text-[#0f172a]">
-                            Transportasi
-                        </label>
-
-                        <div class="transport-grid grid grid-cols-3 gap-x-6 gap-y-3">
-                            @foreach ($transports as $transport)
-                                @php
-                                    $isChecked = isset($ilpd->sppd) && $ilpd->sppd->transport_id == $transport->id;
-                                @endphp
-                                <label class="flex items-center gap-2 cursor-default select-none">
-                                    <input
-                                        type="checkbox"
-                                        disabled
-                                        {{ $isChecked ? 'checked' : '' }}
-                                        class="size-[18px] accent-[#2563eb] disabled:opacity-100 cursor-default">
-                                    <span class="text-[14px] {{ $isChecked ? 'font-medium text-[#0f172a]' : 'text-[#64748b]' }}">
-                                        {{ $transport->name }}
-                                    </span>
-                                </label>
-                            @endforeach
-                        </div>
-                        
-                        @if(isset($ilpd->sppd->transport_lainnya))
-                            <div class="mt-2 flex items-center gap-3">
-                                <label class="flex items-center gap-2 cursor-default">
-                                    <input type="checkbox" checked disabled class="size-[18px] accent-[#2563eb] disabled:opacity-100">
-                                    <span class="text-[14px] font-medium text-[#0f172a]">Lainnya</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    readonly
-                                    value="{{ $ilpd->sppd->transport_lainnya }}"
-                                    class="w-[180px] rounded-md border border-[#cbd5e1] bg-[#f8fafc] px-3 py-1.5 text-[12px] text-[#0f172a] outline-none cursor-default">
-                            </div>
-                        @endif
-                    </div> --}}
 
                     {{-- KEPERLUAN --}}
                     <div class="mb-4">
@@ -516,43 +479,6 @@
                                 readonly>
                         </div>
                     </div>
-                    {{-- <div class="mb-4">
-                        <label class="mb-2 block text-[13px] font-semibold text-[#0f172a]">
-                            Keperluan
-                        </label>
-
-                        <div class="keperluan-grid grid grid-cols-3 gap-x-6 gap-y-3">
-                            @foreach ($keperluans as $keperluan)
-                                @php
-                                    $isChecked = isset($ilpd->sppd) && $ilpd->sppd->keperluan_id == $keperluan->id;
-                                @endphp
-                                <label class="flex items-center gap-2 cursor-default select-none">
-                                    <input
-                                        type="checkbox"
-                                        disabled
-                                        {{ $isChecked ? 'checked' : '' }}
-                                        class="size-[18px] accent-[#2563eb] disabled:opacity-100 cursor-default">
-                                    <span class="text-[14px] {{ $isChecked ? 'font-medium text-[#0f172a]' : 'text-[#64748b]' }}">
-                                        {{ $keperluan->name }}
-                                    </span>
-                                </label>
-                            @endforeach
-                        </div>
-
-                        @if(isset($ilpd->sppd->keperluan_lainnya))
-                            <div class="mt-2 flex items-center gap-3">
-                                <label class="flex items-center gap-2 cursor-default">
-                                    <input type="checkbox" checked disabled class="size-[18px] accent-[#2563eb] disabled:opacity-100">
-                                    <span class="text-[14px] font-medium text-[#0f172a]">Lainnya</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    readonly
-                                    value="{{ $ilpd->sppd->keperluan_lainnya }}"
-                                    class="w-[180px] rounded-md border border-[#cbd5e1] bg-[#f8fafc] px-3 py-1.5 text-[12px] text-[#0f172a] outline-none cursor-default">
-                            </div>
-                        @endif
-                    </div> --}}
 
                     {{-- TUGAS --}}
                     <div>
@@ -591,44 +517,6 @@
 
                     </div>
 
-                    {{-- <div class="mb-5">
-                        <label class="mb-2 block text-[13px] font-semibold text-[#0f172a]">
-                            Tiket <span class="text-red-500">*</span>
-                        </label>
-
-                        <div class="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#2563eb]/40 bg-[#f8fafc] px-6 py-8 text-center transition-all hover:border-[#2563eb] hover:bg-[#eff6ff]/30">
-                            
-                            <input 
-                                type="file" 
-                                id="tiket_file" 
-                                name="tiket_file" 
-                                accept=".pdf,.jpg,.jpeg,.png"
-                                required
-                                class="absolute inset-0 z-10 cursor-pointer opacity-0" 
-                                onchange="updateFileName(this)"
-                                oninvalid="this.setCustomValidity('Silahkan upload tiket')"
-                                onkeydown="cekkunci(event)"
-                            />
-
-                            <div class="mb-3 flex size-10 items-center justify-center rounded-full text-[#2563eb]">
-                                <i data-lucide="cloud-upload" class="size-8"></i>
-                            </div>
-
-                            <p id="file-label" class="text-[14px] font-bold text-[#0f172a]">
-                                Upload tiket perjalanan
-                            </p>
-                            <p class="mt-0.5 text-[11px] text-[#64748b]">
-                                Format: PDF, JPG, JPEG, PNG (Maks. 5MB)
-                            </p>
-
-                            <div class="mt-4">
-                                <span class="inline-flex items-center justify-center rounded-xl border border-[#2563eb] bg-white px-5 py-2 text-[12px] font-semibold text-[#2563eb] shadow-sm transition-colors hover:bg-[#eff6ff]">
-                                    Pilih File
-                                </span>
-                            </div>
-                        </div>
-                    </div> --}}
-
                     {{-- BBM --}}
                     <div class="mb-5">
 
@@ -666,35 +554,6 @@
                                     Nilai di bawah dihitung otomatis dari Master Data berdasarkan Golongan Staff dan kota tujuan.
                                 </p>
                             </div>
-
-                            {{-- Switch / Tombol untuk Mengaktifkan Mode Edit Khusus GA --}}
-                            {{-- <button type="button" id="btnToggleEdit" onclick="toggleAdjustTarif()" 
-                                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-slate-50 px-3 py-1.5 text-[12px] font-semibold text-slate-700 hover:bg-slate-100 transition">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                                </svg>
-                                <span>Sesuaikan Tarif</span>
-                            </button> --}}
-                        </div>
-
-                        {{-- Dropdown Opsional (Awalnya Tersembunyi) --}}
-                        <div id="wrapperDropdownGolongan" class="mb-4 hidden rounded-lg bg-amber-50 p-3 border border-amber-200">
-                            <label class="mb-1 block text-[12px] font-semibold text-amber-900">
-                                Pilih Tarif Golongan Pengganti (Override):
-                            </label>
-                            <select id="selectGolonganOverride" onchange="applyTarifOverride(this)" 
-                                    class="w-full rounded-md border border-amber-300 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                                <option value="">-- Pilih Golongan Penyesuaian --</option>
-                                @foreach($tarifs as $tarif)
-                                    <option value="{{ $tarif->id }}" 
-                                            data-dinas="{{ $tarif->dinas }}" 
-                                            data-makan="{{ $tarif->makan }}" 
-                                            data-hotel="{{ $tarif->hotel }}"
-                                            {{ (isset($golonganId) && $tarif->golongan_id == $golonganId) ? 'selected' : '' }}>
-                                        {{ $tarif->golongan->nama ?? 'Golongan '.$tarif->golongan_id }} — Tarif: Rp {{ number_format($tarif->dinas) }} - {{ number_format($tarif->makan) }} - {{ number_format($tarif->hotel) }} / hari
-                                    </option>
-                                @endforeach
-                            </select>
                         </div>
 
                         {{-- Form Input 4 Kolom --}}
@@ -880,6 +739,25 @@
 
                         </div>
 
+                        <div class="expense-row mb-3 flex items-center justify-between">
+
+                            <span class="text-[13px]">
+                                Laundry
+                            </span>
+
+                            <div class="currency-wrapper w-[220px]">
+
+                                <input
+                                    id="laundry"
+                                    type="text"
+                                    class="currency-input text-center readonly-input"
+                                    value="Actual"
+                                    readonly>
+
+                            </div>
+
+                        </div>
+
                         {{-- PARKIR & TOLL --}}
                         <div class="expense-row mb-3 flex items-center justify-between">
 
@@ -1009,21 +887,6 @@
                     </div>
 
                 </section>
-
-                {{-- BUTTON --}}
-                {{-- <div class="button-wrapper flex justify-end gap-3 pb-6 pt-6">
-
-                    <a href="/dashboard"
-                        class="rounded-[10px] border border-[#94a3b8] bg-white px-6 py-3 text-[14px] font-semibold text-[#64748b]">
-                        Batal
-                    </a>
-
-                    <button type="submit"
-                        class="flex items-center gap-2 rounded-[10px] bg-[#2563eb] px-6 py-3 text-[14px] font-semibold text-white transition hover:bg-[#1d4ed8]">
-                        Simpan
-                    </button>
-
-                </div> --}}
 
             </form>
 

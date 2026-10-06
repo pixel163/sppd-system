@@ -10,13 +10,10 @@ class ExcelController extends Controller
 {
     public function test()
     {
-        // Buat spreadsheet baru
         $spreadsheet = new Spreadsheet();
 
-        // Ambil sheet pertama
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Isi data
         $sheet->setCellValue('A1', 'Laporan SPPD');
         $sheet->setCellValue('A2', 'No');
         $sheet->setCellValue('B2', 'Nama');
@@ -28,10 +25,8 @@ class ExcelController extends Controller
         $sheet->setCellValue('C3', 'IT');
         $sheet->setCellValue('D3', 'Jakarta');
 
-        // Buat file Excel
         $writer = new Xlsx($spreadsheet);
 
-        // Download
         return response()->streamDownload(function () use ($writer) {
             $writer->save('php://output');
         }, 'tes-sppd.xlsx');

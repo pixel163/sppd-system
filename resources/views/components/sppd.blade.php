@@ -312,9 +312,15 @@
                         <div class="relative">
                             <input
                                 id="durasi"
+                                name="durasi"
                                 type="text"
+                                inputmode="numeric"
+                                maxlength="2"
                                 value="{{ $sppd->durasi }}"
                                 class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 pr-20 text-[14px] text-slate-600"
+                                onkeydown="cekkunci(event)"
+                                oninput="validasiWaktu(this)"
+                                {{-- oninput="validasiWaktu(this)"> --}}
                                 disabled>
                             <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[13px] text-[#94a3b8]">
                                 hari
@@ -332,7 +338,8 @@
                         <input 
                             type="text" 
                             value="{{ $sppd->keperluan_list ?? '-' }}"
-                            class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 text-[14px] text-slate-600" 
+                            class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 text-[14px] text-slate-600"
+                            {{-- class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 text-[14px] text-slate-600"> --}}
                             disabled>
                     </div>
                 </div>
@@ -346,7 +353,8 @@
                         <input 
                             type="text" 
                             value="{{ $sppd->transport_list ?? '-' }}" 
-                            class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 text-[14px] text-slate-600" 
+                            class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 text-[14px] text-slate-600"
+                            {{-- class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 text-[14px] text-slate-600"> --}}
                             disabled>
                     </div>
                 </div>
@@ -356,31 +364,16 @@
                     <label for="tugas" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
                         Tugas
                     </label>
-                    {{-- <div class="flex min-h-[140px] flex-1 rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-3"> --}}
                     <div class="flex-1">
                         
                         <textarea
                             id="tugas"
                             class="form-textarea w-full bg-transparent text-[14px] text-slate-600 outline-none resize-none"
+                            {{-- class="form-textarea w-full bg-transparent text-[14px] text-slate-600 outline-none resize-none">{{ $sppd->tugas }}</textarea> --}}
                             disabled>{{ $sppd->tugas }}</textarea>
 
                     </div>
                 </div>
-
-                {{-- =================================================
-                    SECTION KEPUTUSAN APPROVAL MANAGER
-                ================================================== --}}
-                {{-- <form id="approvalForm" method="POST" action="{{ route('sppd.approve', $sppd->id) }}" enctype="multipart/form-data">
-                    @csrf
-
-                    <div class="form-actions flex justify-end gap-3 pt-6">
-                        <button 
-                            type="submit"
-                            class="rounded-lg bg-[#2563eb] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#1d4ed8]">
-                            Setujui
-                        </button>
-                    </div>
-                </form> --}}
 
             </div>
 
@@ -392,3 +385,28 @@
 
 </body>
 </html>
+
+<script>
+    function cekkunci(e) {
+        if (['e', 'E', '+', '-', '.', ','].includes(e.key)) {
+            e.preventDefault();
+        }
+    }
+
+    // Membersihkan input jika di-paste & membatasi nilai max 14 dan min 1
+    function validasiWaktu(input) {
+        input.value = input.value.replace(/[^0-9]/g, '');
+
+        if (input.value !== '') {
+            let val = parseInt(input.value, 10);
+            
+            if (val > 14) {
+                input.value = 14;
+            }
+            
+            if (val < 1) {
+                input.value = '';
+            }
+        }
+    }
+</script>

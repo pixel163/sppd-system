@@ -27,7 +27,8 @@ return new class extends Migration
 
             $table->date('tanggal_awal');
             $table->date('tanggal_akhir');
-            $table->string('status')->default('Menunggu Approval');
+            // $table->string('status')->default('Menunggu Approval');
+            $table->unsignedTinyInteger('status')->default(1);
 
             $table->timestamps();
         });

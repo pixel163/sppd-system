@@ -22,12 +22,8 @@ class Laporan extends Model
         'keterangan',
         'laporan_1',
         'laporan_2',
-        // 'status',
     ];
 
-    /**
-     * Konversi otomatis kolom JSON menjadi Array PHP saat dipanggil
-     */
     protected $casts = [
         'realisasi'        => 'array',
         'perkiraan'        => 'decimal:2',
@@ -37,24 +33,8 @@ class Laporan extends Model
         'selisih'          => 'decimal:2',
     ];
 
-    /**
-     * Relasi ke Model ILPD
-     */
     public function ilpd()
     {
         return $this->belongsTo(Ilpd::class, 'ilpd_id');
     }
-
-    // public function getRealisasiListAttribute()
-    // {
-    //     // Decode JSON string ke array PHP
-    //     $rawIds = $this->realisasi;
-    //     $ids = is_string($rawIds) ? (json_decode($rawIds, true) ?? []) : ($rawIds ?? []);
-    //     $ids = is_array($ids) ? $ids : [$ids];
-
-    //     // Ambil nama dari tabel master Laporan
-    //     $names = \App\Models\Laporan::whereIn('id', $ids)->pluck('name')->toArray();
-
-    //     return !empty($names) ? implode(', ', $names) : '-';
-    // }
 }

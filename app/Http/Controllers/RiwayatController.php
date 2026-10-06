@@ -18,17 +18,16 @@ class RiwayatController extends Controller
         $query = Dinas::with([
             'sppd.kota',
             'sppd.user',
-            'sppd.sppd_approval', // 👈 Ditambahkan untuk riwayat approval SPPD
-            'ilpd.ilpd_approval', // 👈 Ditambahkan untuk riwayat approval ILPD
+            'sppd.sppd_approval',
+            'ilpd.ilpd_approval',
         ]);
 
-        if ($user->jabatan->name !== 'HRGA') { // Sesuaikan 'GA' dengan nama role/penamaan di sistem kamu
+        if ($user->jabatan->name !== 'HRGA') {
             $query->whereHas('sppd', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             });
         }
 
-        // Filter Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -39,7 +38,6 @@ class RiwayatController extends Controller
             });
         }
 
-        // Filter Status
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }

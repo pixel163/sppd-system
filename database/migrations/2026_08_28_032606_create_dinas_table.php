@@ -17,7 +17,8 @@ return new class extends Migration
                     ->constrained('users')
                     ->restrictOnDelete();
             $table->string('no_dinas')->unique();
-            $table->string('status')->default('Draft');
+            // $table->string('status')->default('Draft');
+            $table->unsignedTinyInteger('status')->default(0);
             $table->timestamp('overall_sla')->nullable();
             $table->string('status_sla')->default('IN_PROGRESS');
 

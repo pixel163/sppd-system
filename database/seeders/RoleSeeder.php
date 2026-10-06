@@ -33,11 +33,10 @@ class RoleSeeder extends Seeder
             ],
         ];
 
-        // Gunakan updateOrInsert agar saat re-seed tidak error duplicate entry
         foreach ($roles as $role) {
             DB::table('role')->updateOrInsert(
-                ['name' => $role['name']], // Key acuan pengecekan
-                $role                      // Data yang diinsert/update
+                ['name' => $role['name']],
+                $role                      
             );
         }
     }

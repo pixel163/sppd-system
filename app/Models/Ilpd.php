@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\IlpdStatus;
 
 class Ilpd extends Model
 {
@@ -23,6 +24,7 @@ class Ilpd extends Model
     protected $casts = [
         'tanggal_awal' => 'date',
         'tanggal_akhir' => 'date',
+        'status' => IlpdStatus::class,
     ];
 
     public function Dinas(): BelongsTo
@@ -52,7 +54,6 @@ class Ilpd extends Model
 
     public function approval()
     {
-        // Gunakan hasOne dan latestOfMany() agar mengambil 1 record terakhir
         return $this->hasOne(IlpdApproval::class, 'ilpd_id')->latestOfMany();
     }
 

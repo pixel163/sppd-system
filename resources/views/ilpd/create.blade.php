@@ -4,257 +4,6 @@
 
 @section('content')
 
-{{-- <!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Form ILPD - SPPD System</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"> --}}
-
-    {{-- <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f8fafc;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 999px;
-        }
-
-        /* =========================
-           FORM
-        ========================== */
-
-        .form-input {
-            width: 100%;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 11px 14px;
-            font-size: 14px;
-            outline: none;
-            background: white;
-            color: #1e293b;
-            transition: all .2s ease;
-        }
-
-        .form-input:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .08);
-        }
-
-        .form-input::placeholder {
-            color: #94a3b8;
-        }
-
-        .readonly-input {
-            background: #f8fafc;
-            color: #475569;
-            cursor: not-allowed;
-        }
-
-        .form-textarea {
-            width: 100%;
-            resize: vertical;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 13px 14px;
-            font-size: 14px;
-            outline: none;
-            color: #1e293b;
-        }
-
-        .form-textarea:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .08);
-        }
-
-        /* =========================
-           CURRENCY INPUT
-        ========================== */
-
-        .currency-wrapper {
-            display: flex;
-            overflow: hidden;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            background: white;
-        }
-
-        .currency-prefix {
-            display: flex;
-            align-items: center;
-            padding: 0 12px;
-            background: #f1f5f9;
-            color: #64748b;
-            font-size: 14px;
-            font-weight: 600;
-            border-right: 1px solid #e2e8f0;
-        }
-
-        .currency-input {
-            width: 100%;
-            min-width: 0;
-            border: 0;
-            padding: 10px 12px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .currency-input:focus {
-            box-shadow: inset 0 0 0 1px #2563eb;
-        }
-
-        .currency-input[readonly] {
-            background: #f8fafc;
-            color: #475569;
-            cursor: not-allowed;
-        }
-
-        /* =========================
-           SEARCH / AUTOCOMPLETE
-        ========================== */
-
-        .search-result {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: calc(100% + 4px);
-            z-index: 50;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            background: white;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, .10);
-        }
-
-        .search-item {
-            width: 100%;
-            padding: 12px 14px;
-            text-align: left;
-            border-bottom: 1px solid #f1f5f9;
-            background: white;
-            cursor: pointer;
-            transition: background .15s ease;
-        }
-
-        .search-item:last-child {
-            border-bottom: 0;
-        }
-
-        .search-item:hover {
-            background: #f8fafc;
-        }
-
-        /* =========================
-           MOBILE
-        ========================== */
-
-        @media (max-width: 767px) {
-
-            .desktop-sidebar {
-                position: static;
-                width: 100%;
-                height: auto;
-                border-right: 0;
-                border-bottom: 1px solid #e2e8f0;
-                padding: 16px;
-            }
-
-            .sidebar-menu {
-                display: flex;
-                overflow-x: auto;
-                gap: 5px;
-                padding-bottom: 3px;
-            }
-
-            .sidebar-menu a {
-                flex: 0 0 auto;
-                white-space: nowrap;
-            }
-
-            .sidebar-bottom {
-                display: none;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .top-navbar {
-                height: auto;
-                padding: 14px 16px;
-            }
-
-            .content-wrapper {
-                padding: 20px 16px;
-            }
-
-            .section-card {
-                padding: 18px;
-            }
-
-            .date-wrapper {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .date-wrapper > div {
-                width: 100%;
-            }
-
-            .transport-grid,
-            .necessity-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .expense-row {
-                flex-direction: column;
-                align-items: stretch !important;
-                gap: 8px;
-            }
-
-            .expense-input {
-                width: 100% !important;
-            }
-
-            .user-info {
-                display: none;
-            }
-
-            .button-wrapper {
-                flex-direction: column-reverse;
-            }
-
-            .button-wrapper a,
-            .button-wrapper button {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style> --}}
-{{-- </head> --}}
-
 <body class="min-h-screen bg-white text-[#1e293b]">
 
 <div class="min-h-screen">
@@ -320,6 +69,7 @@
                     <div class="mb-4">
                         <label class="mb-1.5 block text-[13px] font-semibold">
                             Lama Perjalanan <span class="text-red-500">*</span>
+                            {{-- Lama Perjalanan <span class="text-red-500">*</span> <span>(minimal waktu pengajuan h-7)</span> --}}
                         </label>
 
                         <div class="date-wrapper flex items-center gap-4">
@@ -331,8 +81,8 @@
                                     type="date"
                                     class="w-full border-0 text-[14px] outline-none"
                                     value="{{ $sppd->tanggal_awal?->format('Y-m-d') ?? '' }}"
-                                    data-durasi="{{ $sppd->durasi ?? 1 }}"
-                                    onchange="hitungSemua()">
+                                    data-durasi="{{ $sppd->durasi ?? 1 }}">
+                                    {{-- onchange="hitungSemua()"> --}}
                             </div>
 
                             <span class="text-[14px] font-semibold text-[#64748b]">s/d</span>
@@ -503,7 +253,6 @@
                                 max="1000000"
                                 placeholder="Masukkan jumlah biaya BBM"
                                 class="currency-input expense-input"
-                                {{-- class="form-control" --}}
                                 oninput="validateInput(this)">
 
                         </div>
@@ -512,87 +261,124 @@
 
                     {{-- UANG HARIAN --}}
                     <div class="mb-6">
+                        <div class="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
+                            <label class="text-xs font-bold text-slate-800">
+                                Uang Harian (Golongan & Destinasi) <span class="text-red-500">*</span>
+                            </label>
+                            <span class="text-[11px] font-medium text-slate-500">
+                                Durasi SPPD: <strong class="text-slate-700">{{ $sppd->durasi ?? 1 }} Hari</strong>
+                            </span>
+                        </div>
 
-                        <label class="mb-3 block text-[13px] font-semibold">
-                            Uang Harian (sesuai golongan & destinasi)
-                            <span class="text-red-500">*</span>
-                        </label>
+                        <input type="hidden" id="durasi_dinas" value="{{ $sppd->durasi ?? 1 }}">
 
-                        <div class="grid grid-cols-4 gap-3">
+                        <div class="flex flex-col gap-3">
 
-                            {{-- DINAS --}}
-                            <div>
-                                <label class="mb-1.5 block text-[12px] font-semibold text-[#64748b]">
-                                    Dinas / Hari
-                                </label>
-                                <div class="currency-wrapper">
-                                    <span class="currency-prefix">Rp</span>
-                                    <input
-                                        id="dinas"
-                                        name="uang_dinas"
-                                        type="text"
-                                        class="currency-input"
-                                        value="{{ number_format($tarif->dinas ?? 0, 0, ',', '.') }}"
-                                        readonly>
+                            {{-- 1. DINAS --}}
+                            <div class="flex items-end justify-between">
+                                <div class="flex items-end gap-2">
+                                    <div>
+                                        <label class="mb-1 block text-xs font-medium text-slate-500">Dinas</label>
+                                        <div class="currency-wrapper expense-input w-[160px]">
+                                            <span class="currency-prefix text-xs">Rp</span>
+                                            <input id="dinas_rate" name="uang_dinas" type="text" class="currency-input expense-input text-xs" 
+                                                value="{{ number_format($tarif->dinas ?? 0, 0, ',', '.') }}" readonly>
+                                        </div>
+                                    </div>
+
+                                    <span class="mb-2 text-xs font-semibold text-slate-400">×</span>
+
+                                    <div>
+                                        <label class="mb-1 block text-center text-xs font-medium text-slate-500">Hari</label>
+                                        <div class="w-[60px]">
+                                            <input id="dinas_qty" name="dinas_qty" type="text" 
+                                                class="h-[38px] w-full rounded-md border border-slate-200 bg-slate-100 text-center text-xs font-semibold text-slate-600 focus:outline-none" 
+                                                value="{{ $sppd->durasi ?? 1 }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="mb-1 block text-right text-xs font-medium text-slate-500">Subtotal Dinas</label>
+                                    <div class="currency-wrapper expense-input w-[220px]">
+                                        <span class="currency-prefix text-xs">Rp</span>
+                                        <input id="dinas_subtotal" type="text" class="currency-input expense-input text-xs font-bold text-slate-800 bg-slate-50 text-right" value="0" readonly>
+                                    </div>
                                 </div>
                             </div>
 
-                            {{-- MAKAN --}}
-                            <div>
-                                <label class="mb-1.5 block text-[12px] font-semibold text-[#64748b]">
-                                    Makan / Hari
-                                </label>
-                                <div class="currency-wrapper">
-                                    <span class="currency-prefix">Rp</span>
-                                    <input
-                                        id="makan"
-                                        name="uang_makan"
-                                        type="text"
-                                        class="currency-input"
-                                        value="{{ number_format($tarif->makan ?? 0, 0, ',', '.') }}"
-                                        readonly>
+                            {{-- 2. MAKAN --}}
+                            <div class="flex items-end justify-between">
+                                <div class="flex items-end gap-2">
+                                    <div>
+                                        <label class="mb-1 block text-xs font-medium text-slate-500">Makan</label>
+                                        <div class="currency-wrapper expense-input w-[160px]">
+                                            <span class="currency-prefix text-xs">Rp</span>
+                                            <input id="makan_rate" name="uang_makan" type="text" class="currency-input expense-input text-xs" 
+                                                value="{{ number_format($tarif->makan ?? 0, 0, ',', '.') }}" readonly>
+                                        </div>
+                                    </div>
+
+                                    <span class="mb-2 text-xs font-semibold text-slate-400">×</span>
+
+                                    <div>
+                                        <label class="mb-1 block text-center text-xs font-medium text-slate-500">Hari</label>
+                                        <div class="w-[60px]">
+                                            <input id="makan_qty" name="makan_qty" type="text" inputmode="numeric" 
+                                                data-max="{{ $sppd->durasi ?? 1 }}"
+                                                {{-- oninput="validateInput(this)" --}}
+                                                oninput="validateInputQty(this)"
+                                                class="h-[38px] w-full rounded-md border border-slate-300 text-center text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none" 
+                                                value="0">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="mb-1 block text-right text-xs font-medium text-slate-500">Subtotal Makan</label>
+                                    <div class="currency-wrapper expense-input w-[220px]">
+                                        <span class="currency-prefix text-xs">Rp</span>
+                                        <input id="makan_subtotal" type="text" class="currency-input expense-input text-xs font-bold text-slate-800 bg-slate-50 text-right" value="0" readonly>
+                                    </div>
                                 </div>
                             </div>
 
-                            {{-- HOTEL --}}
-                            <div>
-                                <label class="mb-1.5 block text-[12px] font-semibold text-[#64748b]">
-                                    Hotel / Malam
-                                </label>
-                                <div class="currency-wrapper">
-                                    <span class="currency-prefix">Rp</span>
-                                    <input
-                                        id="hotel"
-                                        name="uang_hotel"
-                                        type="text"
-                                        class="currency-input"
-                                        value="{{ number_format($tarif->hotel ?? 0, 0, ',', '.') }}"
-                                        readonly>
-                                </div>
-                            </div>
+                            {{-- 3. HOTEL --}}
+                            <div class="flex items-end justify-between">
+                                <div class="flex items-end gap-2">
+                                    <div>
+                                        <label class="mb-1 block text-xs font-medium text-slate-500">Hotel</label>
+                                        <div class="currency-wrapper expense-input w-[160px]">
+                                            <span class="currency-prefix text-xs">Rp</span>
+                                            <input id="hotel_rate" name="uang_hotel" type="text" class="currency-input expense-input text-xs" 
+                                                value="{{ number_format($tarif->hotel ?? 0, 0, ',', '.') }}" readonly>
+                                        </div>
+                                    </div>
 
-                            {{-- LAUNDRY --}}
-                            <div>
-                                <label class="mb-1.5 block text-[12px] font-semibold text-[#64748b]">
-                                    Laundry
-                                </label>
-                                <div class="currency-wrapper">
-                                    <input
-                                        id="laundry"
-                                        type="text"
-                                        class="currency-input readonly-input"
-                                        value="Actual"
-                                        readonly>
+                                    <span class="mb-2 text-xs font-semibold text-slate-400">×</span>
+
+                                    <div>
+                                        <label class="mb-1 block text-center text-xs font-medium text-slate-500">Malam</label>
+                                        <div class="w-[60px]">
+                                            <input id="hotel_qty" name="hotel_qty" type="text" inputmode="numeric" 
+                                                data-max="{{ $sppd->durasi ?? 1 }}"
+                                                oninput="validateInputQty(this)"
+                                                class="h-[38px] w-full rounded-md border border-slate-300 text-center text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none" 
+                                                value="0">
+                                        </div>
+                                    </div>
                                 </div>
 
+                                <div>
+                                    <label class="mb-1 block text-right text-xs font-medium text-slate-500">Subtotal Hotel</label>
+                                    <div class="currency-wrapper expense-input w-[220px]">
+                                        <span class="currency-prefix text-xs">Rp</span>
+                                        <input id="hotel_subtotal" type="text" class="currency-input expense-input text-xs font-bold text-slate-800 bg-slate-50 text-right" value="0" readonly>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
-
-                        <p class="mt-2 text-[11px] text-[#64748b]">
-                            Tarif Dinas, Makan, dan Hotel disesuaikan dengan golongan pegawai dan kota tujuan.
-                        </p>
-
                     </div>
 
                     {{-- BIAYA LAINNYA --}}
@@ -705,6 +491,26 @@
                                     placeholder="Masukkan jumlah"
                                     class="currency-input expense-input"
                                     oninput="validateInput(this)">
+
+                            </div>
+
+                        </div>
+
+                        {{-- LAUNDRY --}}
+                        <div class="expense-row mb-3 flex items-center justify-between">
+
+                            <span class="text-[13px]">
+                                Laundry
+                            </span>
+
+                            <div class="currency-wrapper w-[220px]">
+
+                                <input
+                                    id="laundry"
+                                    type="text"
+                                    class="currency-input text-center readonly-input"
+                                    value="Actual"
+                                    readonly>
 
                             </div>
 
@@ -860,121 +666,11 @@
 </div>
 
 </body>
-{{-- </html> --}}
 
 @endsection
 
 @push('scripts')
 
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const inputMulai = document.getElementById('tanggalMulai');
-        
-        if (inputMulai) {
-            // 1. Set minimal tanggal awal = H+1 (Besok)
-            const besok = new Date();
-            besok.setDate(besok.getDate() + 1);
-            
-            // Format ke YYYY-MM-DD
-            const minDate = besok.toISOString().split('T')[0];
-            inputMulai.setAttribute('min', minDate);
-
-            // 2. Pasang event listener saat tanggal awal diubah
-            inputMulai.addEventListener('change', hitungSemua);
-
-            if (inputMulai.value) {
-                hitungSemua();
-            }
-        }
-    });
-
-    // Helper: Membersihkan format Rupiah (titik/koma) menjadi angka murni
-    function parseRupiah(val) {
-        if (!val) return 0;
-        return parseInt(val.toString().replace(/[^0-9]/g, '')) || 0;
-    }
-
-    // Helper: Format angka ke ribuan (contoh: 1000000 -> 1.000.000)
-    function formatRupiah(val) {
-        let number = parseRupiah(val);
-        return number ? number.toLocaleString('id-ID') : '0';
-    }
-
-    // Validasi input angka & batasan nominal maksimal
-    function validateInput(element) {
-        let maxLimit = parseInt(element.getAttribute('max')) || 1000000;
-        let nominal = parseRupiah(element.value);
-
-        // Batasi jika melebihi nilai max
-        if (nominal > maxLimit) {
-            nominal = maxLimit;
-        }
-
-        // Ubah tampilan input dengan format ribuan
-        element.value = nominal ? formatRupiah(nominal) : '';
-
-        // Kalkulasi ulang total seperti kalkulator
-        hitungSemua();
-    }
-
-    // Fungsi Utama: Menghitung Total Biaya
-    function hitungSemua() {
-        const inputMulai = document.getElementById('tanggalMulai');
-        const inputSelesai = document.getElementById('tanggalSelesai');
-        const info = document.getElementById('infoLamaPerjalanan');
-        
-        // Kunci UX: Jika tanggalMulai belum diisi, durasi dianggap 0 (biaya harian belum dihitung)
-        const durasiHari = parseInt("{{ $sppd->durasi ?? 1 }}");
-
-        if (!inputMulai || !inputMulai.value) return;
-
-        // A. HITUNG TANGGAL SELESAI
-        const tglMulai = new Date(inputMulai.value);
-        const tglSelesai = new Date(tglMulai);
-        tglSelesai.setDate(tglMulai.getDate() + (durasiHari - 1));
-
-        const yyyy = tglSelesai.getFullYear();
-        const mm = String(tglSelesai.getMonth() + 1).padStart(2, '0');
-        const dd = String(tglSelesai.getDate()).padStart(2, '0');
-        const formattedSelesai = `${yyyy}-${mm}-${dd}`;
-
-        if (inputSelesai) inputSelesai.value = formattedSelesai;
-        if (info) {
-            info.innerText = `Total perjalanan: ${durasiHari} Hari (${inputMulai.value} s/d ${formattedSelesai})`;
-            info.classList.remove('hidden');
-        }
-
-        // 1. Biaya Harian (Dinas + Makan + Hotel) x Durasi (Akan 0 jika tanggalMulai kosong)
-        const dinas = parseRupiah(document.getElementById('dinas')?.value);
-        const makan = parseRupiah(document.getElementById('makan')?.value);
-        const hotel = parseRupiah(document.getElementById('hotel')?.value);
-        const totalHarian = (dinas + makan + hotel) * durasiHari;
-
-        // 2. Biaya Opsional (BBM + Biaya Lainnya)
-        const bbm = parseRupiah(document.getElementById('bbm')?.value);
-        const transportLokal = parseRupiah(document.getElementById('transportLokal')?.value);
-        const visa = parseRupiah(document.getElementById('visa')?.value);
-        const fiskal = parseRupiah(document.getElementById('fiskal')?.value);
-        const airportTax = parseRupiah(document.getElementById('airportTax')?.value);
-        const parkirToll = parseRupiah(document.getElementById('parkirToll')?.value);
-        const entertainment = parseRupiah(document.getElementById('entertainment')?.value);
-        const biayaLainnya = parseRupiah(document.getElementById('biayaLainnya')?.value);
-
-        const totalOpsional = bbm + transportLokal + visa + fiskal + airportTax + parkirToll + entertainment + biayaLainnya;
-
-        // 3. Kalkulasi Grand Total
-        const grandTotal = totalHarian + totalOpsional;
-
-        // Update kolom Total dan Uang Muka
-        const inputTotal = document.getElementById('total');
-        const inputUangMuka = document.getElementById('uangMuka');
-
-        if (inputTotal) inputTotal.value = formatRupiah(grandTotal);
-        if (inputUangMuka) inputUangMuka.value = formatRupiah(grandTotal);
-    }
-</script> --}}
-
-    {{-- @vite('resources/js/ilpd.js') --}}
     @vite('resources/js/ilpd/form.js')
 
 @endpush

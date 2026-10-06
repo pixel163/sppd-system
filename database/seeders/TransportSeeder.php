@@ -46,11 +46,10 @@ class TransportSeeder extends Seeder
             ],
         ];
 
-        // Gunakan updateOrInsert agar saat re-seed tidak error duplicate entry
         foreach ($transports as $transport) {
             DB::table('transport')->updateOrInsert(
-                ['name' => $transport['name']], // Key acuan pengecekan
-                $transport                      // Data yang diinsert/update
+                ['name' => $transport['name']],
+                $transport                      
             );
         }
     }

@@ -82,6 +82,44 @@ function updateDropdownText(checkboxEl, placeholderDefault) {
 window.toggleDropdown = toggleDropdown;
 window.updateDropdownText = updateDropdownText;
 
+document.getElementById('tugas').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        
+        const cursorPosition = this.selectionStart;
+        const textBeforeCursor = this.value.substring(0, cursorPosition);
+        const textAfterCursor = this.value.substring(cursorPosition);
+        
+        // Ambil semua baris sebelum kursor
+        const lines = textBeforeCursor.split('\n');
+        const currentLine = lines[lines.length - 1];
+        
+        // Cek apakah baris dimulai dengan angka dan titik (contoh: "1. ")
+        const match = currentLine.match(/^(\d+)\.\s*(.*)/);
+        
+        if (match) {
+            const nextNumber = parseInt(match[1]) + 1;
+            
+            // Jika baris saat ini kosong (hanya nomor saja), hapus nomor saat Enter ditekan
+            if (match[2].trim() === '') {
+                const lastLineIndex = textBeforeCursor.lastIndexOf(currentLine);
+                this.value = textBeforeCursor.substring(0, lastLineIndex) + textAfterCursor;
+                this.selectionStart = this.selectionEnd = lastLineIndex;
+                return;
+            }
+            
+            // Sisipkan baris baru dengan nomor berikutnya
+            const newLine = `\n${nextNumber}. `;
+            this.value = textBeforeCursor + newLine + textAfterCursor;
+            this.selectionStart = this.selectionEnd = cursorPosition + newLine.length;
+        } else {
+            // Jika tidak ada format nomor, cukup buat baris baru biasa
+            this.value = textBeforeCursor + '\n' + textAfterCursor;
+            this.selectionStart = this.selectionEnd = cursorPosition + 1;
+        }
+    }
+});
+
 // ============================================================
 // 3. INITIALIZATION & EVENT LISTENERS
 // ============================================================

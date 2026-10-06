@@ -28,11 +28,10 @@ class KotaKategoriSeeder extends Seeder
             ],
         ];
 
-        // Gunakan updateOrInsert agar saat re-seed tidak error duplicate entry
         foreach ($kotakategoris as $kotakategori) {
             DB::table('kota_kategori')->updateOrInsert(
-                ['name' => $kotakategori['name']], // Key acuan pengecekan
-                $kotakategori                      // Data yang diinsert/update
+                ['name' => $kotakategori['name']],
+                $kotakategori                      
             );
         }
     }

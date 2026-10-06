@@ -16,26 +16,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Enums\SppdStatus;
+use App\Enums\DinasStatus;
+use App\Enums\SppdApprovalStatus;
 
 class SppdController extends Controller
 {
-    /**
-     * Menampilkan form SPPD
-     */
     public function create()
     {
         $user = Auth::user();
 
-        // Daftar status yang dianggap masih berjalan/aktif
-        $activeStatuses = ['Draft','Menunggu Approval'];
-        // $activeStatuses = ['Draft','Menunggu Approval', 'Disetujui'];
+        $activeStatuses = [SppdStatus::DRAFT, SppdStatus::PENDING];
+        // $activeStatuses = [SppdStatus::DRAFT, SppdStatus::PENDING, SppdStatus::APPROVED];
 
-        // Ambil HANYA 1 data pengajuan terbaru milik user
         $lastForm = Sppd::where('user_id', $user->id)
-            ->latest() // Mengurutkan berdasarkan created_at terbaru
+            ->latest()
             ->first();
 
-        // Cek jika data terakhir ada DAN statusnya termasuk dalam activeStatuses
         if ($lastForm && in_array($lastForm->status, $activeStatuses)) {
             return redirect()->route('dashboard')->with('error', 'Anda masih memiliki pengajuan yang sedang aktif/berproses.');
         }
@@ -48,23 +45,15 @@ class SppdController extends Controller
         ]);
     }
 
-    /**
-     * Menyimpan Form SPPD
-     */
     public function store(Request $request)
     {
-        // 1. Validasi Input Array & Conditional Manual Text
         $request->validate([
             'kota_id'            => ['required', 'exists:kota,id'],
             'durasi'             => ['required', 'integer', 'min:1', 'max:14'],
             'tugas'              => ['required', 'string'],
-            
-            // Validasi Multi-Select Keperluan
             'keperluan_id'       => ['required', 'array', 'min:1'],
             'keperluan_id.*'     => ['exists:keperluan,id'],
             'keperluan_lainnya'  => ['nullable', 'string', 'max:255'],
-
-            // Validasi Multi-Select Transportasi
             'transport_id'       => ['required', 'array', 'min:1'],
             'transport_id.*'     => ['exists:transport,id'],
             'transport_lainnya'  => ['nullable', 'string', 'max:255'],
@@ -72,49 +61,41 @@ class SppdController extends Controller
 
         $user = Auth::user();
 
-        // 2. Jalankan DB Transaction
         $sppd = DB::transaction(function () use ($request, $user) {
             
             $masterSla = now()->addHours(168);
 
-            // Generate Nomor Surat Dinas
             $nextDinasId = (Dinas::max('id') ?? 0) + 1;
             $noDinas = 'DINAS-' . date('Y') . '-' . str_pad($nextDinasId, 5, '0', STR_PAD_LEFT);
 
             $dinas = Dinas::create([
                 'user_id'  => $user->id,
                 'no_dinas' => $noDinas,
-                'status'   => 'Draft',
+                'status' => DinasStatus::DRAFT,
                 'overall_sla' => $masterSla,
                 'status_sla'  => 'IN_PROGRESS',
             ]);
 
-            // Simpan Data SPPD (Array ID otomatis di-cast ke JSON oleh Model)
             $sppdData = Sppd::create([
                 'dinas_id'          => $dinas->id,
-                'no_sppd'           => 'XXXX-HRD/RF/03-X',
+                'no_sppd'           => 'GDSK-HRD/FR/04-Y',
                 'user_id'           => $user->id,
                 'kota_id'           => $request->kota_id,
                 'durasi'            => $request->durasi,
                 'tugas'             => $request->tugas,
-                
-                // Kolom JSON & Teks Kustom Hybrid
                 'keperluan_id'      => $request->keperluan_id,
                 'keperluan_lainnya' => $request->keperluan_lainnya,
                 'transport_id'      => $request->transport_id,
                 'transport_lainnya' => $request->transport_lainnya,
-                
-                'status'            => 'Draft',
+                'status'            => SppdStatus::DRAFT,
             ]);
 
-            // $slaDueAt = now()->addHours(168);
             $form1SlaDueAt = now()->addHours(48);
 
-            // Record History Approval Awal
             SppdApproval::create([
                 'sppd_id'     => $sppdData->id,
                 'approver_id' => null,
-                'status'      => 'Draft',
+                'status'      => SppdApprovalStatus::DRAFT,
                 'signature'   => null,
                 'sla_due_at'  => $form1SlaDueAt,
                 'approved_at' => null,
@@ -123,7 +104,6 @@ class SppdController extends Controller
             return $sppdData;
         });
 
-        // 3. Redirect ke Halaman Berikutnya
         return redirect()->route('ilpd.create', ['sppd' => $sppd->id])
             ->with('success', 'Form SPPD berhasil disimpan. Silakan lanjut mengisi Form Perizinan.');
     }
@@ -132,7 +112,6 @@ class SppdController extends Controller
     {
         $sppd = Sppd::findOrFail($id);
 
-        // Ambil data pendukung untuk dropdown pilihan
         $users      = User::select('id', 'name', 'nik')->get();
         $kotas      = Kota::all();
         $keperluans = Keperluan::all();
@@ -141,12 +120,8 @@ class SppdController extends Controller
         return view('sppd.edit', compact('sppd', 'users', 'kotas', 'keperluans', 'transports'));
     }
 
-    /**
-     * Memproses update data SPPD.
-     */
     public function update(Request $request, $id)
     {
-        // 1. Validasi Input Data
         $validated = $request->validate([
             'user_id'      => 'required|exists:users,id',
             'kota_id'      => 'required|exists:kotas,id',
@@ -155,7 +130,6 @@ class SppdController extends Controller
             'transport_id' => 'required|exists:transports,id',
             'tugas'        => 'required|string',
         ], [
-            // Custom Error Messages (Opsional)
             'user_id.required'      => 'Pegawai wajib dipilih.',
             'kota_id.required'      => 'Kota tujuan wajib dipilih.',
             'durasi.required'       => 'Durasi waktu wajib diisi.',
@@ -164,58 +138,38 @@ class SppdController extends Controller
             'tugas.required'        => 'Deskripsi tugas wajib diisi.',
         ]);
 
-        // 2. Cari Data SPPD
         $sppd = Sppd::findOrFail($id);
 
-        // 3. Update Data di Database
         $sppd->update($validated);
 
-        // 4. Redirect Kembali dengan Pesan Sukses
         return redirect('/dashboard')->with('success', 'Data SPPD berhasil diperbarui');
     }
 
     public function shows($id)
     {
-        // Load SPPD beserta relasi yang dibutuhkan (sesuaikan nama relasi di Model)
-        // $sppd = Sppd::with(['user', 'ilpd', 'dinas', 'kota'])->findOrFail($id);
-
         $sppd = Sppd::with([
             'user.golongan', 
             'dinas', 
             'kota', 
-            // 'keperluan',
             'ilpd.dinas', 
-            'ilpd.detail_ilpd' // Ambil detail_ilpd dari relasi ilpd milik sppd
+            'ilpd.detail_ilpd'
         ])->findOrFail($id);
 
-        // 2. Ambil data ilpd dari relasi $sppd (Jika ada, ambil. Jika belum ada, nilainya null)
         $ilpd = $sppd->ilpd;
 
-        // 3. CARA CEK DEBUG YANG BENAR:
-        // Bungkus dalam 1 dd() agar dua-duanya tampil di layar sekaligus!
-        // dd($sppd, $ilpd);
-
-        // return view('approval.show', compact('sppd','ilpd'));
         return view('sppd.approve', compact('sppd','ilpd'));
-        // return view('sppd.approve', compact('sppd'));
     }
 
-    /**
-     * Tampilkan detail SPPD untuk diproses oleh Manager.
-     */
     public function show($id)
     {
-        // Load SPPD beserta relasi yang dibutuhkan (sesuaikan nama relasi di Model)
-
         $sppd = Sppd::with([
             'user.golongan', 
             'dinas', 
             'kota', 
             'ilpd.dinas', 
-            'ilpd.detail_ilpd' // Ambil detail_ilpd dari relasi ilpd milik sppd
+            'ilpd.detail_ilpd'
         ])->findOrFail($id);
 
-        // 2. Ambil data ilpd dari relasi $sppd (Jika ada, ambil. Jika belum ada, nilainya null)
         $ilpd = $sppd->ilpd;
 
         $kotaKategoriId = $sppd->kota->kota_kategori_id ?? null;
@@ -230,26 +184,18 @@ class SppdController extends Controller
         return view('approval.manager', compact('sppd','ilpd','transports','keperluans','tarifs'));
     }
 
-    /**
-     * Proses Menyetujui SPPD.
-     */
     public function approve(Request $request, $sppdId)
     {
         $user = Auth::user();
 
-        // 1. Validasi TTD Manager
         if (!$user->signature) {
             return back()->with('error', 'Anda belum mengatur TTD di Profil. Silakan unggah TTD terlebih dahulu.');
         }
 
-        // 2. Ambil data SPPD beserta relasi ILPD & approval aktifnya
         $sppd = Sppd::with(['ilpd', 'approval'])->findOrFail($sppdId);
 
         DB::transaction(function () use ($sppd, $user) {
-            // --- A. PROSES SPPD (Form 1) ---
-            // Update status master SPPD & status induk Dinas
             $sppd->update(['status' => 'Disetujui']);
-            // $sppd->update(['status' => 'Sedang Diproses']);
             
             if ($sppd->dinas) {
                 $sppd->dinas->update(['status' => 'Sedang Diproses']);
@@ -257,42 +203,24 @@ class SppdController extends Controller
 
             $lastApproval = SppdApproval::where('sppd_id', $sppd->id)->latest()->first();
 
-            // SppdApproval::create([
-            //     'sppd_id'     => $sppd->id,
-            //     'approver_id' => $user->id,
-            //     'status'      => 'Disetujui',
-            //     'signature'   => $user->signature,
-            //     'sla_due_at'  => $sppd->dinas->overall_sla,
-            //     'approved_at' => now(),
-            // ]);
-
             SppdApproval::create([
                 'sppd_id'     => $sppd->id,
                 'approver_id' => $user->id,
                 'status'      => 'Disetujui',
-                // 'status'      => 'Sedang Diproses',
                 'signature'   => $user->signature,
                 'sla_due_at'  => $sppd->dinas->overall_sla,
                 'approved_at' => now(),
             ]);
 
-            // --- B. PROSES ILPD (Form 2) ---
             if ($sppd->ilpd) {
-                // Update status ILPD
                 $sppd->ilpd->update(['status' => 'Sedang Diproses']);
 
-                // Buat rekord Approval ILPD baru & Mulai Timer SLA baru (misal 24 jam ke depan)
                 IlpdApproval::create([
                     'ilpd_id'     => $sppd->ilpd->id,
-                    // 'approver_id' => $user->id,
-                    // 'status'      => 'Disetujui',
                     'approver_id' => null,
                     'status'      => 'Sedang Diproses',
-                    // 'signature'   => $user->signature,
                     'signature'   => null,
                     'sla_due_at'  => null,
-                    // 'sla_due_at'  => $sppd->dinas->overall_sla,
-                    // 'approved_at' => now(),
                     'approved_at' => null,
                 ]);
             }
@@ -301,21 +229,35 @@ class SppdController extends Controller
         return redirect()->route('dashboard')->with('success', 'Dokumen SPPD berhasil disetujui dan SLA ILPD telah diaktifkan.');
     }
 
+    public function reject(Request $request, $id)
+    {
+        // Validasi alasan penolakan jika pakai Modal
+        $request->validate([
+            'alasan_penolakan' => 'required|string|max:500',
+        ]);
+
+        $sppd = Sppd::findOrFail($id);
+
+        // Update status dan simpan alasan
+        $sppd->update([
+            'status' => 'Ditolak',
+            // 'alasan_penolakan' => $request->alasan_penolakan, // Pastikan kolom ini ada di migration ilpd jika ingin mencatatnya
+        ]);
+
+        return redirect()->back()->with('success', 'Pengajuan SPPD berhasil ditolak.');
+    }
+
     public function approvals(Request $request, $sppdId)
     {
         $user = Auth::user();
 
-        // 1. Validasi TTD Manager
         if (!$user->signature) {
             return back()->with('error', 'Anda belum mengatur TTD di Profil. Silakan unggah TTD terlebih dahulu.');
         }
 
-        // 2. Ambil data SPPD beserta relasi ILPD & approval aktifnya
         $sppd = Sppd::with(['ilpd', 'approval'])->findOrFail($sppdId);
 
         DB::transaction(function () use ($sppd, $user) {
-            // --- A. PROSES SPPD (Form 1) ---
-            // Update status master SPPD & status induk Dinas
             $sppd->update(['status' => 'Disetujui']);
             
             if ($sppd->dinas) {
@@ -332,23 +274,16 @@ class SppdController extends Controller
                 'approved_at' => now(),
             ]);
 
-            // --- B. PROSES ILPD (Form 2) ---
             if ($sppd->ilpd) {
-                // Update status ILPD
                 $sppd->ilpd->update(['status' => 'Sedang Diproses']);
 
-                // Buat rekord Approval ILPD baru & Mulai Timer SLA baru (misal 24 jam ke depan)
                 IlpdApproval::create([
                     'ilpd_id'     => $sppd->ilpd->id,
                     'approver_id' => $user->id,
-                    // 'status'      => 'Disetujui',
-                    // 'approver_id' => null, // Belum ada yang approve ILPD
                     'status'      => 'Sedang Diproses',
-                    // 'signature'   => $user->signature,
                     'signature'   => null,
-                    'sla_due_at'  => now()->addHours(24), // Set deadline SLA Form 2
+                    'sla_due_at'  => now()->addHours(24),
                     'approved_at' => now(),
-                    // 'approved_at' => null,
                 ]);
             }
         });

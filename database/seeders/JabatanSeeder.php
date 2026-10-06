@@ -34,11 +34,10 @@ class JabatanSeeder extends Seeder
             ],
         ];
 
-        // Gunakan updateOrInsert agar saat re-seed tidak error duplicate entry
         foreach ($jabatans as $jabatan) {
             DB::table('jabatan')->updateOrInsert(
-                ['name' => $jabatan['name']], // Key acuan pengecekan
-                $jabatan                      // Data yang diinsert/update
+                ['name' => $jabatan['name']],
+                $jabatan                      
             );
         }
     }

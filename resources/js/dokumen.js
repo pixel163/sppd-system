@@ -606,10 +606,6 @@ function printItem(type, doc) {
 window.printItem = printItem;
 
 function generateSppdLayout(doc) {
-    // const sppd = doc.sppd || {};
-    // const user = doc.user || {};
-    // const kota = doc.kota || {};
-
     const today = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', {
         day: 'numeric',
@@ -636,6 +632,7 @@ function generateSppdLayout(doc) {
 
     // 4. Ambil Nama Manager (panggil relasi 'sppd_approver' yang baru kamu buat)
     const managerName = managerApp.sppd_approver?.name || '........................';
+    const approveJabatan = managerApp.sppd_approver?.jabatan?.name || '........................';
 
     console.log("=== managername ===", managerName);
 
@@ -643,6 +640,27 @@ function generateSppdLayout(doc) {
     const pemohonUser = doc.user || {};
     const pemohonSignature = pemohonUser.signature ? `/storage/${pemohonUser.signature}` : null;
     const pemohonName = pemohonUser.name || '........................';
+    const pemohonJabatan = pemohonUser.jabatan?.name || '........................';
+
+    const tugasArray = doc.tugas ? doc.tugas.split(/\r?\n/) : [];
+
+    // Buat HTML untuk 3 baris list tugas (1, 2, 3)
+    const tugasListHtml = `
+        <div class="tugas-list">
+            <div class="tugas-item">
+                <span class="nomor">1.</span>
+                <div class="garis-tugas">${tugasArray[0] || ''}</div>
+            </div>
+            <div class="tugas-item">
+                <span class="nomor">2.</span>
+                <div class="garis-tugas">${tugasArray[1] || ''}</div>
+            </div>
+            <div class="tugas-item">
+                <span class="nomor">3.</span>
+                <div class="garis-tugas">${tugasArray[2] || ''}</div>
+            </div>
+        </div>
+    `;
 
     // Masukkan kode HTML ILPD kamu di dalam template string backtick (`)
     return `
@@ -700,11 +718,14 @@ function generateSppdLayout(doc) {
 
                 .kop-logo img {
                     max-width: 80px;
+                    max-height: 80px;
                     height: auto;
+                    display: block;
+                    margin: 0 auto;
                 }
 
                 .kop-perusahaan {
-                    width: 55%;
+                    width: 50%;
                     text-align: center;
                 }
 
@@ -721,7 +742,7 @@ function generateSppdLayout(doc) {
                 }
 
                 .kop-nomor {
-                    width: 25%;
+                    width: 30%;
                     text-align: right;
                     font-size: 9pt;
                 }
@@ -777,23 +798,50 @@ function generateSppdLayout(doc) {
 
                 .label-col {
                     width: 130px;
+                    vertical-align: top; /* Ditambahkan agar label sejajar di atas saat teks tugas panjang */
+                    padding-top: 4px;
                 }
 
                 .colon-col {
                     width: 15px;
                     text-align: center;
+                    vertical-align: top;
+                    padding-top: 4px;
                 }
 
+                /* Mengubah box/kotak menjadi garis panjang di bawah */
                 .value-box {
-                    border: 1px solid #94a3b8;
-                    border-radius: 4px;
-                    padding: 6px 10px;
+                    border: none;
+                    border-bottom: 1px solid #000; /* Garis pemisah bawah hitam */
+                    border-radius: 0;
+                    padding: 4px 6px;
                     min-height: 18px;
-                    background-color: #fafafa;
+                    background-color: transparent;
+                    width: 100%;
                 }
 
-                .value-box.large {
-                    min-height: 80px;
+                /* Style khusus untuk list Tugas bernomor */
+                .tugas-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 6px;
+                }
+
+                .tugas-item {
+                    display: flex;
+                    align-items: flex-end;
+                }
+
+                .tugas-item .nomor {
+                    width: 20px;
+                    font-weight: normal;
+                }
+
+                .tugas-item .garis-tugas {
+                    flex-grow: 1;
+                    border-bottom: 1px solid #000;
+                    padding-left: 5px;
+                    min-height: 18px;
                 }
 
                 /* TANGGAL & TANDA TANGAN */
@@ -802,7 +850,7 @@ function generateSppdLayout(doc) {
                 }
 
                 .tanggal-surat {
-                    margin-bottom: 15px;
+                    margin-bottom: 30px;
                 }
 
                 .ttd-table {
@@ -810,23 +858,55 @@ function generateSppdLayout(doc) {
                     border-collapse: collapse;
                     text-align: center;
                     table-layout: fixed;
+                    font-size: 9pt;
                 }
 
                 .ttd-table th {
+                    border: 1px solid #000;
+                    padding: 6px;
                     font-weight: bold;
-                    font-size: 9.5pt;
-                    padding-bottom: 60px; /* Space untuk Tanda Tangan */
-                    vertical-align: top;
+                    background-color: #f8fafc;
                 }
 
+                /* Cell Tanda Tangan */
                 .ttd-table td {
-                    font-size: 9.5pt;
+                    border: 1px solid #000;
+                    padding: 6px 4px;
                     vertical-align: bottom;
                 }
 
-                .nama-ttd {
-                    font-weight: bold;
-                    text-decoration: underline;
+                /* Area Gambar Tanda Tangan (Diperbesar) */
+                .signature-box {
+                    height: 90px; /* Dipertinggi dari 50px agar area TTD lebih leluasa */
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .signature-box img {
+                    max-height: 80px; /* Diperbesar dari 45px */
+                    max-width: 120px;
+                    object-fit: contain;
+                }
+
+                /* Detail Nama & Jabatan */
+                .ttd-info {
+                    text-align: left;
+                    font-size: 8.5pt;
+                    line-height: 1.4;
+                }
+
+                .ttd-info-center {
+                    text-align: center;
+                    font-size: 8.5pt;
+                    line-height: 1.4;
+                }
+
+                /* Garis Pemisah Tipis antara Nama dan Jabatan */
+                .ttd-divider {
+                    border-top: 1px solid #000; /* Garis pemisah tipis hitam */
+                    margin-top: 4px;
+                    padding-top: 4px;
                 }
 
                 /* CSS KHUSUS PRINT */
@@ -880,18 +960,15 @@ function generateSppdLayout(doc) {
                 <!-- 1. KOP SURAT -->
                 <div class="kop-surat">
                     <div class="kop-col kop-logo">
-                        <!-- Ganti src dengan logo perusahaan kamu -->
-                        <img src="https://via.placeholder.com/80x80?text=LOGO" alt="Logo">
+                        <img src="/images/logo.png" alt="Logo Perusahaan">
                     </div>
                     <div class="kop-col kop-perusahaan">
-                        <h2>PT. NAMA PERUSAHAAN ANDA</h2>
-                        <p>Jl. Jendral Sudirman No. 123, Jakarta Selatan</p>
-                        <p>Telp: (021) 555-0192 | Email: info@perusahaan.com</p>
+                        <h4>PT. GOBEL DHARMA SARANA KARYA</h4>
                     </div>
                     <div class="kop-col kop-nomor">
                         <div class="nomor-box">
-                            <div><strong>No. Doc:</strong> SPPD/2026/001</div>
-                            <div><strong>Revisi:</strong> 00</div>
+                            <div><strong>No. Dok:</strong> GDSK-HRD/FR/04-Y</div>
+                            <div><strong>Revisi:</strong> 00 <03></div>
                         </div>
                     </div>
                 </div>
@@ -953,9 +1030,7 @@ function generateSppdLayout(doc) {
                         <td class="label-col">Tugas</td>
                         <td class="colon-col">:</td>
                         <td>
-                            <div class="value-box large">
-                                ${doc.tugas || doc.tugas || '-'}
-                            </div>
+                            ${tugasListHtml}
                         </td>
                     </tr>
                 </table>
@@ -967,45 +1042,71 @@ function generateSppdLayout(doc) {
                     </div>
 
                     <table class="ttd-table">
-                        <tr>
-                            <th>Pemohon</th>
-                            <th>Atasan Langsung</th>
-                            <th>HR / GA</th>
-                            <th>Finance</th>
-                            <th>Direksi</th>
-                        </tr>
-                        <tr>
-                            <td style="vertical-align: bottom; text-align: center;">
-                                <div style="height: 60px; display: flex; align-items: center; justify-content: center;">
-                                    ${pemohonSignature 
-                                        ? `<img src="${pemohonSignature}" style="max-height: 55px; max-width: 120px; object-fit: contain;" />` 
-                                        : ''}
-                                </div>
-                                <div class="nama-ttd">( ${pemohonName} )</div>
-                                <div>Staf</div>
-                            </td>
-                            <td style="vertical-align: bottom; text-align: center;">
-                                <div style="height: 60px; display: flex; align-items: center; justify-content: center;">
-                                    ${managerSignature 
-                                        ? `<img src="${managerSignature}" style="max-height: 55px; max-width: 120px; object-fit: contain;" />` 
-                                        : ''}
-                                </div>
-                                <div class="nama-ttd">( ${managerName} )</div>
-                                <div>Manager / Team Lead</div>
-                            </td>
-                            <td>
-                                <div class="nama-ttd">( ........................ )</div>
-                                <div>HR Manager</div>
-                            </td>
-                            <td>
-                                <div class="nama-ttd">( ........................ )</div>
-                                <div>Finance Dept</div>
-                            </td>
-                            <td>
-                                <div class="nama-ttd">( ........................ )</div>
-                                <div>Direktur</div>
-                            </td>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">Yang Ditugaskan</th>
+                                <th style="width: 20%;">Yang memberi Tugas</th>
+                                <th colspan="3" style="width: 60%;">Disetujui Oleh</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Baris Area Tanda Tangan / Gambar -->
+                            <tr>
+                                <td>
+                                    <div class="signature-box">
+                                        ${pemohonSignature ? `<img src="${pemohonSignature}" alt="TTD Pemohon" />` : ''}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="signature-box">
+                                        ${managerSignature ? `<img src="${managerSignature}" alt="TTD Atasan" />` : ''}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="signature-box"></div>
+                                </td>
+                                <td>
+                                    <div class="signature-box"></div>
+                                </td>
+                                <td>
+                                    <div class="signature-box"></div>
+                                </td>
+                            </tr>
+
+                            <!-- Baris Nama & Jabatan -->
+                            <tr>
+                                <td>
+                                    <div class="ttd-info">
+                                        <div>Nama : ${pemohonName || ''}</div>
+                                        <div class="ttd-divider">Jabatan : ${pemohonJabatan || ''}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="ttd-info">
+                                        <div>Nama : ${managerName || ''}</div>
+                                        <div class="ttd-divider">Jabatan : ${approveJabatan || ''}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="ttd-info-center">
+                                        <div>( .................... )</div>
+                                        <div class="ttd-divider">GM HrGA & IT</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="ttd-info-center">
+                                        <div>( .................... )</div>
+                                        <div class="ttd-divider">Direktur</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="ttd-info-center">
+                                        <div>( .................... )</div>
+                                        <div class="ttd-divider">Direktur</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -1027,14 +1128,7 @@ function generateIlpdLayout(doc) {
     console.log("ISI DATA Kota:", doc?.sppd?.kota);
     const ilpd = doc || {};
     const sppd = doc.sppd || {};
-    // const kota = sppd.kota || {};
-    // const user = doc.user || {};
     const perkiraan = doc.detail_ilpd || {};
-    // const realisasi = doc.realisasi_biaya || {};
-    // // Ambil data tiket jika ada
-    // const tiketList = ilpd.tikets || ilpd.tiket || [];
-    // const tiket = Array.isArray(tiketList) ? (tiketList[0] || {}) : tiketList;
-
     const today = new Date();
     const formattedDate = new Intl.DateTimeFormat('id-ID', {
         day: 'numeric',

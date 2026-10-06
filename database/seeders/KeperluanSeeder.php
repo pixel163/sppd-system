@@ -40,11 +40,10 @@ class KeperluanSeeder extends Seeder
             ],
         ];
 
-        // Gunakan updateOrInsert agar saat re-seed tidak error duplicate entry
         foreach ($keperluans as $keperluan) {
             DB::table('keperluan')->updateOrInsert(
-                ['name' => $keperluan['name']], // Key acuan pengecekan
-                $keperluan                      // Data yang diinsert/update
+                ['name' => $keperluan['name']],
+                $keperluan                      
             );
         }
     }

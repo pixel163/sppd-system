@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\IlpdApprovalStatus;
 
 class IlpdApproval extends Model
 {
@@ -20,6 +21,7 @@ class IlpdApproval extends Model
 
     protected $casts = [
         'approved_at' => 'datetime',
+        'status' => IlpdApprovalStatus::class,
     ];
 
     public function ilpd(): BelongsTo
