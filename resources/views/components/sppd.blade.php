@@ -297,7 +297,8 @@
                     <div class="flex-1">
                         <input 
                             type="text" 
-                            value="{{ $sppd->kota->name ?? '-' }}" 
+                            {{-- value="{{ $sppd->kota->name ?? '-' }}" --}}
+                            value="{{ $sppd->kota_dan_unit }}"
                             class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 text-[14px] text-slate-600" 
                             disabled>
                     </div>
@@ -305,7 +306,7 @@
 
                 {{-- Waktu / Durasi --}}
                 <div class="form-row flex gap-6 py-3">
-                    <label for="waktu" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                    <label for="durasi" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
                         Waktu
                     </label>
                     <div class="flex-1">
@@ -317,11 +318,9 @@
                                 inputmode="numeric"
                                 maxlength="2"
                                 value="{{ $sppd->durasi }}"
-                                class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 pr-20 text-[14px] text-slate-600"
+                                class="form-input w-full rounded-lg border border-[#e2e8f0] bg-slate-50 px-4 py-2.5 pr-20 text-[14px] text-slate-600 focus:border-blue-500 focus:outline-none"
                                 onkeydown="cekkunci(event)"
-                                oninput="validasiWaktu(this)"
-                                {{-- oninput="validasiWaktu(this)"> --}}
-                                disabled>
+                                oninput="validasiWaktu(this)">
                             <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[13px] text-[#94a3b8]">
                                 hari
                             </span>
@@ -365,15 +364,27 @@
                         Tugas
                     </label>
                     <div class="flex-1">
+                        <textarea
+                            id="tugas"
+                            name="tugas"
+                            rows="3"
+                            class="form-textarea w-full rounded-lg border border-[#e2e8f0] bg-slate-50 p-3 text-[14px] text-slate-600 focus:border-blue-500 focus:outline-none resize-none">{{ $sppd->tugas }}</textarea>
+                    </div>
+                </div>
+                {{-- <div class="form-row flex gap-6 py-3">
+                    <label for="tugas" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                        Tugas
+                    </label>
+                    <div class="flex-1">
                         
                         <textarea
                             id="tugas"
                             class="form-textarea w-full bg-transparent text-[14px] text-slate-600 outline-none resize-none"
-                            {{-- class="form-textarea w-full bg-transparent text-[14px] text-slate-600 outline-none resize-none">{{ $sppd->tugas }}</textarea> --}}
+                            class="form-textarea w-full bg-transparent text-[14px] text-slate-600 outline-none resize-none">{{ $sppd->tugas }}</textarea>
                             disabled>{{ $sppd->tugas }}</textarea>
 
                     </div>
-                </div>
+                </div> --}}
 
             </div>
 

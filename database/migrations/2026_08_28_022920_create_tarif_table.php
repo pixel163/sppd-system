@@ -14,13 +14,15 @@ return new class extends Migration
         Schema::create('tarif', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('golongan_id')
-                ->constrained('golongan')
-                ->restrictOnDelete();
+            // $table->foreignId('golongan_id')
+            //     ->constrained('golongan')
+            //     ->restrictOnDelete();
+            $table->foreignId('golongan_id')->nullable()->constrained('golongan')->restrictOnDelete();
 
-            $table->foreignId('kota_kategori_id')
-                ->constrained('kota_kategori')
-                ->restrictOnDelete();
+            // $table->foreignId('kota_kategori_id')
+            //     ->constrained('kota_kategori')
+            //     ->restrictOnDelete();
+            $table->foreignId('kota_kategori_id')->nullable()->constrained('kota_kategori')->restrictOnDelete();
 
             $table->decimal('makan', 15, 2);
             $table->decimal('dinas', 15, 2);
@@ -31,10 +33,10 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->unique([
-                'golongan_id',
-                'kota_kategori_id',
-            ]);
+            // $table->unique([
+            //     'golongan_id',
+            //     'kota_kategori_id',
+            // ]);
         });
     }
 

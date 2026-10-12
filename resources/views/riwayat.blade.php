@@ -153,7 +153,7 @@
                     {{-- DATA --}}
                     <div class="divide-y divide-slate-100">
                         @foreach ($daftarDinas as $dinas)
-                            @php
+                            {{-- @php
                                 $sla = $dinas->sla_info;
                                 
                                 // Dynamic styling untuk badge status utama
@@ -161,6 +161,28 @@
                                     'approved', 'disetujui' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
                                     'rejected', 'ditolak'   => 'bg-rose-50 text-rose-600 border-rose-200',
                                     default                 => 'bg-amber-50 text-amber-600 border-amber-200',
+                                };
+                            @endphp --}}
+
+                            @php
+                                $sla = $dinas->sla_info;
+
+                                $status = $dinas->status?->value;
+
+                                $statusClass = match($status) {
+                                    3 => 'bg-emerald-50 text-emerald-600 border-emerald-200', // Approved
+                                    5 => 'bg-rose-50 text-rose-600 border-rose-200',           // Ditolak
+                                    default => 'bg-amber-50 text-amber-600 border-amber-200',
+                                };
+
+                                $statusLabel = match($status) {
+                                    0 => 'DRAFT',
+                                    1 => 'MENUNGGU APPROVAL',
+                                    2 => 'SEDANG DIPROSES',
+                                    3 => 'DISETUJUI',
+                                    4 => 'SELESAI',
+                                    5 => 'DITOLAK',
+                                    default => '-',
                                 };
                             @endphp
 
@@ -187,8 +209,11 @@
 
                                 {{-- 4. Status Utama --}}
                                 <div>
-                                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
+                                    {{-- <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
                                         {{ str_replace('_', ' ', $dinas->status ?? '-') }}
+                                    </span> --}}
+                                    <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium {{ $statusClass }}">
+                                        {{ $statusLabel }}
                                     </span>
                                 </div>
 

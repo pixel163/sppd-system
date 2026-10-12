@@ -16,25 +16,25 @@ class GolonganSeeder extends Seeder
         $golongans = [
             [
                 'name'        => 'I',
-                'created_by'  => 3,
+                'created_by'  => 1,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
             [
                 'name'        => 'II',
-                'created_by'  => 3,
+                'created_by'  => 1,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
             [
                 'name'        => 'III',
-                'created_by'  => 3,
+                'created_by'  => 1,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
             [
                 'name'        => 'IV',
-                'created_by'  => 3,
+                'created_by'  => 1,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],

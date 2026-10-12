@@ -18,21 +18,26 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('nik')->unique();
 
-            $table->foreignId('role_id')
-                ->constrained('role')
-                ->restrictOnDelete();
+            $table->foreignId('role_id')->nullable()->constrained('role')->restrictOnDelete();
+            $table->foreignId('department_id')->nullable()->constrained('department')->restrictOnDelete();
+            $table->foreignId('jabatan_id')->nullable()->constrained('jabatan')->restrictOnDelete();
+            $table->foreignId('golongan_id')->nullable()->constrained('golongan')->restrictOnDelete();
 
-            $table->foreignId('department_id')
-                ->constrained('department')
-                ->restrictOnDelete();
+            // $table->foreignId('role_id')
+            //     ->constrained('role')
+            //     ->restrictOnDelete();
 
-            $table->foreignId('jabatan_id')
-                ->constrained('jabatan')
-                ->restrictOnDelete();
+            // $table->foreignId('department_id')
+            //     ->constrained('department')
+            //     ->restrictOnDelete();
 
-            $table->foreignId('golongan_id')
-                ->constrained('golongan')
-                ->restrictOnDelete();
+            // $table->foreignId('jabatan_id')
+            //     ->constrained('jabatan')
+            //     ->restrictOnDelete();
+
+            // $table->foreignId('golongan_id')
+            //     ->constrained('golongan')
+            //     ->restrictOnDelete();
 
             $table->string('signature')->nullable();
             $table->timestamp('email_verified_at')->nullable();

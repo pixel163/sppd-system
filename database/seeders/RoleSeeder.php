@@ -15,22 +15,22 @@ class RoleSeeder extends Seeder
         $roles = [
             [
                 'name'        => 'Admin',
-                'created_by'  => 3,
+                'created_by'  => 1,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
             [
-                'name'        => 'Requester',
-                'created_by'  => 3,
+                'name'        => 'User',
+                'created_by'  => 1,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
-            [
-                'name'        => 'Approver',
-                'created_by'  => 3,
-                'created_at'  => now(),
-                'updated_at'  => now(),
-            ],
+            // [
+            //     'name'        => 'Approver',
+            //     'created_by'  => 3,
+            //     'created_at'  => now(),
+            //     'updated_at'  => now(),
+            // ],
         ];
 
         foreach ($roles as $role) {

@@ -60,7 +60,8 @@
                             id="kota"
                             name="kota"
                             type="text"
-                            value="{{ $sppd->kota->name }}"
+                            {{-- value="{{ $sppd->kota->name }}" --}}
+                            value="{{ $sppd->kota_dan_unit }}"
                             class="form-input flex-1"
                             readonly>
                     </div>
@@ -522,8 +523,11 @@
                             <div class="currency-wrapper w-[220px]">
                                 <span class="currency-prefix">Rp</span>
                                 <input
-                                    id="parkirToll"
+                                    {{-- id="parkirToll"
                                     name="parkir&toll"
+                                    type="text" --}}
+                                    id="parkir_toll"
+                                    name="parkir_toll"
                                     type="text"
                                     inputmode="numeric"
                                     max="1000000"
@@ -548,7 +552,7 @@
 
                                 <input
                                     id="entertainment"
-                                    name="entertaiment"
+                                    name="entertainment"
                                     type="text"
                                     inputmode="numeric"
                                     max="1000000"
@@ -563,12 +567,15 @@
                         {{-- DLL --}}
                         <div class="expense-row mb-3 flex items-center justify-between">
 
-                            <input
+                            {{-- <input
                                 id="dll"
                                 name="dll"
                                 type="text"
                                 placeholder="Dll..."
-                                class="w-[120px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[13px] outline-none">
+                                class="w-[120px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[13px] outline-none"> --}}
+                            <span class="text-[13px]">
+                                Lain-lain
+                            </span>
 
                             <div class="currency-wrapper w-[220px]">
 
@@ -577,7 +584,10 @@
                                 </span>
 
                                 <input
-                                    id="biayaLainnya"
+                                    {{-- id="biayaLainnya"
+                                    name="dll"
+                                    type="text" --}}
+                                    id="dll"
                                     name="dll"
                                     type="text"
                                     max="1000000"

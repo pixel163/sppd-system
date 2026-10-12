@@ -7,6 +7,7 @@ use App\Models\Sppd;
 use App\Models\Ilpd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Enums\DinasStatus;
 
 class DokumenController extends Controller
 {
@@ -16,7 +17,7 @@ class DokumenController extends Controller
         $user   = auth()->user();
 
         $query = Dinas::with(['sppd.kota', 'ilpd'])
-            ->whereIn('status', ['Disetujui', 'Selesai']);
+            ->whereIn('status', [DinasStatus::DISETUJUI, DinasStatus::SELESAI]);
         
         if ($user?->jabatan?->name !== 'HRGA') { 
             $query->whereHas('sppd', function ($q) use ($userId) {

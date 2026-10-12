@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Jabatan extends Model
 {
     protected $fillable = [
+        'golongan_id',
         'name',
         'created_by',
         'is_active',

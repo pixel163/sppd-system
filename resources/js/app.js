@@ -1,6 +1,15 @@
 import './bootstrap';
 import { createIcons, icons } from 'lucide';
 
+import './sppd/form.js';
+// import './sppd-form';
+
+import Alpine from 'alpinejs';
+
+window.Alpine = Alpine;
+
+Alpine.start();
+
 const profileToggle = document.getElementById('profileToggle');
 const profileMenu = document.getElementById('profileMenu');
 

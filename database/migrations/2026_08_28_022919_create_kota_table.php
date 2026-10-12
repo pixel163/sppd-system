@@ -13,11 +13,16 @@ return new class extends Migration
     {
         Schema::create('kota', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('area_id')
+                ->constrained('area')
+                ->restrictOnDelete();
+
+            $table->string('name')->unique();
+
             $table->foreignId('kota_kategori_id')
                 ->constrained('kota_kategori')
                 ->restrictOnDelete();
 
-            $table->string('name')->unique();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

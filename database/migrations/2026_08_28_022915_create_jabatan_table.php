@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('jabatan', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('golongan_id')
+                ->constrained('golongan')
+                ->restrictOnDelete();
             $table->string('name')->unique();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->boolean('is_active')->default(true);

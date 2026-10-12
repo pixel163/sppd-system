@@ -42,8 +42,8 @@
                 @forelse($tarifs as $index => $item)
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="px-6 py-4 text-slate-500">{{ $tarifs->firstItem() + $index }}</td>
-                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->golongan->name }}</td>
-                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->kotaKategori->name }}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->golongan->name?? '-' }}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->kotaKategori->name?? '-' }}</td>
                         <td class="px-6 py-4 font-medium text-slate-800">{{ $item->makan }}</td>
                         <td class="px-6 py-4 font-medium text-slate-800">{{ $item->dinas }}</td>
                         <td class="px-6 py-4 font-medium text-slate-800">{{ $item->hotel }}</td>

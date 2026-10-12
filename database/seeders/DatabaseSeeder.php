@@ -231,15 +231,16 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             DepartmentSeeder::class,
-            JabatanSeeder::class,
             GolonganSeeder::class,
+            JabatanSeeder::class,
             TransportSeeder::class,
             KeperluanSeeder::class,
-            UserSeeder::class,
-            KotaKategoriSeeder::class,
-            KotaSeeder::class,
+            // UserSeeder::class,
+            // AreaSeeder::class,
+            // KotaKategoriSeeder::class,
+            // KotaSeeder::class,
             TarifSeeder::class,
-            // AkunSeeder::class,
+            AkunSeeder::class,
         ]);
     }
 }

@@ -101,7 +101,8 @@
                             id="kota"
                             name="kota"
                             type="text"
-                            value="{{ $ilpd->sppd->kota->name ?? '-' }}"
+                            {{-- value="{{ $ilpd->sppd->kota->name ?? '-' }}" --}}
+                            value="{{ $sppd->kota_dan_unit }}"
                             class="form-input flex-1"
                             readonly>
                     </div>
@@ -323,11 +324,20 @@
                                 Rp
                             </span>
 
+                            {{-- <input
+                                id="bbm"
+                                name="bbm"
+                                type="text"
+                                inputmode="numeric"
+                                placeholder="Masukkan jumlah biaya BBM"
+                                class="currency-input expense-input"
+                                oninput="formatRupiah(this); hitungTotal()"> --}}
                             <input
                                 id="bbm"
                                 name="bbm"
                                 type="text"
                                 inputmode="numeric"
+                                value="{{ number_format(optional(optional($sppd->ilpd)->detail_ilpd)->bbm, 0, '', '') }}"
                                 placeholder="Masukkan jumlah biaya BBM"
                                 class="currency-input expense-input"
                                 oninput="formatRupiah(this); hitungTotal()">
@@ -337,112 +347,135 @@
                     </div>
 
                     {{-- UANG HARIAN --}}
-                    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm mb-6">
-                        {{-- Header Section --}}
-                        <div class="mb-4 flex items-center justify-between">
-                            <div>
-                                <h4 class="text-[14px] font-bold text-slate-800">Rincian Uang Harian & Penginapan</h4>
-                                <p class="mt-0.5 text-[11px] text-[#64748b]">
-                                    Nilai di bawah dihitung otomatis dari Master Data berdasarkan Golongan Staff dan kota tujuan.
-                                </p>
-                            </div>
-
-                            {{-- Switch / Tombol untuk Mengaktifkan Mode Edit Khusus GA --}}
-                            <button type="button" id="btnToggleEdit" onclick="toggleAdjustTarif()" 
-                                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-slate-50 px-3 py-1.5 text-[12px] font-semibold text-slate-700 hover:bg-slate-100 transition">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                                </svg>
-                                <span>Sesuaikan Tarif</span>
-                            </button>
-                        </div>
-
-                        {{-- Dropdown Opsional (Awalnya Tersembunyi) --}}
-                        <div id="wrapperDropdownGolongan" class="mb-4 hidden rounded-lg bg-amber-50 p-3 border border-amber-200">
-                            <label class="mb-1 block text-[12px] font-semibold text-amber-900">
-                                Pilih Tarif Golongan Pengganti (Override):
+                    <div class="mb-6">
+                        <div class="mb-3 flex items-center justify-between border-b border-slate-100 pb-2">
+                            <label class="text-xs font-bold text-slate-800">
+                                Uang Harian (Golongan & Destinasi) <span class="text-red-500">*</span>
                             </label>
-                            <select id="selectGolonganOverride" onchange="applyTarifOverride(this)" 
-                                    class="w-full rounded-md border border-amber-300 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                                <option value="">-- Pilih Golongan Penyesuaian --</option>
-                                @foreach($tarifs as $tarif)
-                                    <option value="{{ $tarif->id }}" 
-                                            data-dinas="{{ $tarif->dinas }}" 
-                                            data-makan="{{ $tarif->makan }}" 
-                                            data-hotel="{{ $tarif->hotel }}"
-                                            {{ (isset($golonganId) && $tarif->golongan_id == $golonganId) ? 'selected' : '' }}>
-                                        {{ $tarif->golongan->nama ?? 'Golongan '.$tarif->golongan_id }} — Tarif: Rp {{ number_format($tarif->dinas) }} - {{ number_format($tarif->makan) }} - {{ number_format($tarif->hotel) }} / hari
-                                    </option>
-                                @endforeach
-                            </select>
+                            <span class="text-[11px] font-medium text-slate-500">
+                                Durasi SPPD: <strong class="text-slate-700">{{ $sppd->durasi ?? 1 }} Hari</strong>
+                            </span>
                         </div>
 
-                        {{-- Form Input 4 Kolom --}}
-                        <div class="grid grid-cols-4 gap-3">
+                        <input type="hidden" id="durasi_dinas" value="{{ $sppd->durasi ?? 1 }}">
 
-                            {{-- DINAS --}}
-                            <div>
-                                <label class="mb-1.5 block text-[12px] font-semibold text-[#64748b]">
-                                    Dinas / Hari
-                                </label>
-                                <div class="currency-wrapper">
-                                    <span class="currency-prefix">Rp</span>
-                                    <input
-                                        id="inputDinas"
-                                        name="uang_dinas"
-                                        type="text"
-                                        class="currency-input input-biaya"
-                                        value="{{ number_format($ilpd->detail_ilpd->tarif->dinas ?? 0, 0, ',', '.') }}"
-                                        readonly>
+                        <div class="flex flex-col gap-3">
+
+                            {{-- 1. DINAS --}}
+                            <div class="flex items-end justify-between">
+                                <div class="flex items-end gap-2">
+                                    <div>
+                                        <label class="mb-1 block text-xs font-medium text-slate-500">Dinas</label>
+                                        <div class="currency-wrapper expense-input w-[160px]">
+                                            <span class="currency-prefix text-xs">Rp</span>
+                                            <input id="dinas_rate" name="uang_dinas" type="text" class="currency-input expense-input text-xs" 
+                                                value="{{ number_format($ilpd->detail_ilpd->tarif->dinas ?? 0, 0, ',', '.') }}">
+                                                {{-- value="{{ number_format($ilpd->detail_ilpd->tarif->dinas ?? 0, 0, ',', '.') }}" readonly> --}}
+                                        </div>
+                                    </div>
+
+                                    <span class="mb-2 text-xs font-semibold text-slate-400">×</span>
+
+                                    <div>
+                                        <label class="mb-1 block text-center text-xs font-medium text-slate-500">Hari</label>
+                                        <div class="w-[60px]">
+                                            <input id="dinas_qty" name="dinas_qty" type="text" inputmode="numeric" 
+                                                data-max="{{ $sppd->durasi ?? 1 }}"
+                                                {{-- oninput="validateInput(this)" --}}
+                                                class="h-[38px] w-full rounded-md border border-slate-300 text-center text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none" 
+                                                value="{{ $sppd->durasi ?? 1 }}">
+                                        </div>
+                                    </div>
+                                    {{-- <div>
+                                        <label class="mb-1 block text-center text-xs font-medium text-slate-500">Hari</label>
+                                        <div class="w-[60px]">
+                                            <input id="dinas_qty" name="dinas_qty" type="text" 
+                                                class="h-[38px] w-full rounded-md border border-slate-200 bg-slate-100 text-center text-xs font-semibold text-slate-600 focus:outline-none" 
+                                                value="{{ $sppd->durasi ?? 1 }}" readonly>
+                                        </div>
+                                    </div> --}}
+                                </div>
+
+                                <div>
+                                    <label class="mb-1 block text-right text-xs font-medium text-slate-500">Subtotal Dinas</label>
+                                    <div class="currency-wrapper expense-input w-[220px]">
+                                        <span class="currency-prefix text-xs">Rp</span>
+                                        <input id="dinas_subtotal" type="text" class="currency-input expense-input text-xs font-bold text-slate-800 bg-slate-50 text-right" value="0" readonly>
+                                    </div>
                                 </div>
                             </div>
 
-                            {{-- MAKAN --}}
-                            <div>
-                                <label class="mb-1.5 block text-[12px] font-semibold text-[#64748b]">
-                                    Makan / Hari
-                                </label>
-                                <div class="currency-wrapper">
-                                    <span class="currency-prefix">Rp</span>
-                                    <input
-                                        id="inputMakan"
-                                        name="uang_makan"
-                                        type="text"
-                                        class="currency-input input-biaya"
-                                        value="{{ number_format($ilpd->detail_ilpd->tarif->makan ?? 0, 0, ',', '.') }}"
-                                        readonly>
+                            {{-- 2. MAKAN --}}
+                            <div class="flex items-end justify-between">
+                                <div class="flex items-end gap-2">
+                                    <div>
+                                        <label class="mb-1 block text-xs font-medium text-slate-500">Makan</label>
+                                        <div class="currency-wrapper expense-input w-[160px]">
+                                            <span class="currency-prefix text-xs">Rp</span>
+                                            <input id="makan_rate" name="uang_makan" type="text" class="currency-input expense-input text-xs" 
+                                                value="{{ number_format($ilpd->detail_ilpd->tarif->makan ?? 0, 0, ',', '.') }}">
+                                                {{-- value="{{ number_format($ilpd->detail_ilpd->tarif->makan ?? 0, 0, ',', '.') }}" readonly> --}}
+                                        </div>
+                                    </div>
+
+                                    <span class="mb-2 text-xs font-semibold text-slate-400">×</span>
+
+                                    <div>
+                                        <label class="mb-1 block text-center text-xs font-medium text-slate-500">Hari</label>
+                                        <div class="w-[60px]">
+                                            <input id="makan_qty" name="makan_qty" type="text" inputmode="numeric" 
+                                                data-max="{{ $sppd->durasi ?? 1 }}"
+                                                {{-- oninput="validateInput(this)" --}}
+                                                class="h-[38px] w-full rounded-md border border-slate-300 text-center text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none" 
+                                                value="{{ $ilpd->detail_ilpd->makan_qty ?? 0 }}">
+                                                {{-- value="{{ $ilpd->detail_ilpd->makan_qty ?? 1 }}"> --}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="mb-1 block text-right text-xs font-medium text-slate-500">Subtotal Makan</label>
+                                    <div class="currency-wrapper expense-input w-[220px]">
+                                        <span class="currency-prefix text-xs">Rp</span>
+                                        <input id="makan_subtotal" type="text" class="currency-input expense-input text-xs font-bold text-slate-800 bg-slate-50 text-right" value="0" readonly>
+                                    </div>
                                 </div>
                             </div>
 
-                            {{-- HOTEL --}}
-                            <div>
-                                <label class="mb-1.5 block text-[12px] font-semibold text-[#64748b]">
-                                    Hotel / Malam
-                                </label>
-                                <div class="currency-wrapper">
-                                    <span class="currency-prefix">Rp</span>
-                                    <input
-                                        id="inputHotel"
-                                        name="uang_hotel"
-                                        type="text"
-                                        class="currency-input input-biaya"
-                                        value="{{ number_format($ilpd->detail_ilpd->tarif->hotel ?? 0, 0, ',', '.') }}"
-                                        readonly>
-                                </div>
-                            </div>
+                            {{-- 3. HOTEL --}}
+                            <div class="flex items-end justify-between">
+                                <div class="flex items-end gap-2">
+                                    <div>
+                                        <label class="mb-1 block text-xs font-medium text-slate-500">Hotel</label>
+                                        <div class="currency-wrapper expense-input w-[160px]">
+                                            <span class="currency-prefix text-xs">Rp</span>
+                                            <input id="hotel_rate" name="uang_hotel" type="text" class="currency-input expense-input text-xs" 
+                                                value="{{ number_format($ilpd->detail_ilpd->tarif->hotel ?? 0, 0, ',', '.') }}">
+                                                {{-- value="{{ number_format($ilpd->detail_ilpd->tarif->hotel ?? 0, 0, ',', '.') }}" readonly> --}}
+                                        </div>
+                                    </div>
 
-                            {{-- LAUNDRY --}}
-                            <div>
-                                <label class="mb-1.5 block text-[12px] font-semibold text-[#64748b]">
-                                    Laundry
-                                </label>
-                                <div class="currency-wrapper">
-                                    <input
-                                        id="laundry"
-                                        type="text"
-                                        class="currency-input readonly-input"
-                                        value="Actual"
-                                        readonly>
+                                    <span class="mb-2 text-xs font-semibold text-slate-400">×</span>
+
+                                    <div>
+                                        <label class="mb-1 block text-center text-xs font-medium text-slate-500">Malam</label>
+                                        <div class="w-[60px]">
+                                            <input id="hotel_qty" name="hotel_qty" type="text" inputmode="numeric" 
+                                                data-max="{{ $sppd->durasi ?? 1 }}"
+                                                {{-- oninput="validateInputQty(this)" --}}
+                                                class="h-[38px] w-full rounded-md border border-slate-300 text-center text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none" 
+                                                value="{{ $ilpd->detail_ilpd->hotel_qty ?? 0 }}">
+                                                {{-- value="{{ $ilpd->detail_ilpd->hotel_qty ?? 1 }}"> --}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="mb-1 block text-right text-xs font-medium text-slate-500">Subtotal Hotel</label>
+                                    <div class="currency-wrapper expense-input w-[220px]">
+                                        <span class="currency-prefix text-xs">Rp</span>
+                                        <input id="hotel_subtotal" type="text" class="currency-input expense-input text-xs font-bold text-slate-800 bg-slate-50 text-right" value="0" readonly>
+                                    </div>
                                 </div>
                             </div>
 
@@ -463,16 +496,17 @@
                                 Transport Lokal
                             </span>
 
-                            <div class="currency-wrapper expense-input w-[220px]">
+                            <div class="currency-wrapper w-[220px]">
 
                                 <span class="currency-prefix">
                                     Rp
                                 </span>
 
                                 <input
-                                    id="transportLokal"
+                                    id="transport_lokal"
                                     name="transport_lokal"
                                     type="text"
+                                    value="{{ number_format(optional(optional($sppd->ilpd)->detail_ilpd)->transport_lokal, 0, '', '') }}"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
                                     oninput="formatRupiah(this); hitungTotal()">
@@ -498,6 +532,7 @@
                                     id="visa"
                                     name="visa"
                                     type="text"
+                                    value="{{ number_format(optional(optional($sppd->ilpd)->detail_ilpd)->visa, 0, '', '') }}"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
                                     oninput="formatRupiah(this); hitungTotal()">
@@ -523,6 +558,7 @@
                                     id="fiskal"
                                     name="fiskal"
                                     type="text"
+                                    value="{{ number_format(optional(optional($sppd->ilpd)->detail_ilpd)->fiskal, 0, '', '') }}"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
                                     oninput="formatRupiah(this); hitungTotal()">
@@ -545,8 +581,9 @@
                                 </span>
 
                                 <input
-                                    id="airportTax"
+                                    id="airport_tax"
                                     name="airport_tax"
+                                    value="{{ number_format(optional(optional($sppd->ilpd)->detail_ilpd)->airport_tax, 0, '', '') }}"
                                     type="text"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
@@ -555,6 +592,27 @@
                             </div>
 
                         </div>
+
+                        {{-- LAUNDRY --}}
+                        <div class="expense-row mb-3 flex items-center justify-between">
+
+                            <span class="text-[13px]">
+                                Laundry
+                            </span>
+
+                            <div class="currency-wrapper w-[220px]">
+
+                                <input
+                                    id="laundry"
+                                    type="text"
+                                    class="currency-input text-center readonly-input"
+                                    value="Actual"
+                                    readonly>
+
+                            </div>
+
+                        </div>
+
 
                         {{-- PARKIR & TOLL --}}
                         <div class="expense-row mb-3 flex items-center justify-between">
@@ -570,9 +628,10 @@
                                 </span>
 
                                 <input
-                                    id="parkirToll"
-                                    name="parkir&toll"
+                                    id="parkir_toll"
+                                    name="parkir_toll"
                                     type="text"
+                                    value="{{ number_format(optional(optional($sppd->ilpd)->detail_ilpd)->parkir_toll, 0, '', '') }}"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
                                     oninput="formatRupiah(this); hitungTotal()">
@@ -597,6 +656,8 @@
                                 <input
                                     type="text"
                                     id="entertainment"
+                                    name="entertainment"
+                                    value="{{ number_format(optional(optional($sppd->ilpd)->detail_ilpd)->entertainment, 0, '', '') }}"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
                                     oninput="formatRupiah(this); hitungTotal()">
@@ -608,12 +669,9 @@
                         {{-- DLL --}}
                         <div class="expense-row mb-3 flex items-center justify-between">
 
-                            <input
-                                id="dll"
-                                name="dll"
-                                type="text"
-                                placeholder="Dll..."
-                                class="w-[120px] rounded-md border border-[#cbd5e1] px-3 py-2 text-[13px] outline-none">
+                            <span class="text-[13px]">
+                                DLL
+                            </span>
 
                             <div class="currency-wrapper w-[220px]">
 
@@ -622,8 +680,10 @@
                                 </span>
 
                                 <input
-                                    id="biayaLainnya"
+                                    id="dll"
+                                    name="dll"
                                     type="text"
+                                    value="{{ number_format(optional(optional($sppd->ilpd)->detail_ilpd)->dll, 0, '', '') }}"
                                     placeholder="Masukkan jumlah"
                                     class="currency-input"
                                     oninput="formatRupiah(this); hitungTotal()">

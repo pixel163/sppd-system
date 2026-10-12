@@ -31,6 +31,7 @@ class KotaSeeder extends Seeder
                     ['name' => $namaKota],
                     [
                         'kota_kategori_id' => $kategoriId,
+                        'area_id'          => 1, // Sesuaikan nilai area_id yang valid di database Anda
                         'created_by'       => 3,
                         'is_active'        => true,
                         'created_at'       => now(),

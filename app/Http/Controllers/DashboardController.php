@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Enums\SppdStatus;
+use App\Enums\DinasStatus;
 
 class DashboardController extends Controller
 {
@@ -43,15 +44,15 @@ class DashboardController extends Controller
         ->take(5)
         ->get();
 
-        $draft = Dinas::where('status', 'Draft')->count();
+        $draft = Dinas::where('status', DinasStatus::DRAFT)->count();
 
-        $Disetujui = Dinas::where('status', 'Disetujui')->count();
+        $Disetujui = Dinas::where('status', DinasStatus::DISETUJUI)->count();
 
-        $menungguApproval = Dinas::where('status', 'Menunggu Approval')->count();
+        $menungguApproval = Dinas::where('status', DinasStatus::MENUNGGU_APPROVAL)->count();
 
-        $sedangDiproses = Dinas::where('status', 'Sedang Diproses')->count();
+        $sedangDiproses = Dinas::where('status', DinasStatus::SEDANG_DIPROSES)->count();
 
-        $selesai = Dinas::where('status', 'Selesai')->count();
+        $selesai = Dinas::where('status', DinasStatus::SELESAI)->count();
 
         $dinasList = Dinas::with(['sppd.sppd_approval', 'ilpd.ilpd_approval'])->get();
 

@@ -24,9 +24,15 @@ return new class extends Migration
                     ->constrained('users')
                     ->restrictOnDelete();
 
+                $table->foreignId('area_id')
+                    ->constrained('area')
+                    ->restrictOnDelete();
+
                 $table->foreignId('kota_id')
                     ->constrained('kota')
                     ->restrictOnDelete();
+
+                $table->json('unit_id')->nullable();
 
                 $table->json('keperluan_id')->nullable();
                 $table->json('transport_id')->nullable();

@@ -125,9 +125,10 @@ function hitungSemua() {
     const airportTax = parseRupiah(document.getElementById('airportTax')?.value);
     const parkirToll = parseRupiah(document.getElementById('parkirToll')?.value);
     const entertainment = parseRupiah(document.getElementById('entertainment')?.value);
-    const biayaLainnya = parseRupiah(document.getElementById('biayaLainnya')?.value);
+    const dll = parseRupiah(document.getElementById('dll')?.value);
+    // const biayaLainnya = parseRupiah(document.getElementById('biayaLainnya')?.value);
 
-    const totalOpsional = bbm + transportLokal + visa + fiskal + airportTax + parkirToll + entertainment + biayaLainnya;
+    const totalOpsional = bbm + transportLokal + visa + fiskal + airportTax + parkirToll + entertainment + dll;
 
     // D. GRAND TOTAL
     const grandTotal = totalHarian + totalOpsional;

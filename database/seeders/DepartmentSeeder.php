@@ -15,23 +15,23 @@ class DepartmentSeeder extends Seeder
     {
         $departments = [
             [
-                'name'        => 'IT',
-                'created_by'  => 3,
+                'name'        => 'All',
+                'created_by'  => 1,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
-            [
-                'name'        => 'General Affair',
-                'created_by'  => 3,
-                'created_at'  => now(),
-                'updated_at'  => now(),
-            ],
-            [
-                'name'        => 'Finance',
-                'created_by'  => 3,
-                'created_at'  => now(),
-                'updated_at'  => now(),
-            ],
+            // [
+            //     'name'        => 'General Affair',
+            //     'created_by'  => 3,
+            //     'created_at'  => now(),
+            //     'updated_at'  => now(),
+            // ],
+            // [
+            //     'name'        => 'Finance',
+            //     'created_by'  => 3,
+            //     'created_at'  => now(),
+            //     'updated_at'  => now(),
+            // ],
         ];
 
         foreach ($departments as $department) {

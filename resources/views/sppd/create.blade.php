@@ -134,7 +134,103 @@
                     ================================================== --}}
 
                     {{-- Kota (Searchable Dropdown) --}}
-                    <div class="form-row flex gap-6 py-3">
+                    <div class="form-row flex gap-6 py-3" 
+                        x-data="sppdForm">
+                        
+                        <!-- Label Kiri -->
+                        <label class="form-label w-[180px] pt-2.5 text-[14px] font-bold text-slate-800">
+                            Tujuan Dinas
+                        </label>
+
+                        <!-- Konten Kanan -->
+                        <div class="flex-1 space-y-4">
+                            
+                            <!-- 1. PILIH AREA -->
+                            <div class="w-full">
+                                {{-- <label class="block font-medium text-sm text-slate-700 mb-1">Area Tujuan</label> --}}
+                                <select name="area_id" x-model="selectedArea" @change="fetchKota" class="w-full rounded-lg border border-[#e2e8f0] bg-white px-3 py-2 text-[14px] text-slate-800 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20">
+                                    <option value="">-- Pilih Area --</option>
+                                    @foreach($areas as $area)
+                                        <option value="{{ $area->id }}">{{ $area->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- 2. PILIH KOTA (Muncul jika Area dipilih) -->
+                            <div class="w-full" x-show="selectedArea" x-cloak>
+                                <label class="block font-medium text-sm text-slate-700 mb-1">Kota Tujuan</label>
+                                <select name="kota_id" x-model="selectedKota" @change="fetchUnit" class="w-full rounded-lg border border-[#e2e8f0] bg-white px-3 py-2 text-[14px] text-slate-800 focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20">
+                                    <option value="">-- Pilih Kota --</option>
+                                    <template x-for="kota in kotaList" :key="kota.id">
+                                        <option :value="kota.id" x-text="kota.name"></option>
+                                    </template>
+                                </select>
+                            </div>
+
+                            <!-- 3. PILIH UNIT (Custom Dropdown Checkbox mirip Keperluan Dinas, muncul jika Kota dipilih) -->
+                            <div class="w-full" x-show="selectedKota" x-cloak>
+                                <label class="block font-medium text-sm text-slate-700 mb-1">Unit Tujuan</label>
+                                
+                                <div class="relative" @click.outside="openUnit = false">
+                                    
+                                    <!-- Hidden Inputs untuk dikirim ke Controller Laravel -->
+                                    <template x-for="id in selectedUnits" :key="id">
+                                        <input type="hidden" name="unit_ids[]" :value="id">
+                                    </template>
+
+                                    <!-- Display Box -->
+                                    <div @click="openUnit = !openUnit" 
+                                        class="min-h-[42px] w-full cursor-pointer rounded-lg border border-[#e2e8f0] bg-white px-3 py-2 pr-10 text-[14px] text-slate-800 transition-all duration-200 focus-within:border-[#2563eb] focus-within:ring-2 focus-within:ring-[#2563eb]/20 flex flex-wrap gap-1.5 items-center">
+                                        
+                                        <!-- Placeholder -->
+                                        <span x-show="selectedUnits.length === 0" class="text-slate-400">
+                                            Pilih Unit Tujuan...
+                                        </span>
+
+                                        <!-- Badge Unit Terpilih -->
+                                        <template x-for="(name, index) in selectedUnitNames" :key="index">
+                                            <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                                <span x-text="name"></span>
+                                                <button type="button" @click.stop="toggleUnit(selectedUnits[index], name)" class="text-blue-600 hover:text-blue-800">
+                                                    &times;
+                                                </button>
+                                            </span>
+                                        </template>
+
+                                        <!-- Panah Dropdown -->
+                                        <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                                            <svg class="h-4 w-4 fill-current transition-transform duration-200" :class="openUnit ? 'rotate-180' : ''" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- Menu Dropdown Checkbox Unit -->
+                                    <div x-show="openUnit" 
+                                        x-transition
+                                        class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg ring-1 ring-black/5"
+                                        style="display: none;">
+                                        
+                                        <template x-for="unit in unitList" :key="unit.id">
+                                            <label class="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-[14px] text-slate-700 hover:bg-slate-50 transition-colors">
+                                                <input type="checkbox" 
+                                                    :value="unit.id"
+                                                    :checked="selectedUnits.includes(String(unit.id))"
+                                                    @change="toggleUnit(unit.id, unit.name)"
+                                                    class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                                <span x-text="unit.name"></span>
+                                            </label>
+                                        </template>
+
+                                        <div x-show="unitList.length === 0" class="px-3 py-2 text-sm text-slate-400 italic">Tidak ada unit di kota ini.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {{-- <div class="form-row flex gap-6 py-3">
                         <label for="kota" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
                             Kota Tujuan
                         </label>
@@ -155,7 +251,7 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>
+                    </div> --}}
 
                     {{-- Waktu --}}
                     <div class="form-row flex gap-6 py-3">

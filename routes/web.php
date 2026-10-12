@@ -16,7 +16,10 @@ use App\Http\Controllers\Master\JabatanController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\KotaKategoriController;
 use App\Http\Controllers\Master\KotaController;
+use App\Http\Controllers\Master\AreaController;
+use App\Http\Controllers\Master\UnitController;
 use App\Http\Controllers\Master\TarifController;
+use App\Http\Controllers\MasterDataController;
 
 Route::get('/', function () {return view('login');})->name('login');
 Route::post('/', [AuthController::class, 'login'])->name('login');
@@ -46,9 +49,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
     Route::get('/dokumen', [DokumenController::class, 'index'])->name('dokumen');
 
+    Route::post('/master-data/import', [MasterDataController::class, 'importMaster'])->name('master.import');
+
+    Route::get('/master-data', [MasterDataController::class, 'index'])->name('master.index');
+    Route::post('/master-data/import-karyawan', [MasterDataController::class, 'importKaryawan'])->name('master.import.karyawan');
+    Route::post('/master-data/import-area', [MasterDataController::class, 'importArea'])->name('master.import.area');
+
     // staff or manager sppd
     Route::get('/sppd/create', [SppdController::class, 'create'])->name('sppd.create');
     Route::post('/sppd/create', [SppdController::class, 'store'])->name('sppd.store');
+
+    Route::get('/get-kota/{area_id}', [SppdController::class, 'getKota']);
+    Route::get('/get-unit/{kota_id}', [SppdController::class, 'getUnit']);  
+
+    // Route::get('/get-kota', [SppdController::class, 'getKota']);
+    // Route::get('/get-unit', [SppdController::class, 'getUnit']);
+
     // Route::get('sppd/{id}/edit', [SppdController::class, 'edit'])->name('sppd.edit');
     // Route::put('sppd/{id}/edit', [SppdController::class, 'update'])->name('sppd.update');
     
@@ -56,8 +72,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/ilpd/create/{sppd?}', [IlpdController::class, 'create'])->name('ilpd.create');
     Route::post('/ilpd/create', [IlpdController::class, 'store'])->name('ilpd.store');
     // Route::get('/ilpd/create/{sppd}', [IlpdController::class, 'create'])->name('ilpd.create');
-    // Route::get('ilpd/{id}/edit', [IlpdController::class, 'edit'])->name('ilpd.edit');
-    // Route::put('ilpd/{id}/edit', [IlpdController::class, 'update'])->name('ilpd.update');
+
+    Route::get('ilpd/{id}/edit', [IlpdController::class, 'edit'])->name('ilpd.edit');
+    Route::put('ilpd/{id}/edit', [IlpdController::class, 'update'])->name('ilpd.update');
     
     //  manager approval sppd
     Route::get('/sppd/{id}/approves', [SppdController::class, 'shows'])->name('sppd.approves');
@@ -71,7 +88,8 @@ Route::middleware('auth')->group(function () {
 
     // ga approval ilpd
     // Route::get('/ilpd/{id}', [IlpdController::class, 'show'])->name('approval.general');
-    Route::get('/ilpd/{id}', [IlpdController::class, 'show'])->name('approve.show');
+    // Route::get('/ilpd/{id}', [IlpdController::class, 'show'])->name('approve.show');
+    Route::get('/ilpd/{id}', [IlpdController::class, 'show'])->name('ilpd.show');
     Route::post('/ilpd/{id}/approve', [IlpdController::class, 'approve'])->name('ilpd.approve');
     
     Route::get('/laporan/{id}', [IlpdController::class, 'laporan'])->name('ilpd.laporan');
@@ -89,6 +107,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('role', RoleController::class);
         Route::resource('kotakategori', KotaKategoriController::class);
         Route::resource('kota', KotaController::class);
+        Route::resource('area', AreaController::class);
+        Route::resource('unit', UnitController::class);
         Route::resource('tarif', TarifController::class);
     });
 

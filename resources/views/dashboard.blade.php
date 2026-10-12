@@ -144,7 +144,12 @@
                 {{-- ================================================= --}}
                 {{-- MANAGER : PERLU PERSETUJUAN --}}
                 {{-- ================================================= --}}
-                @if(optional(auth()->user()->jabatan)->name === 'Manager')
+                {{-- @if(optional(auth()->user()->jabatan)->name === 'Manager') --}}
+                @php
+                    $jabatanName = optional(auth()->user()->jabatan)->name ?? '';
+                @endphp
+
+                @if(stripos($jabatanName, 'manager') !== false)
 
                     <div id="managerSection">
 
@@ -423,20 +428,15 @@
                                     <td class="whitespace-nowrap px-4 py-3">
 
                                         @php
-                                            $statusClass = match($item->dinas->status) {
-                                                'approved', 'disetujui'
-                                                    => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-
-                                                'rejected', 'ditolak'
-                                                    => 'bg-rose-50 text-rose-600 border-rose-100',
-
-                                                default
-                                                    => 'bg-amber-50 text-amber-600 border-amber-100',
+                                            $statusClass = match($item->dinas->status ?? $item->status) {
+                                                \App\Enums\DinasStatus::DRAFT => 'bg-yellow-100 text-yellow-800',
+                                                \App\Enums\DinasStatus::DISETUJUI => 'bg-green-100 text-green-800',
+                                                default => 'bg-gray-100 text-gray-800',
                                             };
                                         @endphp
 
-                                        <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize {{ $statusClass }}">
-                                            {{ str_replace('_', ' ', $item->dinas->status) }}
+                                        <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium {{ $statusClass }}">
+                                            {{ $item->dinas->status->label() }}
                                         </span>
 
                                     </td>

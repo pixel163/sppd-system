@@ -15,20 +15,23 @@ class JabatanSeeder extends Seeder
     {
         $jabatans = [
             [
-                'name'        => 'Staff',
-                'created_by'  => 3,
-                'created_at'  => now(),
-                'updated_at'  => now(),
-            ],
-            [
-                'name'        => 'Manager',
-                'created_by'  => 3,
-                'created_at'  => now(),
-                'updated_at'  => now(),
-            ],
-            [
+                'golongan_id'  => '1',
                 'name'        => 'HRGA',
-                'created_by'  => 3,
+                'created_by'  => 1,
+                'created_at'  => now(),
+                'updated_at'  => now(),
+            ],
+            // [
+            //     'golongan_id'  => '2',
+            //     'name'        => 'Manager',
+            //     'created_by'  => 3,
+            //     'created_at'  => now(),
+            //     'updated_at'  => now(),
+            // ],
+            [
+                'golongan_id'  => '1',
+                'name'        => 'Staff',
+                'created_by'  => 1,
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],

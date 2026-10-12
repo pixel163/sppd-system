@@ -34,7 +34,7 @@ return new class extends Migration
             $table->decimal('visa', 15, 2)->nullable();
             $table->decimal('fiskal', 15, 2)->nullable();
             $table->decimal('airport_tax', 15, 2)->nullable();
-            $table->decimal('parkir&toll', 15, 2)->nullable();
+            $table->decimal('parkir_toll', 15, 2)->nullable();
             $table->decimal('entertainment', 15, 2)->nullable();
             $table->decimal('dll', 15, 2)->nullable();
 

@@ -16,7 +16,9 @@ class Sppd extends Model
         'dinas_id',
         'no_sppd',
         'user_id',
+        'area_id',
         'kota_id',
+        'unit_id',
         'keperluan_id',
         'transport_id',
         'keperluan_lainnya',
@@ -29,6 +31,7 @@ class Sppd extends Model
     protected $casts = [
         'keperluan_id' => 'array',
         'transport_id' => 'array',
+        'unit_id'      => 'array',
         'status' => SppdStatus::class,
     ];
 
@@ -42,9 +45,19 @@ class Sppd extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
+    }
+
     public function kota(): BelongsTo
     {
         return $this->belongsTo(Kota::class);
+    }
+
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(Unit::class);
     }
 
     public function keperluan(): BelongsTo
@@ -102,5 +115,32 @@ class Sppd extends Model
         return !empty($names) ? implode(', ', $names) : '-';
     }
 
-    protected $appends = ['keperluan_list', 'transport_list'];
+    public function getUnitListAttribute()
+    {
+        $rawIds = $this->unit_id;
+        $ids = is_string($rawIds) ? (json_decode($rawIds, true) ?? []) : ($rawIds ?? []);
+        $ids = is_array($ids) ? $ids : [$ids];
+
+        $names = \App\Models\Unit::whereIn('id', $ids)->pluck('name')->toArray();
+
+        // if (!empty($this->transport_lainnya)) {
+        //     $names[] = trim($this->transport_lainnya);
+        // }
+
+        return !empty($names) ? implode(', ', $names) : '-';
+    }
+
+    public function getKotaDanUnitAttribute()
+    {
+        $namaKota = $this->kota->name ?? '-';
+        $unitNames = $this->unit_list; // Mengambil dari accessor getUnitListAttribute yang sudah Anda buat
+
+        if ($unitNames === '-') {
+            return $namaKota;
+        }
+
+        return "{$namaKota} ({$unitNames})";
+    }
+
+    protected $appends = ['keperluan_list', 'transport_list', 'unit_list'];
 }

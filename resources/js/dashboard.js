@@ -94,39 +94,49 @@ function showDetail(item) {
                 itemId = item.ilpd.id;
                 rawDate = item.ilpd.created_at || item.created_at;
                 doc.title = item.ilpd.no_ilpd || "Form ILPD";
+                // editUrl = `/ilpd/${itemId}/edit`;
                 
             } else if (type === 'tiket') {
                 const tiketData = Array.isArray(listTiket) ? listTiket[0] : listTiket;
-
-                rawDate = tiketData.uploaded_at || tiketData.created_at || item.created_at;
-
-                doc.title = tiketData.type ? `Tiket ${tiketData.type.toUpperCase()}` : "Tiket Perjalanan";
+                rawDate = tiketData?.uploaded_at || tiketData?.created_at || item.created_at;
+                doc.title = tiketData?.type ? `Tiket ${tiketData.type.toUpperCase()}` : "Tiket Perjalanan";
             }
 
             const docDate = typeof formatTanggalIndo === 'function' ? formatTanggalIndo(rawDate) : (rawDate || '-');
 
-            const mainStatus = item.dinas?.status
-            const docUserId = item.user_id || item.sppd?.user_id || item.dinas?.sppd?.user_id;
+            // 1. Dapatkan angka status (Mendukung angka langsung, string angka, atau objek status Enum)
+            const rawStatusValue = item.dinas?.status?.value ?? item.dinas?.status ?? item.status;
+            const statusNum = Number(rawStatusValue);
 
+            // 2. Pemohon & Role Identifikasi
+            const docUserId = item.user_id || item.sppd?.user_id || item.dinas?.sppd?.user_id;
             const isMyDocument = (Number(docUserId) === Number(window.currentUserId));
             const isHRGA = window.currentUserRole === 'HRGA';
 
             const docUser = item.user || item.sppd?.user;
-            const isSubmitterManager = docUser?.jabatan?.name?.toLowerCase().includes('Manager') 
-                || docUser?.jabatan_id === 2; // Sesuaikan ID/Nama jabatan Manager di DB Anda
+            const isSubmitterManager = docUser?.jabatan?.name?.toLowerCase().includes('manager') 
+                || docUser?.jabatan_id === 2;
 
             const safeItemJson = encodeURIComponent(JSON.stringify(item));
 
+            // Tombol Default (Selalu muncul)
             let documentButtons = `
-                <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                <button type="button" 
+                        data-item="${safeItemJson}"
+                        onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
+                        class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
                     <span>👁</span> Lihat
                 </button>
             `;
 
+            // Map Enum DinasStatus:
+            // 0: DRAFT, 1: MENUNGGU_APPROVAL, 2: SEDANG_DIPROSES, 3: DISETUJUI, 4: DITOLAK, 5: LAPORAN, 6: SELESAI
+
             if (isHRGA && !isMyDocument) {
 
-                if (['Menunggu Approval', 'menunggu_approval', 'Pending'].includes(mainStatus)) {
-                    if ((type === 'form_sppd' || type === 'sppd') && isSubmitterManager) {
+                // Status 1: Menunggu Approval
+                if (statusNum === 1) {
+                    if (['form_sppd', 'sppd'].includes(type) && isSubmitterManager) {
                         documentButtons += `
                             <a href="/sppd/${itemId}/approves" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
                                 Proses
@@ -135,10 +145,14 @@ function showDetail(item) {
                     }
                 }
 
-                else if (['Sedang Diproses', 'sedang_diproses'].includes(mainStatus)) {
-                    if (type === 'form_sppd' || type === 'sppd') {
+                // Status 2: Sedang Diproses
+                else if (statusNum === 2) {
+                    if (['form_sppd', 'sppd'].includes(type)) {
                         documentButtons += `
-                            <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                            <button type="button" 
+                                    data-item="${safeItemJson}"
+                                    onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
+                                    class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
                                 <span>🖨</span> Cetak
                             </button>
                         `;
@@ -151,22 +165,100 @@ function showDetail(item) {
                     }
                 }
 
-                else if (['Disetujui', 'Approved'].includes(mainStatus)) {
+                // Status 3: Disetujui / 5: Laporan / 6: Selesai
+                else if ([3, 5, 6].includes(statusNum)) {
+
+                    // ============================================================
+                    // LOGIKA PENGECEKAN TANGGAL BERANGKAT KHUSUS STATUS DISETUJUI (3)
+                    // ============================================================
+                    if (statusNum === 3) {
+                        const today = new Date().toISOString().split('T')[0];
+                        const tglBerangkat = item.ilpd?.tanggal_awal || item.tanggal_mulai || null;
+
+                        // Hanya untuk ILPD (form 2) & jika belum berangkat
+                        if (['form_ilpd', 'ilpd'].includes(type) && tglBerangkat && tglBerangkat > today) {
+                            documentButtons += `
+                                <a href="/ilpd/${itemId}/edit" class="flex items-center gap-1.5 rounded-lg bg-amber-500 px-4 py-2 text-[13px] font-medium text-white hover:bg-amber-600">
+                                    <span>✏️</span> Edit
+                                </a>
+                            `;
+                        }
+                    }
+
+                    // Tombol Cetak Tetap Ada
                     documentButtons += `
-                        <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                        <button type="button" 
+                                data-item="${safeItemJson}"
+                                onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
+                                class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
                             <span>🖨</span> Cetak
                         </button>
                     `;
                 }
             }
+            // let documentButtons = `
+            //     <button type="button" 
+            //             data-item="${safeItemJson}"
+            //             onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
+            //             class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
+            //         <span>👁</span> Lihat
+            //     </button>
+            // `;
 
+            // // Map Enum DinasStatus:
+            // // 0: DRAFT, 1: MENUNGGU_APPROVAL, 2: SEDANG_DIPROSES, 3: DISETUJUI, 4: DITOLAK, 5: LAPORAN, 6: SELESAI
+
+            // if (isHRGA && !isMyDocument) {
+
+            //     // Status 1: Menunggu Approval
+            //     if (statusNum === 1) {
+            //         // SPPD milik Manager yang butuh tindakan approval GA
+            //         if (['form_sppd', 'sppd'].includes(type) && isSubmitterManager) {
+            //             documentButtons += `
+            //                 <a href="/sppd/${itemId}/approves" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
+            //                     Proses
+            //                 </a>
+            //             `;
+            //         }
+            //     }
+
+            //     // Status 2: Sedang Diproses
+            //     else if (statusNum === 2) {
+            //         if (['form_sppd', 'sppd'].includes(type)) {
+            //             documentButtons += `
+            //                 <button type="button" 
+            //                         data-item="${safeItemJson}"
+            //                         onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
+            //                         class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
+            //                     <span>🖨</span> Cetak
+            //                 </button>
+            //             `;
+            //         } else if (['form_ilpd', 'ilpd'].includes(type)) {
+            //             documentButtons += `
+            //                 <a href="/ilpd/${itemId}" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
+            //                     Proses
+            //                 </a>
+            //             `;
+            //         }
+            //     }
+
+            //     // Status 3: Disetujui / 5: Laporan / 6: Selesai
+            //     else if ([3, 5, 6].includes(statusNum)) {
+            //         documentButtons += `
+            //             <button type="button" 
+            //                     data-item="${safeItemJson}"
+            //                     onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
+            //                     class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
+            //                 <span>🖨</span> Cetak
+            //             </button>
+            //         `;
+            //     }
+            // } 
             else {
-
-                if (['Menunggu Approval', 'menunggu_approval', 'Pending'].includes(mainStatus)) {
-
-                }
-
-                else if (['Sedang Diproses', 'sedang_diproses'].includes(mainStatus)) {
+                // Hak Akses untuk Pemohon / Non-HRGA
+                
+                // Status 2: Sedang Diproses (Pemohon cetak SPPD)
+                if (statusNum === 2) {
                     if (['form_sppd', 'sppd'].includes(type)) {
                         documentButtons += `
                             <button type="button" 
@@ -179,7 +271,8 @@ function showDetail(item) {
                     }
                 }
 
-                else if (['Disetujui', 'Approved'].includes(mainStatus)) {
+                // Status 3, 5, 6: Disetujui / Laporan / Selesai (Pemohon cetak semua form)
+                else if ([3, 5, 6].includes(statusNum)) {
                     documentButtons += `
                         <button type="button" 
                                 data-item="${safeItemJson}"
@@ -189,8 +282,119 @@ function showDetail(item) {
                         </button>
                     `;
                 }
-
             }
+        // });
+        // dokumenList.forEach(type => {
+        //     const doc = getDocumentData(type);
+        //     let itemId = null;
+        //     let rawDate = item.created_at;
+
+        //     if (type === 'form_sppd') {
+        //         itemId = item.id;
+        //         rawDate = item.created_at;
+        //         doc.title = item.no_sppd || item.no || "Form SPPD";
+
+        //     } else if (type === 'form_ilpd' && item.ilpd) {
+        //         itemId = item.ilpd.id;
+        //         rawDate = item.ilpd.created_at || item.created_at;
+        //         doc.title = item.ilpd.no_ilpd || "Form ILPD";
+                
+        //     } else if (type === 'tiket') {
+        //         const tiketData = Array.isArray(listTiket) ? listTiket[0] : listTiket;
+
+        //         rawDate = tiketData.uploaded_at || tiketData.created_at || item.created_at;
+
+        //         doc.title = tiketData.type ? `Tiket ${tiketData.type.toUpperCase()}` : "Tiket Perjalanan";
+        //     }
+
+        //     const docDate = typeof formatTanggalIndo === 'function' ? formatTanggalIndo(rawDate) : (rawDate || '-');
+
+        //     const mainStatus = item.dinas?.status
+        //     const docUserId = item.user_id || item.sppd?.user_id || item.dinas?.sppd?.user_id;
+
+        //     const isMyDocument = (Number(docUserId) === Number(window.currentUserId));
+        //     const isHRGA = window.currentUserRole === 'HRGA';
+
+        //     const docUser = item.user || item.sppd?.user;
+        //     const isSubmitterManager = docUser?.jabatan?.name?.toLowerCase().includes('Manager') 
+        //         || docUser?.jabatan_id === 2; // Sesuaikan ID/Nama jabatan Manager di DB Anda
+
+        //     const safeItemJson = encodeURIComponent(JSON.stringify(item));
+
+        //     let documentButtons = `
+        //         <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+        //             <span>👁</span> Lihat
+        //         </button>
+        //     `;
+
+        //     if (isHRGA && !isMyDocument) {
+
+        //         if (['Menunggu Approval', 'menunggu_approval', 'Pending'].includes(mainStatus)) {
+        //             if ((type === 'form_sppd' || type === 'sppd') && isSubmitterManager) {
+        //                 documentButtons += `
+        //                     <a href="/sppd/${itemId}/approves" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
+        //                         Proses
+        //                     </a>
+        //                 `;
+        //             }
+        //         }
+
+        //         else if (['Sedang Diproses', 'sedang_diproses'].includes(mainStatus)) {
+        //             if (type === 'form_sppd' || type === 'sppd') {
+        //                 documentButtons += `
+        //                     <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+        //                         <span>🖨</span> Cetak
+        //                     </button>
+        //                 `;
+        //             } else if (['form_ilpd', 'ilpd'].includes(type)) {
+        //                 documentButtons += `
+        //                     <a href="/ilpd/${itemId}" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
+        //                         Proses
+        //                     </a>
+        //                 `;
+        //             }
+        //         }
+
+        //         else if (['Disetujui', 'Approved'].includes(mainStatus)) {
+        //             documentButtons += `
+        //                 <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+        //                     <span>🖨</span> Cetak
+        //                 </button>
+        //             `;
+        //         }
+        //     }
+
+        //     else {
+
+        //         if (['Menunggu Approval', 'menunggu_approval', 'Pending'].includes(mainStatus)) {
+
+        //         }
+
+        //         else if (['Sedang Diproses', 'sedang_diproses'].includes(mainStatus)) {
+        //             if (['form_sppd', 'sppd'].includes(type)) {
+        //                 documentButtons += `
+        //                     <button type="button" 
+        //                             data-item="${safeItemJson}"
+        //                             onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
+        //                             class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
+        //                         <span>🖨</span> Cetak
+        //                     </button>
+        //                 `;
+        //             }
+        //         }
+
+        //         else if (['Disetujui', 'Approved'].includes(mainStatus)) {
+        //             documentButtons += `
+        //                 <button type="button" 
+        //                         data-item="${safeItemJson}"
+        //                         onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
+        //                         class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
+        //                     <span>🖨</span> Cetak
+        //                 </button>
+        //             `;
+        //         }
+
+        //     }
 
             const wrapper = document.createElement('div');
             wrapper.className = 'flex flex-col gap-4 rounded-xl border border-[#f1f5f9] p-4 sm:flex-row sm:items-center';
@@ -455,8 +659,12 @@ function generateSppdLayout(item) {
 
     // 2. Cari data approval yang sudah 'Disetujui' dan punya signature/approver
     const managerApp = Array.isArray(approvals) 
-        ? approvals.find(app => app.status === 'Disetujui' && app.signature) || {}
+        ? approvals.find(app => app.status === 2 || app.status === '2' && app.signature) || {}
         : (approvals || {});
+
+    // const managerApp = Array.isArray(approvals) 
+    //     ? approvals.find(app => app.status === 'Disetujui' && app.signature) || {}
+    //     : (approvals || {});
 
     // 3. Ambil TTD Manager
     const managerSignature = managerApp.signature ? `/storage/${managerApp.signature}` : null;
@@ -465,6 +673,9 @@ function generateSppdLayout(item) {
     const managerName = managerApp.sppd_approver?.name || '........................';
 
     const approveJabatan = managerApp.sppd_approver?.jabatan?.name || '........................';
+
+    console.log("=== DEBUG APPROVALS ===", approvals);
+    // console.log("=== DEBUG ===", managerApp);
 
     // 3. TTD Pemohon (User pembuat SPPD)
     const pemohonUser = item.user || {};
@@ -478,15 +689,12 @@ function generateSppdLayout(item) {
     const tugasListHtml = `
         <div class="tugas-list">
             <div class="tugas-item">
-                <span class="nomor">1.</span>
                 <div class="garis-tugas">${tugasArray[0] || ''}</div>
             </div>
             <div class="tugas-item">
-                <span class="nomor">2.</span>
                 <div class="garis-tugas">${tugasArray[1] || ''}</div>
             </div>
             <div class="tugas-item">
-                <span class="nomor">3.</span>
                 <div class="garis-tugas">${tugasArray[2] || ''}</div>
             </div>
         </div>
@@ -532,7 +740,7 @@ function generateSppdLayout(item) {
                 .kop-surat {
                     display: table;
                     width: 100%;
-                    border-bottom: 2px solid #000;
+                    
                     padding-bottom: 10px;
                     margin-bottom: 20px;
                 }
@@ -739,9 +947,9 @@ function generateSppdLayout(item) {
 
                 /* Garis Pemisah Tipis antara Nama dan Jabatan */
                 .ttd-divider {
-                    border-top: 1px solid #000; /* Garis pemisah tipis hitam */
-                    margin-top: 4px;
-                    padding-top: 4px;
+                    border-top: 1px solid #000;
+                    margin: 4px -4px 0 -4px; /* Garis tetap panjang penuh */
+                    padding: 4px 4px 0 4px;
                 }
 
                 /* CSS KHUSUS PRINT */
@@ -924,20 +1132,20 @@ function generateSppdLayout(item) {
                                 </td>
                                 <td>
                                     <div class="ttd-info-center">
-                                        <div>( .................... )</div>
+                                        <div>Chairudin Hidayat D</div>
                                         <div class="ttd-divider">GM HrGA & IT</div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="ttd-info-center">
-                                        <div>( .................... )</div>
-                                        <div class="ttd-divider">Direktur</div>
+                                        <div>Rudi Pasaribu</div>
+                                        <div class="ttd-divider">Director</div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="ttd-info-center">
-                                        <div>( .................... )</div>
-                                        <div class="ttd-divider">Direktur</div>
+                                        <div>Ade Kosasih</div>
+                                        <div class="ttd-divider">Director</div>
                                     </div>
                                 </td>
                             </tr>
@@ -994,7 +1202,8 @@ function generateIlpdLayout(item) {
     console.log("=== DEBUG APPROVALS ===", approvals);
 
     // 2. Cari data approval yang sudah 'Disetujui' dan punya signature/approver
-    const managerApp = approvals.find(app => app.status === 'Sedang Diproses' && app.signature) || {};
+    const managerApp = approvals.find(app => app.status === 2 || app.status === '2' && app.signature) || {};
+    // const managerApp = approvals.find(app => app.status === 'Sedang Diproses' && app.signature) || {};
 
     const managerSignature = managerApp.signature ? `/storage/${managerApp.signature}` : null;
 

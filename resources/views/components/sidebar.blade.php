@@ -142,6 +142,11 @@
                     x-cloak
                     class="flex flex-col gap-1 pl-9 mt-1">
 
+                    <a href="{{ route('master.area.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="building-2" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Area</span>
+                    </a>
+
                     <a href="{{ route('master.department.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
                         <i data-lucide="building-2" class="w-4 h-4 text-[#64748b]"></i>
                         <span class="text-[13px] font-medium text-[#64748b]">Departemen</span>
@@ -185,6 +190,11 @@
                     <a href="{{ route('master.transport.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
                         <i data-lucide="bus" class="w-4 h-4 text-[#64748b]"></i>
                         <span class="text-[13px] font-medium text-[#64748b]">Transportasi</span>
+                    </a>
+
+                    <a href="{{ route('master.unit.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="bus" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Unit</span>
                     </a>
 
                 </div>

@@ -9,13 +9,24 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Kota extends Model
 {
     protected $fillable = [
-        'kota_kategori_id',
+        'area_id',
         'name',
+        'kota_kategori_id',
         'created_by',
         'is_active',
     ];
 
     protected $table = 'kota';
+
+    public function area(): BelongsTo
+    {
+        return $this->belongsTo(Area::class);
+    }
+
+    public function unit(): HasMany
+    {
+        return $this->hasMany(Unit::class);
+    }
 
     public function kategori(): BelongsTo
     {

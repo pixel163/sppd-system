@@ -32,14 +32,69 @@
 
         </div>
 
-
-        <div id="tab-sppd-content" class="tab-content p-6">
+        {{-- <div id="tab-sppd-content" class="tab-content p-6">
             @include('components.sppd')
 
-            {{-- <form action="{{ route('sppd.reject', $sppd->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menolak pengajuan ini?')">
+            <!-- Container aksi tombol di pojok kanan bawah -->
+            <div class="mt-6 flex items-center justify-end gap-3 pt-6 border-t border-slate-100">
+                <!-- Form Tolak -->
+                <form action="{{ route('sppd.reject', $sppd->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menolak pengajuan ini?')">
+                    @csrf
+                    <button 
+                        type="submit" 
+                        class="rounded-lg bg-rose-600 px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-rose-700">
+                        Tolak
+                    </button>
+                </form>
+
+                <!-- Form Setujui -->
+                <form id="approvalForm" method="POST" action="{{ route('sppd.approve', $sppd->id) }}" enctype="multipart/form-data">
+                    @csrf
+                    <button 
+                        type="submit"
+                        class="rounded-lg bg-[#2563eb] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#1d4ed8]">
+                        Setujui
+                    </button>
+                </form>
+            </div>
+        </div> --}}
+
+        <div id="tab-sppd-content" class="tab-content p-6">
+            <!-- Form Setujui sekarang membungkus seluruh komponen input -->
+            <form id="approvalForm" method="POST" action="{{ route('sppd.approve', $sppd->id) }}" enctype="multipart/form-data">
+                @csrf
+
+                {{-- Komponen SPPD (durasi & tugas ada di dalam sini) --}}
+                @include('components.sppd')
+
+                <!-- Container aksi tombol di pojok kanan bawah -->
+                <div class="mt-6 flex items-center justify-end gap-3 pt-6 border-t border-slate-100">
+                    
+                    <!-- Form Tolak tetap terpisah menggunakan button type="button" / form mandiri di luar atau di sini -->
+                    <button 
+                        type="submit" 
+                        formaction="{{ route('sppd.reject', $sppd->id) }}"
+                        onclick="return confirm('Apakah Anda yakin ingin menolak pengajuan ini?')"
+                        class="rounded-lg bg-rose-600 px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-rose-700">
+                        Tolak
+                    </button>
+
+                    <!-- Tombol Setujui -->
+                    <button 
+                        type="submit"
+                        class="rounded-lg bg-[#2563eb] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#1d4ed8]">
+                        Setujui
+                    </button>
+                </div>
+            </form>
+        </div>
+        {{-- <div id="tab-sppd-content" class="tab-content p-6">
+            @include('components.sppd')
+
+            <form action="{{ route('sppd.reject', $sppd->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menolak pengajuan ini?')">
                 @csrf
                 <button type="submit" class="btn btn-danger">Tolak</button>
-            </form> --}}
+            </form>
 
             <!-- Tombol ditempatkan langsung di dalam Tab SPPD -->
             <form id="approvalForm" method="POST" action="{{ route('sppd.approve', $sppd->id) }}" enctype="multipart/form-data">
@@ -52,7 +107,7 @@
                     </button>
                 </div>
             </form>
-        </div>
+        </div> --}}
 
         <div id="tab-ilpd-content" class="tab-content hidden p-6">
             @if(isset($ilpd) && $ilpd)
