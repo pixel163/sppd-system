@@ -14,6 +14,7 @@ use App\Http\Controllers\Master\GolonganController;
 use App\Http\Controllers\Master\DepartmentController;
 use App\Http\Controllers\Master\JabatanController;
 use App\Http\Controllers\Master\RoleController;
+use App\Http\Controllers\Master\KaryawanController;
 use App\Http\Controllers\Master\KotaKategoriController;
 use App\Http\Controllers\Master\KotaController;
 use App\Http\Controllers\Master\AreaController;
@@ -29,6 +30,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.store');
+Route::get('/get-jabatan/{department_id}', [AuthController::class, 'getJabatanByDepartment']);
 
 Route::get('/test', function () {return view('test');})->name('test');
 Route::get('/test1', function () {return view('test1');})->name('test1');
@@ -106,7 +108,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('jabatan', JabatanController::class);
         Route::resource('role', RoleController::class);
         Route::resource('kotakategori', KotaKategoriController::class);
-        Route::resource('kota', KotaController::class);
+        Route::resource('kota', KotaController::class)->parameters(['kota' => 'kota']);
+        Route::resource('karyawan', KaryawanController::class);
         Route::resource('area', AreaController::class);
         Route::resource('unit', UnitController::class);
         Route::resource('tarif', TarifController::class);

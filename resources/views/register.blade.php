@@ -95,6 +95,36 @@
                     <label for="jabatan_id" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                         Jabatan <span class="text-red-500">*</span>
                     </label>
+                    <select id="jabatan_id" name="jabatan_id" required disabled
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1c61e7] focus:border-transparent disabled:bg-slate-100 disabled:text-slate-400">
+                        <option value="" disabled selected>-- Pilih Departemen Terlebih Dahulu --</option>
+                    </select>
+                </div>
+            </div>
+            {{-- <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Departemen -->
+                <div>
+                    <label for="department_id" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                        Departemen <span class="text-red-500">*</span>
+                    </label>
+                    <select id="department_id" name="department_id" required
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1c61e7] focus:border-transparent">
+                        <option value="" disabled selected>-- Pilih Departemen --</option>
+                        @if(isset($departments) && $departments->count() > 0)
+                            @foreach ($departments as $dept)
+                                <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
+                                    {{ $dept->name }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+
+                <!-- Jabatan -->
+                <div>
+                    <label for="jabatan_id" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                        Jabatan <span class="text-red-500">*</span>
+                    </label>
                     <select id="jabatan_id" name="jabatan_id" required
                         class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1c61e7] focus:border-transparent">
                         <option value="" disabled selected>-- Pilih Jabatan --</option>
@@ -107,7 +137,7 @@
                         @endif
                     </select>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Grid Password & Konfirmasi -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
@@ -146,3 +176,54 @@
 
 </body>
 </html>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deptSelect = document.getElementById('department_id');
+    const jabatanSelect = document.getElementById('jabatan_id');
+
+    // Fungsi untuk memuat jabatan berdasarkan departemen
+    function loadJabatans(departmentId, selectedJabatanId = null) {
+        if (!departmentId) {
+            jabatanSelect.innerHTML = '<option value="" disabled selected>-- Pilih Departemen Terlebih Dahulu --</option>';
+            jabatanSelect.disabled = true;
+            return;
+        }
+
+        jabatanSelect.innerHTML = '<option value="" disabled selected>Memuat data...</option>';
+        jabatanSelect.disabled = true;
+
+        fetch(`/get-jabatan/${departmentId}`)
+            .then(response => response.json())
+            .then(data => {
+                jabatanSelect.innerHTML = '<option value="" disabled selected>-- Pilih Jabatan --</option>';
+                
+                if (data.length > 0) {
+                    data.forEach(jabatan => {
+                        const isSelected = selectedJabatanId == jabatan.id ? 'selected' : '';
+                        jabatanSelect.innerHTML += `<option value="${jabatan.id}" ${isSelected}>${jabatan.name}</option>`;
+                    });
+                    jabatanSelect.disabled = false;
+                } else {
+                    jabatanSelect.innerHTML = '<option value="" disabled selected>Tidak ada jabatan di departemen ini</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                jabatanSelect.innerHTML = '<option value="" disabled selected>Gagal memuat jabatan</option>';
+            });
+    }
+
+    // Jika halaman direfresh tapi ada nilai old() (misal validasi gagal sebelumnya)
+    const oldDepartmentId = deptSelect.value;
+    const oldJabatanId = "{{ old('jabatan_id') }}";
+    if (oldDepartmentId) {
+        loadJabatans(oldDepartmentId, oldJabatanId);
+    }
+
+    // Event listener ketika user mengganti pilihan departemen
+    deptSelect.addEventListener('change', function () {
+        loadJabatans(this.value);
+    });
+});
+</script>

@@ -9,6 +9,7 @@ class Jabatan extends Model
 {
     protected $fillable = [
         'golongan_id',
+        'department_id',
         'name',
         'created_by',
         'is_active',
@@ -19,5 +20,15 @@ class Jabatan extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    public function golongan()
+    {
+        return $this->belongsTo(Golongan::class, 'golongan_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
     }
 }

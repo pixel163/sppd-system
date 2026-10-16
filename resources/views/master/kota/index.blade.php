@@ -28,9 +28,10 @@
             <thead>
                 <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     <th class="px-6 py-4">No</th>
-                    <th class="px-6 py-4">Kota Kategori</th>
+                    <th class="px-6 py-4">Area</th>
                     <th class="px-6 py-4">Nama Kota</th>
-                    <th class="px-6 py-4">Dibuat Oleh</th>
+                    <th class="px-6 py-4">Kota Kategori</th>
+                    {{-- <th class="px-6 py-4">Dibuat Oleh</th> --}}
                     <th class="px-6 py-4">Status</th>
                     <th class="px-6 py-4 text-right">Aksi</th>
                 </tr>
@@ -39,14 +40,12 @@
                 @forelse($kotas as $index => $item)
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="px-6 py-4 text-slate-500">{{ $kotas->firstItem() + $index }}</td>
-                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->kategori->name }}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->area->name }}</td>
                         <td class="px-6 py-4 font-medium text-slate-800">{{ $item->name }}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->kategori->name ?? '-' }}</td>
                         {{-- <td class="px-6 py-4 text-slate-500">
-                            {{ $item->creator ? $item->creator->name : 'Sistem/HRGA' }}
-                        </td> --}}
-                        <td class="px-6 py-4 text-slate-500">
                             HRGA / Admin
-                        </td>
+                        </td> --}}
                         <td class="px-6 py-4">
                             @if($item->is_active)
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Aktif</span>
@@ -56,8 +55,8 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <!-- Tombol Edit -->
-                                <button @click="openEdit = true; editId = {{ $item->id }}; editName = '{{ $item->name }}'; editActive = {{ $item->is_active ? 'true' : 'false' }}" 
+                                <!-- Tombol Edit dengan binding data Alpine.js -->
+                                <button @click="openEdit = true; editId = {{ $item->id }}; editName = '{{ $item->name }}'; editKategori = '{{ $item->kota_kategori_id }}'; editActive = {{ $item->is_active ? 'true' : 'false' }}" 
                                         class="p-2 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors">
                                     <i data-lucide="pencil" class="w-4 h-4"></i>
                                 </button>
@@ -75,7 +74,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-8 text-center text-slate-400">Belum ada data kota.</td>
+                        <td colspan="6" class="px-6 py-8 text-center text-slate-400">Belum ada data kota.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -96,9 +95,10 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Nama Kota</label>
-                        <input type="text" name="name" required class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Misal: Audit Lapangan">
+                        <input type="text" name="name" required class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Misal: Jakarta Selatan">
                     </div>
                     <div class="flex items-center gap-2">
+                        <input type="hidden" name="is_active" value="0">
                         <input type="checkbox" name="is_active" id="is_active_add" value="1" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                         <label for="is_active_add" class="text-sm text-slate-600">Status Aktif</label>
                     </div>
@@ -119,12 +119,27 @@
                 @csrf
                 @method('PUT')
                 <div class="space-y-4">
+                    <!-- Dropdown Kategori Kota -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Kota Kategori</label>
+                        <select name="kota_kategori_id" x-model="editKategori" required class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">Pilih Kategori</option>
+                            @foreach($kategoris as $kat)
+                                <option value="{{ $kat->id }}">{{ $kat->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Nama Kota -->
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Nama Kota</label>
                         <input type="text" name="name" x-model="editName" required class="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
+
+                    <!-- Status Aktif -->
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" name="is_active" id="is_active_edit" value="1" :checked="editActive" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                        <input type="hidden" name="is_active" value="0">
+                        <input type="checkbox" name="is_active" id="is_active_edit" value="1" x-model="editActive" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                         <label for="is_active_edit" class="text-sm text-slate-600">Status Aktif</label>
                     </div>
                 </div>

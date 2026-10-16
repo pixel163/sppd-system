@@ -33,7 +33,7 @@
                     <th class="px-6 py-4">Makan</th>
                     <th class="px-6 py-4">Dinas</th>
                     <th class="px-6 py-4">Hotel</th>
-                    <th class="px-6 py-4">Dibuat Oleh</th>
+                    {{-- <th class="px-6 py-4">Dibuat Oleh</th> --}}
                     <th class="px-6 py-4">Status</th>
                     <th class="px-6 py-4 text-right">Aksi</th>
                 </tr>
@@ -44,15 +44,15 @@
                         <td class="px-6 py-4 text-slate-500">{{ $tarifs->firstItem() + $index }}</td>
                         <td class="px-6 py-4 font-medium text-slate-800">{{ $item->golongan->name?? '-' }}</td>
                         <td class="px-6 py-4 font-medium text-slate-800">{{ $item->kotaKategori->name?? '-' }}</td>
-                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->makan }}</td>
-                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->dinas }}</td>
-                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->hotel }}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ number_format($item->makan, 0, ',', '.') }}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ number_format($item->dinas, 0, ',', '.') }}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ number_format($item->hotel, 0, ',', '.') }}</td>
                         {{-- <td class="px-6 py-4 text-slate-500">
                             {{ $item->creator ? $item->creator->name : 'Sistem/HRGA' }}
                         </td> --}}
-                        <td class="px-6 py-4 text-slate-500">
+                        {{-- <td class="px-6 py-4 text-slate-500">
                             HRGA / Admin
-                        </td>
+                        </td> --}}
                         <td class="px-6 py-4">
                             @if($item->is_active)
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Aktif</span>

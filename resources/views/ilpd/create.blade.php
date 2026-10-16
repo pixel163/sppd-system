@@ -82,6 +82,7 @@
                                     type="date"
                                     class="w-full border-0 text-[14px] outline-none"
                                     value="{{ $sppd->tanggal_awal?->format('Y-m-d') ?? '' }}"
+                                    {{-- min="{{ date('Y-m-d') }}" --}}
                                     data-durasi="{{ $sppd->durasi ?? 1 }}">
                                     {{-- onchange="hitungSemua()"> --}}
                             </div>
@@ -396,7 +397,7 @@
                                 Transport Lokal
                             </span>
 
-                            <div class="currency-wrapper expense-input w-[220px]">
+                            <div class="currency-wrapper w-[220px]">
 
                                 <span class="currency-prefix">
                                     Rp

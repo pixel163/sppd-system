@@ -143,7 +143,7 @@
                     class="flex flex-col gap-1 pl-9 mt-1">
 
                     <a href="{{ route('master.area.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
-                        <i data-lucide="building-2" class="w-4 h-4 text-[#64748b]"></i>
+                        <i data-lucide="compass" class="w-4 h-4 text-[#64748b]"></i>
                         <span class="text-[13px] font-medium text-[#64748b]">Area</span>
                     </a>
 
@@ -160,6 +160,11 @@
                     <a href="{{ route('master.jabatan.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
                         <i data-lucide="briefcase" class="w-4 h-4 text-[#64748b]"></i>
                         <span class="text-[13px] font-medium text-[#64748b]">Jabatan</span>
+                    </a>
+
+                    <a href="{{ route('master.karyawan.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
+                        <i data-lucide="users" class="w-4 h-4 text-[#64748b]"></i>
+                        <span class="text-[13px] font-medium text-[#64748b]">Karyawan</span>
                     </a>
 
                     <a href="{{ route('master.keperluan.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
@@ -193,7 +198,7 @@
                     </a>
 
                     <a href="{{ route('master.unit.index') }}" class="flex items-center gap-3 rounded-xl px-4 py-2 hover:bg-slate-100 transition-colors">
-                        <i data-lucide="bus" class="w-4 h-4 text-[#64748b]"></i>
+                        <i data-lucide="grid" class="w-4 h-4 text-[#64748b]"></i>
                         <span class="text-[13px] font-medium text-[#64748b]">Unit</span>
                     </a>
 

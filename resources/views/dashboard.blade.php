@@ -277,7 +277,8 @@
     {{-- ========================================================= --}}
     {{-- GA / HRGA --}}
     {{-- ========================================================= --}}
-    @if(optional(auth()->user()->jabatan)->name === 'HRGA')
+    @if(optional(auth()->user()->role)->name === 'Admin')
+    {{-- @if(optional(auth()->user()->jabatan)->name === 'HRGA') --}}
 
         <div id="gaSection" class="mt-6">
 
@@ -355,10 +356,27 @@
                         </p>
                     </div>
 
-                    <a href="/riwayat"
+                    <div class="flex items-center gap-3">
+                        <form method="GET" action="" class="flex items-center">
+                            <select name="department_id" onchange="this.form.submit()" 
+                                class="rounded-lg border border-[#e2e8f0] bg-white px-3 py-1.5 text-[12px] text-slate-700 focus:border-[#0d6efd] focus:ring-1 focus:ring-[#0d6efd]">
+                                <option value="">-- Semua Departemen --</option>
+                                @foreach($departemens ?? [] as $dept)
+                                    <option value="{{ $dept->id }}" {{ request('department_id') == $dept->id ? 'selected' : '' }}>
+                                        {{ $dept->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+
+                        <a href="/riwayat" class="text-[12px] font-semibold text-[#0d6efd] hover:underline whitespace-nowrap">
+                            Lihat Semua
+                        </a>
+                    </div>
+                    {{-- <a href="/riwayat"
                         class="text-[12px] font-semibold text-[#0d6efd] hover:underline">
                         Lihat Semua
-                    </a>
+                    </a> --}}
 
                 </div>
 
@@ -375,6 +393,10 @@
 
                                 <th class="whitespace-nowrap px-4 py-3 font-semibold">
                                     Pemohon
+                                </th>
+
+                                <th class="whitespace-nowrap px-4 py-3 font-semibold">
+                                    Departemen
                                 </th>
 
                                 <th class="whitespace-nowrap px-4 py-3 font-semibold">
@@ -415,6 +437,10 @@
                                     </td>
 
                                     <td class="whitespace-nowrap px-4 py-3 text-[#334155]">
+                                        {{ $item->sppd->user->department->name ?? $item->user->department->name ?? '-' }}
+                                    </td>
+
+                                    <td class="whitespace-nowrap px-4 py-3 text-[#334155]">
                                         {{ $item->sppd->kota->name ?? $item->kota->name ?? '-' }}
                                     </td>
 
@@ -431,6 +457,7 @@
                                             $statusClass = match($item->dinas->status ?? $item->status) {
                                                 \App\Enums\DinasStatus::DRAFT => 'bg-yellow-100 text-yellow-800',
                                                 \App\Enums\DinasStatus::DISETUJUI => 'bg-green-100 text-green-800',
+                                                \App\Enums\DinasStatus::LAPORAN => 'bg-green-100 text-blue-800',
                                                 default => 'bg-gray-100 text-gray-800',
                                             };
                                         @endphp
@@ -551,7 +578,8 @@
 <script>
     // Passing data auth dari Laravel/Blade ke global window JavaScript
     window.currentUserId = {{ auth()->id() }};
-    window.currentUserRole = "{{ auth()->user()->jabatan->name ?? '-' }}";
+    window.currentUserRole = "{{ auth()->user()->role->name ?? '-' }}";
+    // window.currentUserRole = "{{ auth()->user()->jabatan->name ?? '-' }}";
 </script>
 
     @vite('resources/js/dashboard.js')

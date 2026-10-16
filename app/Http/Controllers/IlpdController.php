@@ -69,6 +69,8 @@ class IlpdController extends Controller
         $transports = Transport::where('is_active', true)->get(); 
         $keperluans = Keperluan::where('is_active', true)->get();
 
+        // dd($golonganId, $kotaKategoriId, $tarif);
+
         return view('ilpd.create', compact('sppd', 'transports', 'keperluans', 'tarif'));
     }
 
@@ -963,22 +965,25 @@ class IlpdController extends Controller
             'laporan_2'       => 'nullable|string',
         ]);
 
-        $totalPerkiraan = $ilpd->detail_ilpd ? $ilpd->detail_ilpd->sum('uang_muka') : 0;
+        // $totalPerkiraan = $ilpd->detail_ilpd ? $ilpd->detail_ilpd->sum('uang_muka') : 0;
+        $totalPerkiraan = $ilpd->detail_ilpd ? (float) ($ilpd->detail_ilpd->total ?? 0) : 0;
 
         $uangMuka = (float) $request->input('uang_muka', 0);
         $totalRealisasi = (float) $request->input('total_realisasi', 0);
         
         $selisihBE = $uangMuka - $totalRealisasi;
 
-        DB::transaction(function () use ($request, $ilpd, $totalPerkiraan) {
+        DB::transaction(function () use ($request, $ilpd, $totalPerkiraan, $uangMuka, $totalRealisasi, $selisihBE) {
         
             Laporan::updateOrCreate(
                 ['ilpd_id' => $ilpd->id],
                 [
                     'realisasi'       => $request->input('realisasi'),
                     'perkiraan'       => $totalPerkiraan,
-                    'uang_muka'       => $request->input('uang_muka', 0),
-                    'total_realisasi' => $request->input('total_realisasi', 0),
+                    'uang_muka'       => $uangMuka,
+                    // 'uang_muka'       => $request->input('uang_muka', 0),
+                    'total_realisasi' => $totalRealisasi,
+                    // 'total_realisasi' => $request->input('total_realisasi', 0),
                     'total_dibayar'   => $request->input('total_dibayar', 0),
                     'selisih'         => $selisihBE,
                     'keterangan'      => $request->input('keterangan'),
@@ -989,12 +994,12 @@ class IlpdController extends Controller
 
             if ($ilpd->dinas) {
                 $ilpd->dinas->update([
-                    'status' => 'Selesai'
+                    'status' => DinasStatus::SELESAI,
                 ]);
             } 
             else {
                 Dinas::where('ilpd_id', $ilpd->id)->update([
-                    'status' => 'Selesai'
+                    'status' => DinasStatus::SELESAI,
                 ]);
             }
         });

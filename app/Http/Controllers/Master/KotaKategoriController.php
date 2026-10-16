@@ -30,13 +30,13 @@ class KotaKategoriController extends Controller
         return redirect()->back()->with('success', 'Data KotaKategori berhasil ditambahkan!');
     }
 
-    public function update(Request $request, KotaKategori $kotakategoris)
+    public function update(Request $request, KotaKategori $kotakategori)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:kotakategori,name,' . $kotakategoris->id,
+            'name' => 'required|string|max:255|unique:kota_kategori,name,' . $kotakategori->id,
         ]);
 
-        $kotakategoris->update([
+        $kotakategori->update([
             'name'      => $request->name,
             'is_active' => $request->has('is_active'),
         ]);

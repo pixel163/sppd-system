@@ -28,8 +28,10 @@
             <thead>
                 <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     <th class="px-6 py-4">No</th>
+                    <th class="px-6 py-4">Golongan</th>
+                    <th class="px-6 py-4">Departemen</th>
                     <th class="px-6 py-4">Nama Jabatan</th>
-                    <th class="px-6 py-4">Dibuat Oleh</th>
+                    {{-- <th class="px-6 py-4">Dibuat Oleh</th> --}}
                     <th class="px-6 py-4">Status</th>
                     <th class="px-6 py-4 text-right">Aksi</th>
                 </tr>
@@ -38,13 +40,15 @@
                 @forelse($jabatans as $index => $item)
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="px-6 py-4 text-slate-500">{{ $jabatans->firstItem() + $index }}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->golongan->name }}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ $item->Department->name }}</td>
                         <td class="px-6 py-4 font-medium text-slate-800">{{ $item->name }}</td>
                         {{-- <td class="px-6 py-4 text-slate-500">
                             {{ $item->creator ? $item->creator->name : 'Sistem/HRGA' }}
                         </td> --}}
-                        <td class="px-6 py-4 text-slate-500">
+                        {{-- <td class="px-6 py-4 text-slate-500">
                             HRGA / Admin
-                        </td>
+                        </td> --}}
                         <td class="px-6 py-4">
                             @if($item->is_active)
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Aktif</span>

@@ -26,22 +26,11 @@ use App\Enums\IlpdApprovalStatus;
 
 class SppdController extends Controller
 {
-    // public function getKota($area_id)
-    // {
-    //     $kota = Kota::where('area_id', $area_id)->get();
-    //     return response()->json($kota);
-    // }
-
-    // public function getUnit($kota_id)
-    // {
-    //     $unit = Unit::where('kota_id', $kota_id)->get();
-    //     return response()->json($unit);
-    // }
-
     public function getKota($areaId)
     {
         return response()->json(
             Kota::where('area_id', $areaId)
+                ->where('is_active', true) // <-- Tambahkan filter ini
                 ->select('id', 'name')
                 ->orderBy('name')
                 ->get()
@@ -52,11 +41,32 @@ class SppdController extends Controller
     {
         return response()->json(
             Unit::where('kota_id', $kotaId)
+                ->where('is_active', true) // <-- Tambahkan filter ini jika tabel Unit juga punya kolom is_active
                 ->select('id', 'name')
                 ->orderBy('name')
                 ->get()
         );
     }
+
+    // public function getKota($areaId)
+    // {
+    //     return response()->json(
+    //         Kota::where('area_id', $areaId)
+    //             ->select('id', 'name')
+    //             ->orderBy('name')
+    //             ->get()
+    //     );
+    // }
+
+    // public function getUnit($kotaId)
+    // {
+    //     return response()->json(
+    //         Unit::where('kota_id', $kotaId)
+    //             ->select('id', 'name')
+    //             ->orderBy('name')
+    //             ->get()
+    //     );
+    // }
 
     public function create()
     {
@@ -95,7 +105,7 @@ class SppdController extends Controller
             'kota_id'            => ['required', 'exists:kota,id'],
             'unit_ids'            => ['nullable', 'array'],
             'unit_ids.*'         => ['exists:unit,id'],
-            'durasi'             => ['required', 'integer', 'min:1', 'max:14'],
+            'durasi'             => ['required', 'integer', 'min:1', 'max:365'],
             'tugas'              => ['required', 'string'],
 
             'keperluan_id'       => ['required_without:keperluan_lainnya', 'array'],

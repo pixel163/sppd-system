@@ -29,7 +29,7 @@
                 <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     <th class="px-6 py-4">No</th>
                     <th class="px-6 py-4">Nama Keperluan</th>
-                    <th class="px-6 py-4">Dibuat Oleh</th>
+                    {{-- <th class="px-6 py-4">Dibuat Oleh</th> --}}
                     <th class="px-6 py-4">Status</th>
                     <th class="px-6 py-4 text-right">Aksi</th>
                 </tr>
@@ -39,9 +39,9 @@
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="px-6 py-4 text-slate-500">{{ $keperluans->firstItem() + $index }}</td>
                         <td class="px-6 py-4 font-medium text-slate-800">{{ $item->name }}</td>
-                        <td class="px-6 py-4 text-slate-500">
+                        {{-- <td class="px-6 py-4 text-slate-500">
                             {{ $item->creator?->name ?? '-' }} {{ $item->creator?->jabatan ? '('.$item->creator->jabatan->name.')' : '' }}
-                        </td>
+                        </td> --}}
                         {{-- <td class="px-6 py-4 text-slate-500">
                             HRGA / Admin
                         </td> --}}

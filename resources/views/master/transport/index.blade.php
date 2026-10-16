@@ -29,7 +29,7 @@
                 <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     <th class="px-6 py-4">No</th>
                     <th class="px-6 py-4">Nama Transportasi</th>
-                    <th class="px-6 py-4">Dibuat Oleh</th>
+                    {{-- <th class="px-6 py-4">Dibuat Oleh</th> --}}
                     <th class="px-6 py-4">Status</th>
                     <th class="px-6 py-4 text-right">Aksi</th>
                 </tr>
@@ -42,9 +42,9 @@
                         {{-- <td class="px-6 py-4 text-slate-500">
                             {{ $item->creator ? $item->creator->name : 'Sistem/HRGA' }}
                         </td> --}}
-                        <td class="px-6 py-4 text-slate-500">
+                        {{-- <td class="px-6 py-4 text-slate-500">
                             HRGA / Admin
-                        </td>
+                        </td> --}}
                         <td class="px-6 py-4">
                             @if($item->is_active)
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Aktif</span>

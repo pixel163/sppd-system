@@ -254,6 +254,67 @@
                     </div> --}}
 
                     {{-- Waktu --}}
+                    {{-- <div class="form-row flex gap-6 py-3">
+                        <label class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                            Waktu (Durasi)
+                        </label>
+                        <div class="flex-1">
+                            <div class="flex gap-4">
+                                <div class="relative flex-1">
+                                    <input 
+                                        name="durasi_bulan" 
+                                        type="number" 
+                                        min="0" 
+                                        placeholder="0" 
+                                        class="form-input pr-16"
+                                        value="{{ old('durasi_bulan', $durasiBulan ?? '') }}">
+                                    <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[13px] text-[#94a3b8]">
+                                        bulan
+                                    </span>
+                                </div>
+                                <div class="relative flex-1">
+                                    <input 
+                                        name="durasi_hari" 
+                                        type="number" 
+                                        min="0" 
+                                        placeholder="0" 
+                                        class="form-input pr-16"
+                                        value="{{ old('durasi_hari', $durasiHari ?? '') }}"
+                                        required>
+                                    <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[13px] text-[#94a3b8]">
+                                        hari
+                                    </span>
+                                </div>
+                            </div>
+                            <p class="mt-1.5 text-[11px] text-[#94a3b8]">
+                                Isi kolom bulan jika perjalanan dinas lebih dari 30 hari.
+                            </p>
+                        </div>
+                    </div> --}}
+
+                    {{-- <div class="form-row flex gap-6 py-3">
+                        <label for="durasi" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
+                            Waktu
+                        </label>
+                        <div class="flex-1">
+                            <div class="relative">
+                                <input
+                                    id="durasi"
+                                    name="durasi"
+                                    type="text"
+                                    placeholder="Contoh: 35 hari atau 1 bulan 7 hari"
+                                    class="form-input"
+                                    value="{{ old('durasi', $durasi ?? '') }}"
+                                    required
+                                    oninvalid="this.setCustomValidity('Silahkan masukan waktu dinas')"
+                                    oninput="this.setCustomValidity('')">
+                            </div>
+                            <p class="mt-1.5 text-[11px] text-[#94a3b8]">
+                                Ketik bebas sesuai durasi perjalanan dinas (misal: 45 hari / 1 bulan 15 hari).
+                            </p>
+                        </div>
+                    </div> --}}
+
                     <div class="form-row flex gap-6 py-3">
 
                         <label for="waktu" class="form-label w-[180px] pt-2.5 text-[14px] font-bold">
@@ -269,7 +330,7 @@
                                     name="durasi"
                                     type="text"
                                     inputmode="numeric"
-                                    maxlength="2"
+                                    maxlength="3"
                                     placeholder="Masukkan waktu"
                                     class="form-input pr-20"
                                     required
@@ -283,9 +344,9 @@
 
                             </div>
 
-                            <p class="mt-1.5 text-[11px] text-[#94a3b8]">
+                            {{-- <p class="mt-1.5 text-[11px] text-[#94a3b8]">
                                 Masukkan angka 1–14 hari.
-                            </p>
+                            </p> --}}
 
                         </div>
 

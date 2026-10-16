@@ -12,7 +12,7 @@ function showDetail(item) {
         2: 'Sedang Diproses',
         3: 'Disetujui',
         4: 'Ditolak',
-        5: 'Menunggu Laporan',
+        5: 'Laporan',
         6: 'Selesai'
     };
 
@@ -111,7 +111,7 @@ function showDetail(item) {
             // 2. Pemohon & Role Identifikasi
             const docUserId = item.user_id || item.sppd?.user_id || item.dinas?.sppd?.user_id;
             const isMyDocument = (Number(docUserId) === Number(window.currentUserId));
-            const isHRGA = window.currentUserRole === 'HRGA';
+            const isAdmin = window.currentUserRole === 'Admin';
 
             const docUser = item.user || item.sppd?.user;
             const isSubmitterManager = docUser?.jabatan?.name?.toLowerCase().includes('manager') 
@@ -120,19 +120,21 @@ function showDetail(item) {
             const safeItemJson = encodeURIComponent(JSON.stringify(item));
 
             // Tombol Default (Selalu muncul)
+            // Mulai dengan string kosong agar tombol tidak menumpuk
             let documentButtons = `
-                <button type="button" 
-                        data-item="${safeItemJson}"
-                        onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
-                        class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
-                    <span>👁</span> Lihat
-                </button>
-            `;
+                    <button type="button" 
+                            data-item="${safeItemJson}"
+                            onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
+                            class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
+                        <span>👁</span> Lihat
+                    </button>
+                `;
 
             // Map Enum DinasStatus:
             // 0: DRAFT, 1: MENUNGGU_APPROVAL, 2: SEDANG_DIPROSES, 3: DISETUJUI, 4: DITOLAK, 5: LAPORAN, 6: SELESAI
 
-            if (isHRGA && !isMyDocument) {
+            if (isAdmin && !isMyDocument) {
+                // --- HAK AKSES ADMIN / HRGA UNTUK DOKUMEN MILIK ORANG LAIN ---
 
                 // Status 1: Menunggu Approval
                 if (statusNum === 1) {
@@ -144,15 +146,11 @@ function showDetail(item) {
                         `;
                     }
                 }
-
                 // Status 2: Sedang Diproses
                 else if (statusNum === 2) {
                     if (['form_sppd', 'sppd'].includes(type)) {
                         documentButtons += `
-                            <button type="button" 
-                                    data-item="${safeItemJson}"
-                                    onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
-                                    class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
+                            <button type="button" data-item="${safeItemJson}" onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))" class="flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50">
                                 <span>🖨</span> Cetak
                             </button>
                         `;
@@ -164,237 +162,81 @@ function showDetail(item) {
                         `;
                     }
                 }
+                // Status 3: Disetujui (Admin bisa Edit jika belum tanggal berangkat)
+                else if (statusNum === 3) {
+                    const today = new Date().toISOString().split('T')[0];
+                    const tglBerangkat = item.ilpd?.tanggal_awal || item.tanggal_mulai || null;
 
-                // Status 3: Disetujui / 5: Laporan / 6: Selesai
-                else if ([3, 5, 6].includes(statusNum)) {
-
-                    // ============================================================
-                    // LOGIKA PENGECEKAN TANGGAL BERANGKAT KHUSUS STATUS DISETUJUI (3)
-                    // ============================================================
-                    if (statusNum === 3) {
-                        const today = new Date().toISOString().split('T')[0];
-                        const tglBerangkat = item.ilpd?.tanggal_awal || item.tanggal_mulai || null;
-
-                        // Hanya untuk ILPD (form 2) & jika belum berangkat
-                        if (['form_ilpd', 'ilpd'].includes(type) && tglBerangkat && tglBerangkat > today) {
-                            documentButtons += `
-                                <a href="/ilpd/${itemId}/edit" class="flex items-center gap-1.5 rounded-lg bg-amber-500 px-4 py-2 text-[13px] font-medium text-white hover:bg-amber-600">
-                                    <span>✏️</span> Edit
-                                </a>
-                            `;
-                        }
-                    }
-
-                    // Tombol Cetak Tetap Ada
-                    documentButtons += `
-                        <button type="button" 
-                                data-item="${safeItemJson}"
-                                onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
-                                class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
-                            <span>🖨</span> Cetak
-                        </button>
-                    `;
-                }
-            }
-            // let documentButtons = `
-            //     <button type="button" 
-            //             data-item="${safeItemJson}"
-            //             onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
-            //             class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
-            //         <span>👁</span> Lihat
-            //     </button>
-            // `;
-
-            // // Map Enum DinasStatus:
-            // // 0: DRAFT, 1: MENUNGGU_APPROVAL, 2: SEDANG_DIPROSES, 3: DISETUJUI, 4: DITOLAK, 5: LAPORAN, 6: SELESAI
-
-            // if (isHRGA && !isMyDocument) {
-
-            //     // Status 1: Menunggu Approval
-            //     if (statusNum === 1) {
-            //         // SPPD milik Manager yang butuh tindakan approval GA
-            //         if (['form_sppd', 'sppd'].includes(type) && isSubmitterManager) {
-            //             documentButtons += `
-            //                 <a href="/sppd/${itemId}/approves" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
-            //                     Proses
-            //                 </a>
-            //             `;
-            //         }
-            //     }
-
-            //     // Status 2: Sedang Diproses
-            //     else if (statusNum === 2) {
-            //         if (['form_sppd', 'sppd'].includes(type)) {
-            //             documentButtons += `
-            //                 <button type="button" 
-            //                         data-item="${safeItemJson}"
-            //                         onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
-            //                         class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
-            //                     <span>🖨</span> Cetak
-            //                 </button>
-            //             `;
-            //         } else if (['form_ilpd', 'ilpd'].includes(type)) {
-            //             documentButtons += `
-            //                 <a href="/ilpd/${itemId}" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
-            //                     Proses
-            //                 </a>
-            //             `;
-            //         }
-            //     }
-
-            //     // Status 3: Disetujui / 5: Laporan / 6: Selesai
-            //     else if ([3, 5, 6].includes(statusNum)) {
-            //         documentButtons += `
-            //             <button type="button" 
-            //                     data-item="${safeItemJson}"
-            //                     onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
-            //                     class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
-            //                 <span>🖨</span> Cetak
-            //             </button>
-            //         `;
-            //     }
-            // } 
-            else {
-                // Hak Akses untuk Pemohon / Non-HRGA
-                
-                // Status 2: Sedang Diproses (Pemohon cetak SPPD)
-                if (statusNum === 2) {
-                    if (['form_sppd', 'sppd'].includes(type)) {
+                    if (['form_ilpd', 'ilpd'].includes(type) && tglBerangkat && tglBerangkat > today) {
                         documentButtons += `
-                            <button type="button" 
-                                    data-item="${safeItemJson}"
-                                    onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
-                                    class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
+                            <a href="/ilpd/${itemId}/edit" class="flex items-center gap-1.5 rounded-lg bg-amber-500 px-4 py-2 text-[13px] font-medium text-white hover:bg-amber-600">
+                                <span>✏️</span> Edit
+                            </a>
+                        `;
+                    } else {
+                        documentButtons += `
+                            <button type="button" data-item="${safeItemJson}" onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))" class="flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50">
                                 <span>🖨</span> Cetak
                             </button>
                         `;
                     }
                 }
-
-                // Status 3, 5, 6: Disetujui / Laporan / Selesai (Pemohon cetak semua form)
-                else if ([3, 5, 6].includes(statusNum)) {
+                // Status 5, 6 untuk Admin
+                else if ([5, 6].includes(statusNum)) {
                     documentButtons += `
-                        <button type="button" 
-                                data-item="${safeItemJson}"
-                                onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
-                                class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
+                        <button type="button" data-item="${safeItemJson}" onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))" class="flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50">
                             <span>🖨</span> Cetak
                         </button>
                     `;
                 }
+                // else {
+                //     documentButtons += `
+                //         <button type="button" data-item="${safeItemJson}" onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))" class="flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50">
+                //             <span>🖨</span> Cetak
+                //         </button>
+                //     `;
+                // }
+
+            } else {
+                // --- HAK AKSES PEMOHON / MILIK SENDIRI ---
+
+                // Status 2: Sedang Diproses (Pemohon cetak SPPD)
+                if (statusNum === 2) {
+                    if (['form_sppd', 'sppd'].includes(type)) {
+                        documentButtons += `
+                            <button type="button" data-item="${safeItemJson}" onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))" class="flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50">
+                                <span>🖨</span> Cetak
+                            </button>
+                        `;
+                    }
+                }
+                // Status 3 (Disetujui): User biasa hanya tombol Cetak
+                else if (statusNum === 3) {
+                    documentButtons += `
+                        <button type="button" data-item="${safeItemJson}" onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))" class="flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50">
+                            <span>🖨</span> Cetak
+                        </button>
+                    `;
+                }
+                // Status 5 atau 6 (Status Laporan): Tombol Proses Laporan (jika belum dibuat) atau Cetak
+                else if ([5, 6].includes(statusNum)) {
+                    const sudahLaporan = item.ilpd?.laporan || item.has_laporan;
+
+                    if (['form_ilpd', 'ilpd'].includes(type) && !sudahLaporan) {
+                        documentButtons += `
+                            <a href="/laporan/${itemId}" class="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-emerald-700">
+                                Proses
+                            </a>
+                        `;
+                    } else {
+                        documentButtons += `
+                            <button type="button" data-item="${safeItemJson}" onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))" class="flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-50">
+                                <span>🖨</span> Cetak
+                            </button>
+                        `;
+                    }
+                }
             }
-        // });
-        // dokumenList.forEach(type => {
-        //     const doc = getDocumentData(type);
-        //     let itemId = null;
-        //     let rawDate = item.created_at;
-
-        //     if (type === 'form_sppd') {
-        //         itemId = item.id;
-        //         rawDate = item.created_at;
-        //         doc.title = item.no_sppd || item.no || "Form SPPD";
-
-        //     } else if (type === 'form_ilpd' && item.ilpd) {
-        //         itemId = item.ilpd.id;
-        //         rawDate = item.ilpd.created_at || item.created_at;
-        //         doc.title = item.ilpd.no_ilpd || "Form ILPD";
-                
-        //     } else if (type === 'tiket') {
-        //         const tiketData = Array.isArray(listTiket) ? listTiket[0] : listTiket;
-
-        //         rawDate = tiketData.uploaded_at || tiketData.created_at || item.created_at;
-
-        //         doc.title = tiketData.type ? `Tiket ${tiketData.type.toUpperCase()}` : "Tiket Perjalanan";
-        //     }
-
-        //     const docDate = typeof formatTanggalIndo === 'function' ? formatTanggalIndo(rawDate) : (rawDate || '-');
-
-        //     const mainStatus = item.dinas?.status
-        //     const docUserId = item.user_id || item.sppd?.user_id || item.dinas?.sppd?.user_id;
-
-        //     const isMyDocument = (Number(docUserId) === Number(window.currentUserId));
-        //     const isHRGA = window.currentUserRole === 'HRGA';
-
-        //     const docUser = item.user || item.sppd?.user;
-        //     const isSubmitterManager = docUser?.jabatan?.name?.toLowerCase().includes('Manager') 
-        //         || docUser?.jabatan_id === 2; // Sesuaikan ID/Nama jabatan Manager di DB Anda
-
-        //     const safeItemJson = encodeURIComponent(JSON.stringify(item));
-
-        //     let documentButtons = `
-        //         <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
-        //             <span>👁</span> Lihat
-        //         </button>
-        //     `;
-
-        //     if (isHRGA && !isMyDocument) {
-
-        //         if (['Menunggu Approval', 'menunggu_approval', 'Pending'].includes(mainStatus)) {
-        //             if ((type === 'form_sppd' || type === 'sppd') && isSubmitterManager) {
-        //                 documentButtons += `
-        //                     <a href="/sppd/${itemId}/approves" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
-        //                         Proses
-        //                     </a>
-        //                 `;
-        //             }
-        //         }
-
-        //         else if (['Sedang Diproses', 'sedang_diproses'].includes(mainStatus)) {
-        //             if (type === 'form_sppd' || type === 'sppd') {
-        //                 documentButtons += `
-        //                     <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
-        //                         <span>🖨</span> Cetak
-        //                     </button>
-        //                 `;
-        //             } else if (['form_ilpd', 'ilpd'].includes(type)) {
-        //                 documentButtons += `
-        //                     <a href="/ilpd/${itemId}" class="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[13px] font-medium text-white hover:bg-blue-700">
-        //                         Proses
-        //                     </a>
-        //                 `;
-        //             }
-        //         }
-
-        //         else if (['Disetujui', 'Approved'].includes(mainStatus)) {
-        //             documentButtons += `
-        //                 <button type="button" class="flex items-center gap-1.5 rounded-lg border ${doc.border} px-4 py-2 text-[13px] font-medium ${doc.iconColor} hover:bg-slate-50" onclick="printItem('${type}', ${JSON.stringify(item).replace(/"/g, '&quot;')})">
-        //                     <span>🖨</span> Cetak
-        //                 </button>
-        //             `;
-        //         }
-        //     }
-
-        //     else {
-
-        //         if (['Menunggu Approval', 'menunggu_approval', 'Pending'].includes(mainStatus)) {
-
-        //         }
-
-        //         else if (['Sedang Diproses', 'sedang_diproses'].includes(mainStatus)) {
-        //             if (['form_sppd', 'sppd'].includes(type)) {
-        //                 documentButtons += `
-        //                     <button type="button" 
-        //                             data-item="${safeItemJson}"
-        //                             onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
-        //                             class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
-        //                         <span>🖨</span> Cetak
-        //                     </button>
-        //                 `;
-        //             }
-        //         }
-
-        //         else if (['Disetujui', 'Approved'].includes(mainStatus)) {
-        //             documentButtons += `
-        //                 <button type="button" 
-        //                         data-item="${safeItemJson}"
-        //                         onclick="printItem('${type}', JSON.parse(decodeURIComponent(this.dataset.item)))"
-        //                         class="flex items-center gap-1.5 rounded-lg border ${doc.border || 'border-slate-300'} px-4 py-2 text-[13px] font-medium ${doc.iconColor || 'text-slate-700'} hover:bg-slate-50">
-        //                     <span>🖨</span> Cetak
-        //                 </button>
-        //             `;
-        //         }
-
-        //     }
 
             const wrapper = document.createElement('div');
             wrapper.className = 'flex flex-col gap-4 rounded-xl border border-[#f1f5f9] p-4 sm:flex-row sm:items-center';
@@ -707,7 +549,7 @@ function generateSppdLayout(item) {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Surat Perintah Perjalanan Dinas (SPPD)</title>
+            <title>Surat Perintah Perjalanan Dinas</title>
             <style>
                 /* Setup Halaman Cetak A4 */
                 @page {
@@ -783,18 +625,35 @@ function generateSppdLayout(item) {
                     width: 30%;
                     text-align: right;
                     font-size: 9pt;
+                    box-sizing: border-box;
+                    padding-right: 0;
                 }
 
-                .nomor-box {
+                /* .nomor-box {
                     border: 1px solid #000;
                     display: inline-block;
                     text-align: left;
                     width: 100%;
                     white-space: nowrap;
+                } */
+
+                .nomor-box {
+                    display: block;
+                    width: 100%;
+                    max-width: 100%;
+                    min-width: 0;
+                    box-sizing: border-box;
+                    border: 1px solid #000;
+                    text-align: left;
+                    white-space: normal;
+                    overflow-wrap: anywhere;
                 }
 
                 .nomor-box div {
+                    box-sizing: border-box;
+                    width: 100%;
                     padding: 4px 6px;
+                    overflow-wrap: anywhere;
                 }
 
                 .nomor-box div:first-child {
@@ -900,13 +759,13 @@ function generateSppdLayout(item) {
                     border-collapse: collapse;
                     text-align: center;
                     table-layout: fixed;
-                    font-size: 9pt;
+                    font-size: 8pt;
                 }
 
                 /* Header Kolom */
                 .ttd-table th {
                     border: 1px solid #000;
-                    padding: 6px;
+                    padding: 6px 4px;
                     font-weight: bold;
                     background-color: #f8fafc;
                 }
@@ -915,7 +774,8 @@ function generateSppdLayout(item) {
                 .ttd-table td {
                     border: 1px solid #000;
                     padding: 6px 4px;
-                    vertical-align: bottom;
+                    vertical-align: top;
+                    overflow: hidden;
                 }
 
                 /* Area Gambar Tanda Tangan (Diperbesar) */
@@ -935,14 +795,20 @@ function generateSppdLayout(item) {
                 /* Detail Nama & Jabatan */
                 .ttd-info {
                     text-align: left;
-                    font-size: 8.5pt;
-                    line-height: 1.4;
+                    font-size: 7.5pt;
+                    line-height: 1.3;
+                    word-break: break-word; /* Memaksa kata panjang/nipis turun ke baris bawah */
+                    overflow-wrap: break-word;
+                    max-width: 100%;
                 }
 
                 .ttd-info-center {
                     text-align: center;
-                    font-size: 8.5pt;
-                    line-height: 1.4;
+                    font-size: 7.5pt;
+                    line-height: 1.3;
+                    word-break: break-word; /* Memaksa kata panjang/nipis turun ke baris bawah */
+                    overflow-wrap: break-word;
+                    max-width: 100%;
                 }
 
                 /* Garis Pemisah Tipis antara Nama dan Jabatan */
@@ -1052,7 +918,14 @@ function generateSppdLayout(item) {
                     <tr>
                         <td class="label-col">Kota Tujuan</td>
                         <td class="colon-col">:</td>
-                        <td><div class="value-box">${item.kota?.name || item.name || '-'}</div></td>
+                        <td>
+                            <div class="value-box">
+                                ${
+                                    item.kota_dan_unit || 
+                                    (item.kota?.name ? `${item.kota.name} (${item.unit_list || item.units_list?.map(u => u.name).join(', ') || '-'})` : '-')
+                                }
+                            </div>
+                        </td>
                     </tr>
                     <tr>
                         <td class="label-col">Waktu</td>
@@ -1342,8 +1215,8 @@ function generateIlpdLayout(item) {
                             <tr><td>Visa</td><td class="text-right">Rp ${formatRupiah(perkiraan.visa)}</td></tr>
                             <tr><td>Fiskal</td><td class="text-right">Rp ${formatRupiah(perkiraan.fiskal)}</td></tr>
                             <tr><td>Tax Airport</td><td class="text-right">Rp ${formatRupiah(perkiraan.airport_tax)}</td></tr>
-                            <tr><td>Parkir & Tol</td><td class="text-right">Rp ${formatRupiah(perkiraan.parkirtoll)}</td></tr>
-                            <tr><td>Entertaiment</td><td class="text-right">Rp ${formatRupiah(perkiraan.entertaiment)}</td></tr>
+                            <tr><td>Parkir & Tol</td><td class="text-right">Rp ${formatRupiah(perkiraan.parkir_toll)}</td></tr>
+                            <tr><td>Entertaiment</td><td class="text-right">Rp ${formatRupiah(perkiraan.entertainment)}</td></tr>
                             <tr><td>Lainnya</td><td class="text-right">Rp ${formatRupiah(perkiraan.dll)}</td></tr>
                         </table>
                     </td>
@@ -1358,8 +1231,8 @@ function generateIlpdLayout(item) {
                             <tr><td>Visa</td><td class="text-right">Rp ${formatRupiah(realisasi.visa)}</td></tr>
                             <tr><td>Fiskal</td><td class="text-right">Rp ${formatRupiah(realisasi.fiskal)}</td></tr>
                             <tr><td>Tax Airport</td><td class="text-right">Rp ${formatRupiah(realisasi.airport_tax)}</td></tr>
-                            <tr><td>Parkir & Tol</td><td class="text-right">Rp ${formatRupiah(realisasi.parkirtoll)}</td></tr>
-                            <tr><td>Entertaiment</td><td class="text-right">Rp ${formatRupiah(realisasi.entertaiment)}</td></tr>
+                            <tr><td>Parkir & Tol</td><td class="text-right">Rp ${formatRupiah(realisasi.parkir_toll)}</td></tr>
+                            <tr><td>Entertaiment</td><td class="text-right">Rp ${formatRupiah(realisasi.entertainment)}</td></tr>
                             <tr><td>Lainnya</td><td class="text-right">Rp ${formatRupiah(realisasi.dll)}</td></tr>
                         </table>
                     </td>

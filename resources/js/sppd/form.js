@@ -16,8 +16,8 @@ function validasiWaktu(input) {
     if (input.value !== '') {
         let val = parseInt(input.value, 10);
         
-        if (val > 14) {
-            input.value = 14;
+        if (val > 365) {
+            input.value = 365;
         }
         
         if (val < 1) {

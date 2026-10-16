@@ -4,17 +4,28 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Jabatan;
+use App\Models\Golongan;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class JabatanController extends Controller
 {
     public function index()
     {
-        
-        $jabatans = Jabatan::latest()->paginate(10);
+        $jabatans = Jabatan::with(['golongan', 'department'])->latest()->paginate(10);
         
         return view('master.jabatan.index', compact('jabatans'));
     }
+    // public function index()
+    // {
+        
+    //     $jabatans = Jabatan::latest()->paginate(10);
+
+    //     $golongan = Golongan::all();
+    //     $department = Department::all();
+        
+    //     return view('master.jabatan.index', compact('jabatans','golongan','department'));
+    // }
 
     public function store(Request $request)
     {

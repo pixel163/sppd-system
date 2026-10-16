@@ -9,6 +9,7 @@ use App\Models\Ilpd;
 use App\Models\IlpdApproval;
 use App\Models\Dinas;
 use App\Models\Kota;
+use App\Models\Department;
 use App\Models\Keperluan;
 use App\Models\Transport;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ use App\Enums\DinasStatus;
 class DashboardController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
         
@@ -38,11 +39,22 @@ class DashboardController extends Controller
             })
             ->latest()
             ->get();
+
+        $departemens = Department::all();
         
-        $pengajuanGa = Sppd::with(['dinas','user','kota','ilpd.detail_ilpd','ilpd.tiket','approval', 'sppd_approval.sppd_approver', 'user.jabatan','ilpd.ilpd_approval','ilpd.approval'])
-        ->latest()
-        ->take(5)
-        ->get();
+        $pengajuanGa = Sppd::with(['dinas','user','user.department','kota','ilpd.detail_ilpd','ilpd.tiket','approval', 'sppd_approval.sppd_approver', 'user.jabatan','ilpd.ilpd_approval','ilpd.approval','ilpd.laporan'])
+            ->when($request->department_id, function($query) use ($request) {
+                $query->whereHas('user', function($q) use ($request) {
+                    // $query->whereHas('sppd.user', function($q) use ($request) {
+                    $q->where('department_id', $request->department_id);
+                })->orWhereHas('user', function($q) use ($request) {
+                    $q->where('department_id', $request->department_id);
+                });
+            })
+            ->latest()
+            ->take(6)
+            // ->take(5)
+            ->get();
 
         $draft = Dinas::where('status', DinasStatus::DRAFT)->count();
 
@@ -59,5 +71,5 @@ class DashboardController extends Controller
         $keperluans = Keperluan::all();
         $transports = Transport::all();
 
-        return view('dashboard', compact('pengajuanSaya' ,'approvalManager', 'pengajuanGa', 'pengajuanGa','draft', 'Disetujui', 'menungguApproval', 'sedangDiproses', 'selesai', 'dinasList', 'keperluans', 'transports'));}
+        return view('dashboard', compact('pengajuanSaya' ,'approvalManager', 'pengajuanGa', 'pengajuanGa','draft', 'Disetujui', 'menungguApproval', 'sedangDiproses', 'selesai', 'dinasList', 'keperluans', 'transports','departemens'));}
 }

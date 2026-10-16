@@ -47,15 +47,24 @@ class KaryawanImport implements ToModel
             ]);
         }
 
-        // 4. Sinkronisasi Jabatan (Index 4, butuh golongan_id)
+        // 4. Sinkronisasi Jabatan 
         $jabatan = null;
         if (!empty($row[4])) {
             $jabatan = Jabatan::firstOrCreate([
-                'name' => trim($row[4]),
+                'name' => trim($row[4]), // <-- Kunci pengecekan duplikat: Cukup namanya saja!
             ], [
-                'golongan_id' => $golongan ? $golongan->id : null,
+                'department_id' => $department ? $department->id : null,
+                'golongan_id'   => $golongan ? $golongan->id : null,
             ]);
         }
+        // $jabatan = null;
+        // if (!empty($row[4])) {
+        //     $jabatan = Jabatan::firstOrCreate([
+        //         'name' => trim($row[4]),
+        //     ], [
+        //         'golongan_id' => $golongan ? $golongan->id : null,
+        //     ]);
+        // }
 
         // 5. Sinkronisasi User / Karyawan (Index 1 = NIK, Index 2 = Nama, Index 6 = Email)
         User::updateOrCreate([

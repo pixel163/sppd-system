@@ -23,7 +23,7 @@ class DetailIlpd extends Model
         'visa',
         'fiskal',
         'airport_tax',
-        'parkir&toll',
+        'parkir_toll',
         'entertainment',
         'dll',
         'total',

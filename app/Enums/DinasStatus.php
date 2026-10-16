@@ -20,7 +20,7 @@ enum DinasStatus: int
             self::SEDANG_DIPROSES => 'Sedang Diproses',
             self::DISETUJUI => 'Disetujui',
             self::DITOLAK => 'Ditolak',
-            self::LAPORAN => 'Menunggu Laporan',
+            self::LAPORAN => 'Laporan',
             self::SELESAI => 'Selesai',
         };
     }

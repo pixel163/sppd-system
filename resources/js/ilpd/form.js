@@ -151,16 +151,27 @@ document.addEventListener('DOMContentLoaded', function () {
     // 2. Setup tanggal mulai
     const inputMulai = document.getElementById('tanggalMulai');
     if (inputMulai) {
-        const besok = new Date();
-        besok.setDate(besok.getDate() + 7);
-        const minDate = besok.toISOString().split('T')[0];
-        inputMulai.setAttribute('min', minDate);
+        // Set minimal tanggal ke hari ini
+        const today = new Date().toISOString().split('T')[0];
+        inputMulai.setAttribute('min', today);
 
         inputMulai.addEventListener('change', hitungSemua);
         if (inputMulai.value) {
             hitungSemua();
         }
     }
+    // const inputMulai = document.getElementById('tanggalMulai');
+    // if (inputMulai) {
+    //     const besok = new Date();
+    //     besok.setDate(besok.getDate() + 7);
+    //     const minDate = besok.toISOString().split('T')[0];
+    //     inputMulai.setAttribute('min', minDate);
+
+    //     inputMulai.addEventListener('change', hitungSemua);
+    //     if (inputMulai.value) {
+    //         hitungSemua();
+    //     }
+    // }
 
     // 3. Clean format sebelum Submit Form
     const form = document.querySelector('form');

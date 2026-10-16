@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('golongan_id')
                 ->constrained('golongan')
                 ->restrictOnDelete();
+            $table->foreignId('department_id')->nullable()->constrained('department')->restrictOnDelete();
             $table->string('name')->unique();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->boolean('is_active')->default(true);

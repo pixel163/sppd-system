@@ -101,6 +101,45 @@ class AuthController extends Controller
         return view('register', compact('departments', 'jabatans'));
     }
 
+    // public function register(Request $request)
+    // {
+    //     $request->validate([
+    //         'name'          => 'required|string|max:255',
+    //         'email'         => 'required|string|email|max:255|unique:users,email',
+    //         'nik'           => 'required|numeric|digits_between:5,16|unique:users,nik',
+    //         'department_id' => 'required|exists:department,id',
+    //         'jabatan_id'    => 'required|exists:jabatan,id',
+    //         'password'      => 'required|string|min:3|confirmed',
+    //         // 'password'      => 'required|string|min:8|confirmed',
+    //     ], [
+    //         'nik.unique'        => 'NIK sudah terdaftar di sistem.',
+    //         'email.unique'      => 'Email sudah terdaftar.',
+    //         'password.confirmed'=> 'Konfirmasi password tidak cocok.',
+    //     ]);
+
+    //     $jabatan = \App\Models\Jabatan::find($request->jabatan_id);
+
+    //     $roleId = 2;
+    //     $golonganId = 1;
+
+    //     $namaJabatan = strtolower($jabatan->name ?? $jabatan->nama ?? '');
+
+    //     if (str_contains($namaJabatan, 'Manager') || str_contains($namaJabatan, 'HRGA')) {$roleId = 2;}
+    //     if (str_contains($namaJabatan, 'Manager') || str_contains($namaJabatan, 'HRGA')) {$golonganId = 2;}
+
+    //     User::create([
+    //         'name'          => $request->name,
+    //         'email'         => $request->email,
+    //         'nik'           => $request->nik,
+    //         'role_id'       => $roleId,
+    //         'golongan_id'   => $golonganId,
+    //         'department_id' => $request->department_id,
+    //         'jabatan_id'    => $request->jabatan_id,
+    //         'password'      => Hash::make($request->password),
+    //     ]);
+
+    //     return redirect()->route('login')->with('success', 'Pendaftaran akun berhasil! Silakan masuk.');
+    // }
     public function register(Request $request)
     {
         $request->validate([
@@ -110,7 +149,6 @@ class AuthController extends Controller
             'department_id' => 'required|exists:department,id',
             'jabatan_id'    => 'required|exists:jabatan,id',
             'password'      => 'required|string|min:3|confirmed',
-            // 'password'      => 'required|string|min:8|confirmed',
         ], [
             'nik.unique'        => 'NIK sudah terdaftar di sistem.',
             'email.unique'      => 'Email sudah terdaftar.',
@@ -118,14 +156,25 @@ class AuthController extends Controller
         ]);
 
         $jabatan = \App\Models\Jabatan::find($request->jabatan_id);
+        $namaJabatan = ($jabatan->name ?? $jabatan->nama ?? '');
+        // $namaJabatan = strtolower($jabatan->name ?? $jabatan->nama ?? '');
 
-        $roleId = 1;
-        $golonganId = 1;
+        // Default role & golongan
+        $roleId = 2;
+        $golonganId = 1; // Default selain di bawah (Staff/Lainnya)
 
-        $namaJabatan = strtolower($jabatan->name ?? $jabatan->nama ?? '');
-
-        if (str_contains($namaJabatan, 'Manager') || str_contains($namaJabatan, 'HRGA')) {$roleId = 2;}
-        if (str_contains($namaJabatan, 'Manager') || str_contains($namaJabatan, 'HRGA')) {$golonganId = 2;}
+        // Tentukan golongan & role berdasarkan nama jabatan
+        if (str_contains($namaJabatan, 'GENERAL MANAGER')) {
+            $golonganId = 4;
+        } elseif (str_contains($namaJabatan, 'MANAGER')) {
+        // } elseif (str_contains($namaJabatan, 'MANAGER') || str_contains($namaJabatan, 'hrga')) {
+            $golonganId = 3;
+            // $roleId = 2; // Sesuaikan role jika diperlukan
+        } elseif (str_contains($namaJabatan, 'SUPERVISOR')) {
+            $golonganId = 2;
+        } else {
+            $golonganId = 1;
+        }
 
         User::create([
             'name'          => $request->name,
@@ -139,5 +188,13 @@ class AuthController extends Controller
         ]);
 
         return redirect()->route('login')->with('success', 'Pendaftaran akun berhasil! Silakan masuk.');
+    }
+
+    public function getJabatanByDepartment($department_id)
+    {
+        // Ambil jabatan yang department_id-nya sesuai
+        $jabatans = Jabatan::where('department_id', $department_id)->get();
+        
+        return response()->json($jabatans);
     }
 }
